@@ -84,7 +84,7 @@ button {
 }
 
 .logout-btn button {
-    background:#d93025 !important;
+    background:#0000ff !important;
     color:white !important;
 }
 </style>
@@ -246,6 +246,7 @@ st.markdown("""
 Dashboard Kepala Sekolah • Streamlit
 </p>
 """, unsafe_allow_html=True)
+
 
 
 
