@@ -10,27 +10,89 @@ st.set_page_config(
 )
 
 # =========================================================
-# LOGIN SEDERHANA
+# SESSION STATE
 # =========================================================
 if "login" not in st.session_state:
     st.session_state.login = False
 
+if "page" not in st.session_state:
+    st.session_state.page = "cabdin"
+
+if "selected_cabdin" not in st.session_state:
+    st.session_state.selected_cabdin = None
+
+# =========================================================
+# CSS GLOBAL (ELEGAN & RINGAN)
+# =========================================================
+st.markdown("""
+<style>
+/* Login box */
+.login-box {
+    max-width: 360px;
+    margin: auto;
+    padding: 25px;
+    border-radius: 12px;
+    background: #f4f6f9;
+    border: 1px solid #e0e0e0;
+}
+
+/* Cabdin button */
+.cabdin-btn button {
+    background: #1f4fd8;
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    height: 48px;
+}
+
+/* Card sekolah */
+.school-card {
+    background:#eaf2fb;
+    border-left:6px solid #1f77b4;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:10px;
+    font-size:14px;
+}
+.school-danger {
+    background:#fdecea;
+    border-left:6px solid #d93025;
+}
+.school-title {
+    font-weight:700;
+}
+
+/* Logout button */
+.logout-btn button {
+    background:#d93025;
+    color:white;
+    border-radius:8px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# =========================================================
+# LOGIN
+# =========================================================
 if not st.session_state.login:
-    st.title("🔐 Login Dashboard")
+    st.markdown("<div class='login-box'>", unsafe_allow_html=True)
+    st.markdown("### 🔐 Login Dashboard")
 
     user = st.text_input("Username")
     pwd = st.text_input("Password", type="password")
 
-    if st.button("Login"):
+    if st.button("Login", use_container_width=True):
         if user == "aripin" and pwd == "ritonga":
             st.session_state.login = True
             st.rerun()
         else:
-            st.error("❌ Username / Password salah")
+            st.error("❌ Username atau Password salah")
+
+    st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
 # =========================================================
-# LOAD DATA (PASTI BENAR SESUAI DEBUG ANDA)
+# LOAD DATA
 # =========================================================
 @st.cache_data
 def load_data():
@@ -47,24 +109,23 @@ def load_data():
 df_ks, df_guru = load_data()
 
 # =========================================================
-# SESSION STATE
+# HEADER + LOGOUT
 # =========================================================
-if "page" not in st.session_state:
-    st.session_state.page = "cabdin"
+col1, col2 = st.columns([6,1])
+with col1:
+    st.markdown("<h2 style='color:#0B5394;'>📊 Dashboard Kepala Sekolah</h2>", unsafe_allow_html=True)
+with col2:
+    with st.container():
+        if st.button("🚪 Logout", use_container_width=True):
+            st.session_state.login = False
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.rerun()
 
-if "selected_cabdin" not in st.session_state:
-    st.session_state.selected_cabdin = None
+st.markdown("<hr>", unsafe_allow_html=True)
 
 # =========================================================
-# HEADER
-# =========================================================
-st.markdown("""
-<h2 style='color:#0B5394;'>📊 Dashboard Kepala Sekolah</h2>
-<hr>
-""", unsafe_allow_html=True)
-
-# =========================================================
-# SIDEBAR FILTER & SEARCH
+# SIDEBAR FILTER
 # =========================================================
 st.sidebar.header("🔍 Filter & Pencarian")
 
@@ -80,47 +141,18 @@ ket_filter = st.sidebar.selectbox(
     ["Semua"] + sorted(df_ks["Keterangan Akhir"].dropna().unique())
 )
 
-# =========================================================
-# CSS CARD
-# =========================================================
-st.markdown("""
-<style>
-.school-card {
-    background:#eaf2fb;
-    border-left:6px solid #1f77b4;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:10px;
-    font-size:14px;
-}
-.school-danger {
-    background:#fdecea;
-    border-left:6px solid #d93025;
-}
-.school-title {
-    font-weight:700;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# =========================================================
-# FUNGSI FILTER GLOBAL
-# =========================================================
 def apply_filter(df):
     if jenjang_filter != "Semua":
         df = df[df["Jenjang"] == jenjang_filter]
-
     if ket_filter != "Semua":
         df = df[df["Keterangan Akhir"] == ket_filter]
-
     if search_nama:
         df = df[df["Nama Kepala Sekolah"]
                 .str.contains(search_nama, case=False, na=False)]
-
     return df
 
 # =========================================================
-# HALAMAN 1 — CABANG DINAS
+# HALAMAN CABANG DINAS
 # =========================================================
 if st.session_state.page == "cabdin":
 
@@ -132,13 +164,14 @@ if st.session_state.page == "cabdin":
     cols = st.columns(4)
     for i, cabdin in enumerate(cabdin_list):
         with cols[i % 4]:
-            if st.button(f"📍 {cabdin}", use_container_width=True):
-                st.session_state.selected_cabdin = cabdin
-                st.session_state.page = "sekolah"
-                st.rerun()
+            with st.container():
+                if st.button(f"📍 {cabdin}", use_container_width=True):
+                    st.session_state.selected_cabdin = cabdin
+                    st.session_state.page = "sekolah"
+                    st.rerun()
 
 # =========================================================
-# HALAMAN 2 — SEKOLAH DALAM CABDIN
+# HALAMAN SEKOLAH
 # =========================================================
 elif st.session_state.page == "sekolah":
 
@@ -153,10 +186,8 @@ elif st.session_state.page == "sekolah":
     df_cab = apply_filter(df_cab)
 
     for idx, row in df_cab.iterrows():
-
         status = row["Keterangan Akhir"]
         danger = status in ["PLT", "Harus Diberhentikan"]
-
         card_class = "school-card school-danger" if danger else "school-card"
 
         st.markdown(f"""
@@ -173,9 +204,6 @@ elif st.session_state.page == "sekolah":
             st.write(f"**Jenjang:** {row['Jenjang']}")
             st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
 
-            # =================================================
-            # GANTI KEPSEK DARI SIMPEG
-            # =================================================
             if danger:
                 calon = st.selectbox(
                     "👤 Pilih Calon Pengganti (SIMPEG)",
