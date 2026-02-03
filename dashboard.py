@@ -81,7 +81,7 @@ with col1:
     st.markdown("## 📊 Dashboard Kepala Sekolah")
 
 with col2:
-    if st.button("🔄 Refresh Data SIMPEG", use_container_width=True):
+    if st.button("🔄 Refresh SIMPEG", use_container_width=True):
         st.cache_data.clear()
         st.success("✅ Data SIMPEG dimuat ulang")
         st.rerun()
@@ -101,7 +101,7 @@ st.divider()
 with st.expander("🔍 Pencarian Guru (SIMPEG)", expanded=True):
     keyword = st.text_input(
         "Ketik Nama Guru atau NIP",
-        placeholder="contoh: YUSMIATI / 1965"
+        placeholder="contoh: Arifin Ritonga / 1994"
     )
 
     if keyword:
@@ -194,3 +194,4 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
