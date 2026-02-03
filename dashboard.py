@@ -279,7 +279,6 @@ if (danger or sudah) and not boleh_edit:
         "ℹ️ Anda login sebagai **Kadis (View Only)**. "
         "Perubahan data hanya dapat dilakukan oleh Operator atau Kabid PTK."
     )
-
         # 🔥 BAGIAN YANG SEBELUMNYA HILANG
         with st.expander("🔍 Detail & Penanganan Kepala Sekolah"):
             st.write(f"**NIP:** {row['NIP']}")
@@ -410,6 +409,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
