@@ -55,7 +55,7 @@ st.markdown("""
 # =========================================================
 if not st.session_state.login:
 
-    st.markdown("## 🔐 LOGIN DASHBOARD")
+    st.markdown("## 🔐 LOGIN ")
 
     col1, col2, col3 = st.columns([2,3,2])
     with col2:
@@ -158,7 +158,7 @@ elif st.session_state.page == "sekolah":
     for idx, row in df_cab.iterrows():
 
         status = row["Keterangan Akhir"]
-        danger = status in ["PLT", "Harus Diberhentikan"]
+        danger = status in ["Harap Segera Defenitifkan", "Harus Diberhentikan"]
         card_class = "school-card school-danger" if danger else "school-card"
 
         st.markdown(f"""
@@ -187,4 +187,5 @@ elif st.session_state.page == "sekolah":
 # FOOTER
 # =========================================================
 st.divider()
-st.caption("Dashboard Kepala Sekolah • Streamlit")
+st.caption("Dashboard Kepala Sekolah • 01/ MHD. ARIPIN RITONGA, S.Kom")
+
