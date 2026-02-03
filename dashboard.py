@@ -65,7 +65,7 @@ st.markdown("""
 <style>
 .stApp { background:#d3d3d3; color:black; }
 .school-card { background:white; border-left:6px solid #1f77b4;
-border-radius:10px; padding:16px; margin-bottom:14px; }
+border-radius:10px; padding:12px; margin-bottom:14px; }
 .school-danger { background:#fdecea; border-left:6px solid #d93025; }
 .school-saved { background:#e6f4ea; border-left:6px solid #1e8e3e; }
 .school-title { font-weight:700; }
@@ -194,5 +194,6 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
