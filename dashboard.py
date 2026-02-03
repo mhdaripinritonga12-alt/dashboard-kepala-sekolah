@@ -1,145 +1,157 @@
 import streamlit as st
 import pandas as pd
 
-# ======================
-# KONFIGURASI
-# ======================
+# =====================
+# KONFIGURASI HALAMAN
+# =====================
 st.set_page_config(
-    page_title="Dashboard Kepala Sekolah",
+    page_title="Dashboard Kepala Sekolah Dinas Pendidikan",
     layout="wide"
 )
 
-# ======================
-# LOAD DATA
-# ======================
-@st.cache_data
-def load_data():
-    ks = pd.read_excel("data_kepala_sekolah.xlsx", sheet_name="KEPALA_SEKOLAH")
-    guru = pd.read_excel("data_kepala_sekolah.xlsx", sheet_name="SIMPEG_GURU")
-    return ks, guru
-
-df_ks, df_guru = load_data()
-
-# ======================
-# VALIDASI KOLOM
-# ======================
-wajib_ks = [
-    "Cabang Dinas", "Nama Sekolah", "Nama Kepala Sekolah",
-    "Jenjang", "NIP", "Keterangan Akhir"
-]
-for c in wajib_ks:
-    if c not in df_ks.columns:
-        st.error(f"❌ Kolom '{c}' tidak ada di Sheet KEPALA_SEKOLAH")
-        st.stop()
-
-wajib_guru = ["Nama Guru", "NIP", "Jenjang", "Cabang Dinas", "Status PNS"]
-for c in wajib_guru:
-    if c not in df_guru.columns:
-        st.error(f"❌ Kolom '{c}' tidak ada di Sheet SIMPEG_GURU")
-        st.stop()
-
-# ======================
-# HEADER
-# ======================
+# =====================
+# JUDUL
+# =====================
 st.markdown("""
-<h1 style="color:#0B5394;font-weight:800;">
+<h1 style='color:#0B5394; font-weight:800;'>
 📊 DASHBOARD KEPALA SEKOLAH DINAS PENDIDIKAN
 </h1>
 <hr>
 """, unsafe_allow_html=True)
 
-# ======================
-# FILTER SIDEBAR
-# ======================
-st.sidebar.header("🔎 Filter")
+# =====================
+# LOAD DATA (FIX)
+# =====================
+@st.cache_data
+def load_data():
+    return pd.read_excel(
+        "data_kepala_sekolah.xlsx",
+        sheet_name="Dashboard_Kepala_Sekolah"
+    )
+
+data = load_data()
+
+# =====================
+# VALIDASI KOLOM
+# =====================
+kolom_wajib = [
+    "Cabang Dinas",
+    "Nama Sekolah",
+    "Nama Kepala Sekolah",
+    "NIP",
+    "Jenjang",
+    "Sertifikat BCKS",
+    "Tahun Pengangkatan",
+    "Jabatan",
+    "Keterangan Akhir",
+    "Calon Pengganti"
+]
+
+for kolom in kolom_wajib:
+    if kolom not in data.columns:
+        st.error(f"❌ Kolom '{kolom}' tidak ditemukan di Excel")
+        st.stop()
+
+# =====================
+# SIDEBAR FILTER
+# =====================
+st.sidebar.header("🔎 Filter Data")
 
 jenjang = st.sidebar.selectbox(
     "Jenjang",
-    ["Semua"] + sorted(df_ks["Jenjang"].dropna().unique())
+    ["Semua"] + sorted(data["Jenjang"].dropna().unique())
 )
 
+bcks = st.sidebar.selectbox(
+    "Sertifikat BCKS",
+    ["Semua", "Sudah", "Belum"]
+)
+
+# =====================
+# FILTER DATA
+# =====================
+df = data.copy()
+
 if jenjang != "Semua":
-    df_ks = df_ks[df_ks["Jenjang"] == jenjang]
+    df = df[df["Jenjang"] == jenjang]
 
-# ======================
-# CSS CARD
-# ======================
-st.markdown("""
-<style>
-.card {padding:16px;border-radius:12px;margin-bottom:12px;background:#f4f6f9;}
-.red {background:#fdecea;border-left:6px solid #d93025;}
-.blue {border-left:6px solid #1f77b4;}
-</style>
-""", unsafe_allow_html=True)
+if bcks != "Semua":
+    df = df[df["Sertifikat BCKS"] == bcks]
 
-# ======================
+# =====================
 # TAMPILAN PER CABDIN
-# ======================
-st.subheader("🏢 Cabang Dinas Wilayah")
+# =====================
+st.subheader("🏢 Data Kepala Sekolah per Cabang Dinas")
+st.caption("Klik Cabang Dinas → Sekolah → Detail Kepala Sekolah")
 
-for cabdin in sorted(df_ks["Cabang Dinas"].unique()):
+for cabdin in sorted(df["Cabang Dinas"].unique()):
     with st.expander(f"📍 {cabdin}", expanded=False):
-        df_c = df_ks[df_ks["Cabang Dinas"] == cabdin]
 
-        for _, row in df_c.iterrows():
+        df_cabdin = df[df["Cabang Dinas"] == cabdin]
 
-            diberhentikan = row["Keterangan Akhir"] == "Harus Diberhentikan"
-            warna = "red" if diberhentikan else "blue"
+        for _, row in df_cabdin.iterrows():
 
-            st.markdown(
-                f"""
-                <div class="card {warna}">
-                <b>🏫 {row['Nama Sekolah']}</b><br>
-                👤 {row['Nama Kepala Sekolah']}<br>
-                <b style="color:red;">{row['Keterangan Akhir']}</b>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+            warna = "#ffdddd" if "Harus Diberhentikan" in row["Keterangan Akhir"] else "#f9f9f9"
 
-            # ======================
-            # DETAIL + CALON PENGGANTI
-            # ======================
-            with st.expander("🔍 Detail & Penetapan Pengganti", expanded=False):
+            with st.expander(
+                f"🏫 {row['Nama Sekolah']} — {row['Nama Kepala Sekolah']}",
+                expanded=False
+            ):
+                st.markdown(
+                    f"<div style='background:{warna}; padding:15px; border-radius:8px;'>",
+                    unsafe_allow_html=True
+                )
 
-                st.write(f"**NIP:** {row['NIP']}")
-                st.write(f"**Jenjang:** {row['Jenjang']}")
-                st.write(f"**Cabang Dinas:** {row['Cabang Dinas']}")
+                col1, col2 = st.columns(2)
 
-                # 🔴 LOGIKA CALON PENGGANTI
-                if diberhentikan:
-                    st.markdown("### 🧑‍🏫 Calon Pengganti (SIMPEG)")
+                with col1:
+                    st.markdown(f"""
+                    **Nama Kepala Sekolah**  
+                    {row['Nama Kepala Sekolah']}
 
-                    kandidat = df_guru[
-                        (df_guru["Status PNS"] == "PNS") &
-                        (df_guru["Jenjang"] == row["Jenjang"]) &
-                        (df_guru["Cabang Dinas"] == row["Cabang Dinas"])
-                    ]
+                    **NIP**  
+                    {row['NIP']}
 
-                    if kandidat.empty:
-                        st.warning("⚠️ Tidak ada calon pengganti tersedia")
-                    else:
-                        pilihan = kandidat["Nama Guru"].tolist()
+                    **Jabatan**  
+                    {row['Jabatan']}
+                    """)
 
-                        calon = st.selectbox(
-                            "Pilih Calon Pengganti",
-                            ["-- Pilih Guru --"] + pilihan,
-                            key=f"{row['NIP']}"
-                        )
+                with col2:
+                    st.markdown(f"""
+                    **Jenjang**  
+                    {row['Jenjang']}
 
-                        if calon != "-- Pilih Guru --":
-                            nip_calon = kandidat[kandidat["Nama Guru"] == calon]["NIP"].values[0]
-                            st.success(f"✅ Calon Pengganti: {calon} ({nip_calon})")
+                    **Sertifikat BCKS**  
+                    {row['Sertifikat BCKS']}
 
-                else:
-                    st.info("ℹ️ Kepala sekolah masih aktif")
+                    **Tahun Pengangkatan**  
+                    {row['Tahun Pengangkatan']}
+                    """)
 
-# ======================
+                st.markdown("---")
+
+                st.markdown(f"""
+                **📌 Keterangan Akhir**  
+                <b style='color:red;'>{row['Keterangan Akhir']}</b>
+                """ , unsafe_allow_html=True)
+
+                # =====================
+                # CALON PENGGANTI
+                # =====================
+                if "Harus Diberhentikan" in row["Keterangan Akhir"]:
+                    st.markdown(f"""
+                    **👤 Calon Pengganti**  
+                    <b>{row['Calon Pengganti']}</b>
+                    """, unsafe_allow_html=True)
+
+                st.markdown("</div>", unsafe_allow_html=True)
+
+# =====================
 # FOOTER
-# ======================
+# =====================
 st.markdown("""
 <hr>
-<p style="text-align:center;font-size:13px;color:gray;">
-Dashboard Kepala Sekolah • Final • Anti Error
+<p style='text-align:center; font-size:13px; color:gray;'>
+Dashboard Kepala Sekolah • Dinas Pendidikan Provinsi • Streamlit
 </p>
 """, unsafe_allow_html=True)
