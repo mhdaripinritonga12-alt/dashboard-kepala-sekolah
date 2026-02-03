@@ -22,80 +22,86 @@ if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
 
 # =========================================================
-# CSS GLOBAL (LOGIN + BACKGROUND)
+# CSS GLOBAL (LOGIN + DASHBOARD)
 # =========================================================
 st.markdown("""
 <style>
-/* Background utama */
+/* ================= BACKGROUND ================= */
 .stApp {
-    background: linear-gradient(180deg, #eaf2fb 0%, #ffffff 100%);
+    background: #0b2545; /* biru tua */
+    color: black;
 }
 
-/* LOGIN BOX */
+/* ================= LOGIN ================= */
 .login-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 80vh;
+    height: 85vh;
 }
 
 .login-box {
-    width: 340px;
-    padding: 25px;
-    border-radius: 14px;
-    background: #1f4fd8;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    width: 360px;
+    padding: 28px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #1f4fd8, #163fa3);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+    text-align: center;
 }
 
 .login-title {
-    text-align: center;
     color: white;
     font-weight: 700;
-    margin-bottom: 15px;
     font-size: 18px;
+    margin-top: 10px;
+    margin-bottom: 18px;
 }
 
-/* Card sekolah */
+/* ================= CARD SEKOLAH ================= */
 .school-card {
     background:#eaf2fb;
     border-left:6px solid #1f77b4;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:10px;
+    border-radius:12px;
+    padding:14px;
+    margin-bottom:12px;
     font-size:14px;
+    color:black;
 }
+
 .school-danger {
     background:#fdecea;
     border-left:6px solid #d93025;
 }
+
 .school-title {
     font-weight:700;
 }
 
-/* Tombol cabdin */
-.cabdin-btn button {
-    background:#1f4fd8;
-    color:white;
-    border-radius:10px;
-    font-weight:600;
-    height:46px;
+/* ================= BUTTON ================= */
+button {
+    border-radius:10px !important;
+    font-weight:600 !important;
 }
 
-/* Logout */
 .logout-btn button {
-    background:#d93025;
-    color:white;
-    border-radius:8px;
+    background:#d93025 !important;
+    color:white !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# LOGIN
+# LOGIN (GABUNGAN RUMUS 1 + 2)
 # =========================================================
 if not st.session_state.login:
+
     st.markdown("<div class='login-wrapper'>", unsafe_allow_html=True)
     st.markdown("<div class='login-box'>", unsafe_allow_html=True)
+
+    st.image(
+        "https://upload.wikimedia.org/wikipedia/commons/8/8e/Logo_Pemerintah_Provinsi_Sumatera_Utara.png",
+        width=90
+    )
 
     st.markdown("<div class='login-title'>🔐 LOGIN DASHBOARD</div>", unsafe_allow_html=True)
 
@@ -127,8 +133,13 @@ df_ks, df_guru = load_data()
 # HEADER + LOGOUT
 # =========================================================
 col1, col2 = st.columns([6,1])
+
 with col1:
-    st.markdown("<h2 style='color:#0B5394;'>📊 Dashboard Kepala Sekolah</h2>", unsafe_allow_html=True)
+    st.markdown(
+        "<h2 style='color:black;'>📊 Dashboard Kepala Sekolah</h2>",
+        unsafe_allow_html=True
+    )
+
 with col2:
     with st.container():
         if st.button("🚪 Logout", use_container_width=True):
@@ -162,13 +173,15 @@ def apply_filter(df):
     if ket_filter != "Semua":
         df = df[df["Keterangan Akhir"] == ket_filter]
     if search_nama:
-        df = df[df["Nama Kepala Sekolah"].str.contains(search_nama, case=False, na=False)]
+        df = df[df["Nama Kepala Sekolah"]
+                .str.contains(search_nama, case=False, na=False)]
     return df
 
 # =========================================================
 # HALAMAN CABANG DINAS
 # =========================================================
 if st.session_state.page == "cabdin":
+
     st.subheader("🏢 Cabang Dinas Wilayah")
 
     df_view = apply_filter(df_ks)
@@ -177,16 +190,16 @@ if st.session_state.page == "cabdin":
     cols = st.columns(4)
     for i, cabdin in enumerate(cabdin_list):
         with cols[i % 4]:
-            with st.container():
-                if st.button(f"📍 {cabdin}", use_container_width=True):
-                    st.session_state.selected_cabdin = cabdin
-                    st.session_state.page = "sekolah"
-                    st.rerun()
+            if st.button(f"📍 {cabdin}", use_container_width=True):
+                st.session_state.selected_cabdin = cabdin
+                st.session_state.page = "sekolah"
+                st.rerun()
 
 # =========================================================
 # HALAMAN SEKOLAH
 # =========================================================
 elif st.session_state.page == "sekolah":
+
     cabdin = st.session_state.selected_cabdin
     st.subheader(f"🏫 Sekolah — {cabdin}")
 
@@ -197,6 +210,7 @@ elif st.session_state.page == "sekolah":
     df_cab = apply_filter(df_ks[df_ks["Cabang Dinas"] == cabdin])
 
     for idx, row in df_cab.iterrows():
+
         status = row["Keterangan Akhir"]
         danger = status in ["PLT", "Harus Diberhentikan"]
         card_class = "school-card school-danger" if danger else "school-card"
@@ -228,7 +242,7 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 st.markdown("""
 <hr>
-<p style='text-align:center; color:gray; font-size:12px'>
+<p style='text-align:center; color:black; font-size:12px'>
 Dashboard Kepala Sekolah • Streamlit
 </p>
 """, unsafe_allow_html=True)
