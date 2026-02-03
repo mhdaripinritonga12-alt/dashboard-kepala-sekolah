@@ -75,6 +75,15 @@ if not st.session_state.login:
                 st.error("❌ Username atau Password salah")
 
     st.stop()
+# =========================================================
+# 👤 INFO USER LOGIN
+# =========================================================
+st.caption(f"👤 Login sebagai: **{st.session_state.role}**")
+
+# =========================================================
+# 🔐 BATASI AKSES BERDASARKAN ROLE
+# =========================================================
+boleh_edit = st.session_state.role in ["Operator", "Kabid"]
 
 # =========================================================
 # FUNGSI SIMPAN & LOAD PERUBAHAN KEPSEK
@@ -392,6 +401,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
