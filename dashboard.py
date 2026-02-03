@@ -22,27 +22,37 @@ if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
 
 # =========================================================
-# CSS GLOBAL (ELEGAN & RINGAN)
+# CSS GLOBAL (LOGIN + BACKGROUND)
 # =========================================================
 st.markdown("""
 <style>
-/* Login box */
-.login-box {
-    max-width: 360px;
-    margin: auto;
-    padding: 25px;
-    border-radius: 12px;
-    background: #f4f6f9;
-    border: 1px solid #e0e0e0;
+/* Background utama */
+.stApp {
+    background: linear-gradient(180deg, #eaf2fb 0%, #ffffff 100%);
 }
 
-/* Cabdin button */
-.cabdin-btn button {
+/* LOGIN BOX */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.login-box {
+    width: 340px;
+    padding: 25px;
+    border-radius: 14px;
     background: #1f4fd8;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.login-title {
+    text-align: center;
     color: white;
-    border-radius: 10px;
-    font-weight: 600;
-    height: 48px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    font-size: 18px;
 }
 
 /* Card sekolah */
@@ -62,7 +72,16 @@ st.markdown("""
     font-weight:700;
 }
 
-/* Logout button */
+/* Tombol cabdin */
+.cabdin-btn button {
+    background:#1f4fd8;
+    color:white;
+    border-radius:10px;
+    font-weight:600;
+    height:46px;
+}
+
+/* Logout */
 .logout-btn button {
     background:#d93025;
     color:white;
@@ -75,8 +94,10 @@ st.markdown("""
 # LOGIN
 # =========================================================
 if not st.session_state.login:
+    st.markdown("<div class='login-wrapper'>", unsafe_allow_html=True)
     st.markdown("<div class='login-box'>", unsafe_allow_html=True)
-    st.markdown("### 🔐 Login Dashboard")
+
+    st.markdown("<div class='login-title'>🔐 LOGIN DASHBOARD</div>", unsafe_allow_html=True)
 
     user = st.text_input("Username")
     pwd = st.text_input("Password", type="password")
@@ -88,7 +109,7 @@ if not st.session_state.login:
         else:
             st.error("❌ Username atau Password salah")
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div></div>", unsafe_allow_html=True)
     st.stop()
 
 # =========================================================
@@ -96,14 +117,8 @@ if not st.session_state.login:
 # =========================================================
 @st.cache_data
 def load_data():
-    df_ks = pd.read_excel(
-        "data_kepala_sekolah.xlsx",
-        sheet_name="KEPALA_SEKOLAH"
-    )
-    df_guru = pd.read_excel(
-        "data_kepala_sekolah.xlsx",
-        sheet_name="GURU_SIMPEG"
-    )
+    df_ks = pd.read_excel("data_kepala_sekolah.xlsx", sheet_name="KEPALA_SEKOLAH")
+    df_guru = pd.read_excel("data_kepala_sekolah.xlsx", sheet_name="GURU_SIMPEG")
     return df_ks, df_guru
 
 df_ks, df_guru = load_data()
@@ -147,15 +162,13 @@ def apply_filter(df):
     if ket_filter != "Semua":
         df = df[df["Keterangan Akhir"] == ket_filter]
     if search_nama:
-        df = df[df["Nama Kepala Sekolah"]
-                .str.contains(search_nama, case=False, na=False)]
+        df = df[df["Nama Kepala Sekolah"].str.contains(search_nama, case=False, na=False)]
     return df
 
 # =========================================================
 # HALAMAN CABANG DINAS
 # =========================================================
 if st.session_state.page == "cabdin":
-
     st.subheader("🏢 Cabang Dinas Wilayah")
 
     df_view = apply_filter(df_ks)
@@ -174,7 +187,6 @@ if st.session_state.page == "cabdin":
 # HALAMAN SEKOLAH
 # =========================================================
 elif st.session_state.page == "sekolah":
-
     cabdin = st.session_state.selected_cabdin
     st.subheader(f"🏫 Sekolah — {cabdin}")
 
@@ -182,8 +194,7 @@ elif st.session_state.page == "sekolah":
         st.session_state.page = "cabdin"
         st.rerun()
 
-    df_cab = df_ks[df_ks["Cabang Dinas"] == cabdin]
-    df_cab = apply_filter(df_cab)
+    df_cab = apply_filter(df_ks[df_ks["Cabang Dinas"] == cabdin])
 
     for idx, row in df_cab.iterrows():
         status = row["Keterangan Akhir"]
