@@ -29,87 +29,107 @@ def load_data():
 data = load_data()
 
 # ======================
+# VALIDASI KOLOM WAJIB
+# ======================
+kolom_wajib = [
+    "Cabang Dinas",
+    "Nama Sekolah",
+    "Nama Kepala Sekolah",
+    "Jenjang",
+    "Sertifikat BCKS",
+    "Keterangan Akhir",
+    "NIP",
+    "Jabatan",
+    "Tahun Pengangkatan"
+]
+
+for kolom in kolom_wajib:
+    if kolom not in data.columns:
+        st.error(f"❌ Kolom '{kolom}' tidak ditemukan di Excel")
+        st.stop()
+
+# ======================
 # SIDEBAR FILTER
 # ======================
 st.sidebar.header("🔎 Filter Data")
 
-filter_jenjang = st.sidebar.selectbox(
+f_jenjang = st.sidebar.selectbox(
     "Jenjang",
-    ["Semua"] + sorted(data["Jenjang"].dropna().unique().tolist())
+    ["Semua"] + sorted(data["Jenjang"].dropna().unique())
 )
 
-filter_bcks = st.sidebar.selectbox(
+f_bcks = st.sidebar.selectbox(
     "Sertifikat BCKS",
     ["Semua", "Sudah", "Belum"]
 )
 
-filter_status = st.sidebar.selectbox(
+f_status = st.sidebar.selectbox(
     "Keterangan Akhir",
-    ["Semua"] + sorted(data["Keterangan Akhir"].dropna().unique().tolist())
+    ["Semua"] + sorted(data["Keterangan Akhir"].dropna().unique())
 )
 
 # ======================
-# TERAPKAN FILTER
+# FILTER DATA
 # ======================
 df = data.copy()
 
-if filter_jenjang != "Semua":
-    df = df[df["Jenjang"] == filter_jenjang]
+if f_jenjang != "Semua":
+    df = df[df["Jenjang"] == f_jenjang]
 
-if filter_bcks != "Semua":
-    df = df[df["Sertifikat BCKS"] == filter_bcks]
+if f_bcks != "Semua":
+    df = df[df["Sertifikat BCKS"] == f_bcks]
 
-if filter_status != "Semua":
-    df = df[df["Keterangan Akhir"] == filter_status]
+if f_status != "Semua":
+    df = df[df["Keterangan Akhir"] == f_status]
 
 # ======================
-# TAMPILAN PER CABDIN
+# TAMPILAN PER CABANG DINAS
 # ======================
 st.subheader("🏢 Data Kepala Sekolah per Cabang Dinas")
 st.caption("Klik Cabang Dinas → Sekolah → Detail Kepala Sekolah")
 
 for cabdin in sorted(df["Cabang Dinas"].unique()):
     with st.expander(f"📍 {cabdin}", expanded=False):
-        df_cabdin = df[df["Cabang Dinas"] == cabdin]
+        df_cd = df[df["Cabang Dinas"] == cabdin]
 
-        for _, row in df_cabdin.iterrows():
+        for _, r in df_cd.iterrows():
             with st.expander(
-                f"🏫 {row['Nama Sekolah']} — {row['Nama Kepala Sekolah']}",
+                f"🏫 {r['Nama Sekolah']} — {r['Nama Kepala Sekolah']}",
                 expanded=False
             ):
                 col1, col2 = st.columns(2)
 
                 with col1:
                     st.markdown(f"""
-                    **Nama Kepala Sekolah**  
-                    {row['Nama Kepala Sekolah']}
+**Nama Kepala Sekolah**  
+{r['Nama Kepala Sekolah']}
 
-                    **NIP**  
-                    {row['NIP']}
+**NIP**  
+{r['NIP']}
 
-                    **Jabatan**  
-                    {row['Jabatan']}
-                    """)
+**Jabatan**  
+{r['Jabatan']}
+""")
 
                 with col2:
                     st.markdown(f"""
-                    **Jenjang**  
-                    {row['Jenjang']}
+**Jenjang**  
+{r['Jenjang']}
 
-                    **Sertifikat BCKS**  
-                    {row['Sertifikat BCKS']}
+**Sertifikat BCKS**  
+{r['Sertifikat BCKS']}
 
-                    **Tahun Pengangkatan**  
-                    {row['Tahun Pengangkatan']}
-                    """)
+**Tahun Pengangkatan**  
+{r['Tahun Pengangkatan']}
+""")
 
                 st.markdown("---")
                 st.markdown(f"""
-                **📌 Keterangan Akhir**  
-                <span style='font-size:18px; font-weight:700; color:red;'>
-                {row['Keterangan Akhir']}
-                </span>
-                """, unsafe_allow_html=True)
+**📌 Keterangan Akhir**  
+<span style='font-size:18px; font-weight:700; color:red;'>
+{r['Keterangan Akhir']}
+</span>
+""", unsafe_allow_html=True)
 
 # ======================
 # FOOTER
