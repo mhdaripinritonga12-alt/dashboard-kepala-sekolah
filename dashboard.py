@@ -325,9 +325,10 @@ st.info("""
 **Pokok Ketentuan:**
 1. Kepala Sekolah diberikan tugas maksimal **2 (dua) periode**
 2. Satu periode = **4 (empat) tahun**
-3. Kepala Sekolah yang telah menjabat **2 periode wajib diberhentikan**
-4. Sekolah tanpa Kepala Sekolah definitif **wajib segera diisi (PLT/Definitif)**
-5. Penugasan Kepala Sekolah merupakan **tugas tambahan ASN**
+3. Kepala Sekolah yang telah menjabat **2 periode wajib diberhentikan sesuai pada pasal 31**
+4. Kepala Sekolah yang telah menajabat **1 Periode bisa di perpanjang apabila memiliki Sertifikat BCKS sesuai pada Pasal 32**
+5. Sekolah tanpa Kepala Sekolah definitif **wajib segera diisi (PLT/Definitif)**
+6. Penugasan Kepala Sekolah merupakan **tugas tambahan ASN**
 """)
 
 st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselaraskan dengan Permendikdasmen No. 7 Tahun 2025")
@@ -337,5 +338,6 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
