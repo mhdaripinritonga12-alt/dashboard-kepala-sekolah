@@ -1,6 +1,14 @@
 import streamlit as st
 import pandas as pd
 import os
+# =========================================================
+# 🔒 PAKSA LOGIN SETIAP APLIKASI DIBUKA ULANG
+# (ANTI AUTO-LOGIN, TANPA MENGUBAH KODE LAMA)
+# =========================================================
+if "initialized" not in st.session_state:
+    st.session_state.initialized = True
+    st.session_state.login = False
+    st.session_state.role = None
 
 # =========================================================
 # KONFIGURASI APLIKASI
@@ -384,6 +392,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
