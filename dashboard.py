@@ -28,7 +28,7 @@ st.markdown("""
 <style>
 /* ================= BACKGROUND ================= */
 .stApp {
-    background: #0000ff; /* biru tua */
+    background: #d3d3d3; /* biru tua */
     color: black;
 }
 
@@ -246,6 +246,7 @@ st.markdown("""
 Dashboard Kepala Sekolah • Streamlit
 </p>
 """, unsafe_allow_html=True)
+
 
 
 
