@@ -1,18 +1,17 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
 
-# =====================
+# ======================
 # KONFIGURASI HALAMAN
-# =====================
+# ======================
 st.set_page_config(
     page_title="Dashboard Kepala Sekolah Dinas Pendidikan",
     layout="wide"
 )
 
-# =====================
-# JUDUL UTAMA (BIRU & BOLD)
-# =====================
+# ======================
+# JUDUL
+# ======================
 st.markdown("""
 <h1 style='color:#0B5394; font-weight:800;'>
 📊 DASHBOARD KEPALA SEKOLAH DINAS PENDIDIKAN
@@ -20,115 +19,104 @@ st.markdown("""
 <hr>
 """, unsafe_allow_html=True)
 
-# =====================
+# ======================
 # LOAD DATA
-# =====================
-data_kasek = pd.read_excel("data_kepala_sekolah.xlsx")
-data_simpeg = pd.read_excel("data_guru_simpeg.xlsx")
+# ======================
+@st.cache_data
+def load_data():
+    return pd.read_excel("data_kepala_sekolah.xlsx")
 
-tahun_sekarang = datetime.now().year
+data = load_data()
 
-# =====================
-# HITUNG TAHUN BERJALAN & STATUS
-# =====================
-data_kasek["Tahun Pengangkatan"] = pd.to_numeric(
-    data_kasek["Tahun Pengangkatan"], errors="coerce"
-)
-
-data_kasek["Tahun Berjalan"] = tahun_sekarang - data_kasek["Tahun Pengangkatan"]
-
-def hitung_periode(tahun):
-    if tahun <= 4:
-        return "Periode 1"
-    elif tahun <= 8:
-        return "Periode 2"
-    else:
-        return "Lebih dari 2 Periode"
-
-data_kasek["Status Periode"] = data_kasek["Tahun Berjalan"].apply(hitung_periode)
-
-def keterangan_akhir(row):
-    if row["Tahun Berjalan"] > 8:
-        return "Harus Diberhentikan"
-    return f"Aktif {row['Status Periode']}"
-
-data_kasek["Keterangan Akhir"] = data_kasek.apply(keterangan_akhir, axis=1)
-
-# =====================
-# FILTER SIDEBAR
-# =====================
+# ======================
+# SIDEBAR FILTER
+# ======================
 st.sidebar.header("🔎 Filter Data")
 
-jenjang_filter = st.sidebar.selectbox(
+filter_jenjang = st.sidebar.selectbox(
     "Jenjang",
-    ["Semua"] + sorted(data_kasek["Jenjang"].dropna().unique())
+    ["Semua"] + sorted(data["Jenjang"].dropna().unique().tolist())
 )
 
-bcks_filter = st.sidebar.selectbox(
+filter_bcks = st.sidebar.selectbox(
     "Sertifikat BCKS",
-    ["Semua"] + sorted(data_kasek["Sertifikat BCKS"].dropna().unique())
+    ["Semua", "Sudah", "Belum"]
 )
 
-periode_filter = st.sidebar.selectbox(
-    "Status Periode",
-    ["Semua"] + sorted(data_kasek["Status Periode"].dropna().unique())
+filter_status = st.sidebar.selectbox(
+    "Keterangan Akhir",
+    ["Semua"] + sorted(data["Keterangan Akhir"].dropna().unique().tolist())
 )
 
-df = data_kasek.copy()
+# ======================
+# TERAPKAN FILTER
+# ======================
+df = data.copy()
 
-if jenjang_filter != "Semua":
-    df = df[df["Jenjang"] == jenjang_filter]
+if filter_jenjang != "Semua":
+    df = df[df["Jenjang"] == filter_jenjang]
 
-if bcks_filter != "Semua":
-    df = df[df["Sertifikat BCKS"] == bcks_filter]
+if filter_bcks != "Semua":
+    df = df[df["Sertifikat BCKS"] == filter_bcks]
 
-if periode_filter != "Semua":
-    df = df[df["Status Periode"] == periode_filter]
+if filter_status != "Semua":
+    df = df[df["Keterangan Akhir"] == filter_status]
 
-# =====================
-# DATA KEPALA SEKOLAH (RINGKAS)
-# =====================
-st.subheader("📋 Data Kepala Sekolah (Klik untuk Detail)")
+# ======================
+# TAMPILAN PER CABDIN
+# ======================
+st.subheader("🏢 Data Kepala Sekolah per Cabang Dinas")
+st.caption("Klik Cabang Dinas → Sekolah → Detail Kepala Sekolah")
 
-for i, row in df.iterrows():
-    with st.expander(f"🏫 {row['Nama Sekolah']} — {row['Nama Kepala Sekolah']}"):
-        st.write("**Nama Kepala Sekolah:**", row["Nama Kepala Sekolah"])
-        st.write("**NIP:**", row["NIP"])
-        st.write("**Jenjang:**", row["Jenjang"])
-        st.write("**Sertifikat BCKS:**", row["Sertifikat BCKS"])
-        st.write("**Tahun Pengangkatan:**", row["Tahun Pengangkatan"])
-        st.write("**Tahun Berjalan:**", row["Tahun Berjalan"])
-        st.write("**Status Periode:**", row["Status Periode"])
-        st.write("**Keterangan Akhir:**", row["Keterangan Akhir"])
+for cabdin in sorted(df["Cabang Dinas"].unique()):
+    with st.expander(f"📍 {cabdin}", expanded=False):
+        df_cabdin = df[df["Cabang Dinas"] == cabdin]
 
-        # =====================
-        # CALON PENGGANTI OTOMATIS
-        # =====================
-        if row["Keterangan Akhir"] == "Harus Diberhentikan":
-            st.markdown("### 🔁 Calon Pengganti (SIMPEG)")
+        for _, row in df_cabdin.iterrows():
+            with st.expander(
+                f"🏫 {row['Nama Sekolah']} — {row['Nama Kepala Sekolah']}",
+                expanded=False
+            ):
+                col1, col2 = st.columns(2)
 
-            calon = data_simpeg[
-                (data_simpeg["JABATAN"].str.lower() == "guru")
-            ]
+                with col1:
+                    st.markdown(f"""
+                    **Nama Kepala Sekolah**  
+                    {row['Nama Kepala Sekolah']}
 
-            calon_list = calon["NAMA GURU"].dropna().unique()
+                    **NIP**  
+                    {row['NIP']}
 
-            pilihan = st.selectbox(
-                "Pilih Calon Pengganti",
-                calon_list,
-                key=f"calon_{i}"
-            )
+                    **Jabatan**  
+                    {row['Jabatan']}
+                    """)
 
-            st.success(f"✅ Calon pengganti dipilih: **{pilihan}**")
+                with col2:
+                    st.markdown(f"""
+                    **Jenjang**  
+                    {row['Jenjang']}
 
-# =====================
-# RINGKASAN PENGGANTIAN
-# =====================
-st.markdown("---")
-st.subheader("📌 Penetapan Calon Pengganti")
+                    **Sertifikat BCKS**  
+                    {row['Sertifikat BCKS']}
 
-pengganti = df[df["Keterangan Akhir"] == "Harus Diberhentikan"][
-    ["Nama Kepala Sekolah", "Nama Sekolah", "Jenjang", "Keterangan Akhir"]
-]
+                    **Tahun Pengangkatan**  
+                    {row['Tahun Pengangkatan']}
+                    """)
 
-st.dataframe(pengganti, use_container_width=True)
+                st.markdown("---")
+                st.markdown(f"""
+                **📌 Keterangan Akhir**  
+                <span style='font-size:18px; font-weight:700; color:red;'>
+                {row['Keterangan Akhir']}
+                </span>
+                """, unsafe_allow_html=True)
+
+# ======================
+# FOOTER
+# ======================
+st.markdown("""
+<hr>
+<p style='text-align:center; font-size:13px; color:gray;'>
+Dashboard Kepala Sekolah • Dinas Pendidikan Provinsi • Streamlit
+</p>
+""", unsafe_allow_html=True)
