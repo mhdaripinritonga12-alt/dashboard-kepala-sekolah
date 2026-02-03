@@ -28,7 +28,7 @@ st.markdown("""
 <style>
 /* Background setelah login */
 .stApp {
-    background-color: #eef4fb;
+    background-color: #d3d3d3;
     color: black;
 }
 
@@ -188,4 +188,5 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • 01/ MHD. ARIPIN RITONGA, S.Kom")
+
 
