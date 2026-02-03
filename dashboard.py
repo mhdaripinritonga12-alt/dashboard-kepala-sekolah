@@ -277,7 +277,7 @@ elif st.session_state.page == "sekolah":
     # 🔒 BLOK AKSES EDIT UNTUK KADIS (VIEW ONLY)
     # =========================================================
     if (danger or sudah) and not boleh_edit:
-        st.info(
+    st.info(
             "ℹ️ Anda login sebagai **Kadis (View Only)**. "
             "Perubahan data hanya dapat dilakukan oleh Operator atau Kabid PTK."
         )
@@ -411,6 +411,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
