@@ -154,6 +154,9 @@ with col4:
         st.rerun()
 
 st.divider()
+# RESET ROLE SAAT LOGOUT
+if not st.session_state.login:
+    st.session_state.role = None
 
 # =========================================================
 # 🔍 PENCARIAN GURU SIMPEG
@@ -381,6 +384,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
