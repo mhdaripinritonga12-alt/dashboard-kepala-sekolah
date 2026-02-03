@@ -259,10 +259,6 @@ elif st.session_state.page == "sekolah":
             st.write(f"**NIP:** {row['NIP']}")
             st.write(f"**Jenjang:** {row['Jenjang']}")
             st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
-# =========================================================
-# 🔐 BATASI AKSES BERDASARKAN ROLE
-# =========================================================
-boleh_edit = st.session_state.role in ["Operator", "Kabid"]
 
             if danger or sudah:
                 default_idx = (
@@ -388,6 +384,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
