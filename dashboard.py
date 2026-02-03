@@ -98,7 +98,7 @@ with col2:
         st.rerun()
 
 with col3:
-    if st.button("🔄 Refresh Data Kepala Sekolah", use_container_width=True):
+    if st.button("🔄 Refresh Data Kepsek", use_container_width=True):
         st.cache_data.clear()
         st.success("✅ Data Kepala Sekolah dimuat ulang")
         st.rerun()
@@ -250,3 +250,4 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
