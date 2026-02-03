@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 # ======================
-# LOAD DATA
+# LOAD DATA AMAN
 # ======================
 @st.cache_data
 def load_data():
@@ -21,25 +21,35 @@ def load_data():
 df, df_guru = load_data()
 
 # ======================
-# VALIDASI KOLOM
+# VALIDASI KOLOM WAJIB
 # ======================
-kolom_ks = [
-    "Cabang Dinas", "Nama Sekolah", "Nama Kepala Sekolah",
-    "NIP", "Jabatan", "Jenjang",
-    "Sertifikat BCKS", "Tahun Pengangkatan", "Keterangan Akhir"
+kolom_wajib_ks = [
+    "Cabang Dinas",
+    "Nama Sekolah",
+    "Nama Kepala Sekolah",
+    "Keterangan Akhir",
+    "Jenjang"
 ]
 
-kolom_guru = ["Nama Guru", "NIP", "Jenjang", "Cabang Dinas"]
-
-for c in kolom_ks:
-    if c not in df.columns:
-        st.error(f"❌ Kolom '{c}' tidak ditemukan di data_kepala_sekolah.xlsx")
+for col in kolom_wajib_ks:
+    if col not in df.columns:
+        st.error(f"❌ Kolom '{col}' tidak ditemukan di data_kepala_sekolah.xlsx")
         st.stop()
 
-for c in kolom_guru:
-    if c not in df_guru.columns:
-        st.error(f"❌ Kolom '{c}' tidak ditemukan di data_guru_simpeg.xlsx")
-        st.stop()
+# ======================
+# CEK KOLOM GURU (AMAN)
+# ======================
+# 👉 GANTI "Nama" JIKA DI EXCEL ANDA BEDA
+NAMA_GURU_COL = "Nama"
+
+if NAMA_GURU_COL not in df_guru.columns:
+    st.error(
+        f"❌ Kolom '{NAMA_GURU_COL}' tidak ditemukan di data_guru_simpeg.xlsx\n\n"
+        "➡️ Buka Excel SIMPEG\n"
+        "➡️ Lihat nama kolom yang berisi NAMA GURU\n"
+        "➡️ Ganti variabel NAMA_GURU_COL di dashboard.py"
+    )
+    st.stop()
 
 # ======================
 # HEADER
@@ -52,7 +62,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ======================
-# SEARCH GLOBAL (NAMA KEPSEK)
+# SEARCH KEPALA SEKOLAH
 # ======================
 search = st.text_input("🔍 Cari Nama Kepala Sekolah")
 
@@ -73,18 +83,18 @@ if jenjang != "Semua":
     df = df[df["Jenjang"] == jenjang]
 
 # ======================
-# CSS
+# STYLE CARD
 # ======================
 st.markdown("""
 <style>
 .card {
     border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
     background-color: #f4f6f9;
     border-left: 6px solid #1f77b4;
 }
-.card-danger {
+.danger {
     background-color: #fdecea;
     border-left: 6px solid #d93025;
 }
@@ -92,55 +102,52 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ======================
-# TAMPILAN CABANG DINAS
+# TAMPILAN PER CABDIN
 # ======================
 st.subheader("🏢 Cabang Dinas Wilayah")
 
-for cabdin in sorted(df["Cabang Dinas"].unique()):
-    with st.expander(f"📍 {cabdin}", expanded=False):
+cabdin_list = sorted(df["Cabang Dinas"].unique())
+cols = st.columns(4)
 
-        df_cab = df[df["Cabang Dinas"] == cabdin]
+for i, cabdin in enumerate(cabdin_list):
+    with cols[i % 4]:
+        with st.expander(f"📍 {cabdin}", expanded=False):
 
-        for i, row in df_cab.iterrows():
+            df_cab = df[df["Cabang Dinas"] == cabdin]
 
-            danger = row["Keterangan Akhir"] in ["PLT", "Harus Diberhentikan"]
-            card_class = "card-danger" if danger else "card"
+            for _, row in df_cab.iterrows():
+                is_danger = row["Keterangan Akhir"] in ["PLT", "Harus Diberhentikan"]
+                card_class = "danger" if is_danger else "card"
 
-            st.markdown(f"""
-            <div class="{card_class}">
-                <b>🏫 {row['Nama Sekolah']}</b><br>
-                👤 {row['Nama Kepala Sekolah']}<br>
-                <span style="color:red;font-weight:700;">
-                    {row['Keterangan Akhir']}
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
+                st.markdown(
+                    f"""
+                    <div class="{card_class}">
+                        <b>🏫 {row['Nama Sekolah']}</b><br>
+                        👤 {row['Nama Kepala Sekolah']}<br>
+                        <span style="color:red; font-weight:700;">
+                        {row['Keterangan Akhir']}
+                        </span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
-            with st.expander("🔍 Lihat Detail", expanded=False):
-                st.write(f"**NIP:** {row['NIP']}")
-                st.write(f"**Jabatan:** {row['Jabatan']}")
-                st.write(f"**Jenjang:** {row['Jenjang']}")
-                st.write(f"**BCKS:** {row['Sertifikat BCKS']}")
-                st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
+                with st.expander("🔍 Detail & Pengganti"):
+                    st.write(f"**Jenjang:** {row.get('Jenjang','-')}")
+                    st.write(f"**NIP:** {row.get('NIP','-')}")
+                    st.write(f"**Jabatan:** {row.get('Jabatan','-')}")
+                    st.write(f"**Tahun Pengangkatan:** {row.get('Tahun Pengangkatan','-')}")
 
-                # ======================
-                # CALON PENGGANTI
-                # ======================
-                if row["Keterangan Akhir"] in ["PLT", "Harus Diberhentikan"]:
-                    kandidat = df_guru[
-                        (df_guru["Jenjang"] == row["Jenjang"]) &
-                        (df_guru["Cabang Dinas"] == cabdin)
-                    ]
+                    if is_danger:
+                        calon = df_guru[
+                            df_guru["Jenjang"] == row["Jenjang"]
+                        ][NAMA_GURU_COL].dropna().unique()
 
-                    if len(kandidat) > 0:
-                        pilih = st.selectbox(
+                        st.selectbox(
                             "👥 Pilih Calon Pengganti",
-                            kandidat["Nama Guru"].unique(),
-                            key=f"ganti_{i}"
+                            calon,
+                            key=f"ganti_{cabdin}_{row['Nama Sekolah']}"
                         )
-                        st.success(f"Calon pengganti dipilih: **{pilih}**")
-                    else:
-                        st.warning("Tidak ada kandidat dari data SIMPEG")
 
 # ======================
 # FOOTER
