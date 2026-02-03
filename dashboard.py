@@ -101,7 +101,7 @@ if not st.session_state.login:
     st.image(
         "st.image(
     "https://upload.wikimedia.org/wikipedia/commons/8/8e/Logo_Pemerintah_Provinsi_Sumatera_Utara.png",
-    width=90 )
+    width=90 ),
 
     st.markdown("<div class='login-title'>🔐 LOGIN DASHBOARD</div>", unsafe_allow_html=True)
 
@@ -246,6 +246,7 @@ st.markdown("""
 Dashboard Kepala Sekolah • Streamlit
 </p>
 """, unsafe_allow_html=True)
+
 
 
 
