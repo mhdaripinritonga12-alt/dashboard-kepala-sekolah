@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # =========================================================
-# KONFIGURASI
+# KONFIGURASI APLIKASI
 # =========================================================
 st.set_page_config(
     page_title="Dashboard Kepala Sekolah",
@@ -26,7 +26,7 @@ if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
 
 # =========================================================
-# FUNGSI SIMPAN PERUBAHAN
+# FUNGSI SIMPAN & LOAD PERUBAHAN KEPSEK
 # =========================================================
 def load_perubahan():
     if os.path.exists(DATA_SAVE):
@@ -47,9 +47,9 @@ def save_perubahan(data_dict):
 perubahan_kepsek = load_perubahan()
 
 # =========================================================
-# LOAD DATA (CACHE)
+# LOAD DATA UTAMA (CACHE)
 # =========================================================
-@st.cache_data(show_spinner="Memuat data SIMPEG...")
+@st.cache_data(show_spinner="📂 Memuat data Kepala Sekolah & SIMPEG...")
 def load_data():
     df_ks = pd.read_excel(DATA_FILE, sheet_name="KEPALA_SEKOLAH")
     df_guru = pd.read_excel(DATA_FILE, sheet_name="GURU_SIMPEG")
@@ -59,34 +59,51 @@ df_ks, df_guru = load_data()
 guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 
 # =========================================================
-# CSS
+# CSS (TAMPILAN DINAS)
 # =========================================================
 st.markdown("""
 <style>
 .stApp { background:#d3d3d3; color:black; }
-.school-card { background:white; border-left:6px solid #1f77b4;
-border-radius:10px; padding:12px; margin-bottom:14px; }
-.school-danger { background:#fdecea; border-left:6px solid #d93025; }
-.school-saved { background:#e6f4ea; border-left:6px solid #1e8e3e; }
-.school-title { font-weight:700; }
+.school-card {
+    background:white;
+    border-left:6px solid #1f77b4;
+    border-radius:10px;
+    padding:16px;
+    margin-bottom:14px;
+}
+.school-danger {
+    background:#fdecea;
+    border-left:6px solid #d93025;
+}
+.school-saved {
+    background:#e6f4ea;
+    border-left:6px solid #1e8e3e;
+}
+.school-title { font-weight:700; font-size:16px; }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# HEADER + LOGOUT + REFRESH
+# HEADER + REFRESH + LOGOUT
 # =========================================================
-col1, col2, col3 = st.columns([6,2,2])
+col1, col2, col3, col4 = st.columns([5,2,2,2])
 
 with col1:
     st.markdown("## 📊 Dashboard Kepala Sekolah")
 
 with col2:
-    if st.button("🔄 Refresh SIMPEG", use_container_width=True):
+    if st.button("🔄 Refresh Data SIMPEG", use_container_width=True):
         st.cache_data.clear()
         st.success("✅ Data SIMPEG dimuat ulang")
         st.rerun()
 
 with col3:
+    if st.button("🔄 Refresh Data Kepala Sekolah", use_container_width=True):
+        st.cache_data.clear()
+        st.success("✅ Data Kepala Sekolah dimuat ulang")
+        st.rerun()
+
+with col4:
     if st.button("🚪 Logout", use_container_width=True):
         st.session_state.login = False
         st.session_state.page = "cabdin"
@@ -96,12 +113,12 @@ with col3:
 st.divider()
 
 # =========================================================
-# 🔍 PENCARIAN GURU SIMPEG (AKURAT)
+# 🔍 PENCARIAN GURU SIMPEG
 # =========================================================
-with st.expander("🔍 Pencarian Guru (SIMPEG)", expanded=True):
+with st.expander("🔍 Pencarian Guru (SIMPEG)", expanded=False):
     keyword = st.text_input(
         "Ketik Nama Guru atau NIP",
-        placeholder="contoh: Arifin Ritonga / 1994"
+        placeholder="contoh: Mhd Aripin Ritonga/ 1994"
     )
 
     if keyword:
@@ -114,7 +131,7 @@ with st.expander("🔍 Pencarian Guru (SIMPEG)", expanded=True):
         if hasil.empty:
             st.error("❌ Guru tidak ditemukan di data SIMPEG")
         else:
-            st.success(f"✅ Ditemukan {len(hasil)} data")
+            st.success(f"✅ Ditemukan {len(hasil)} data guru")
             st.dataframe(hasil, use_container_width=True)
 
 st.divider()
@@ -160,7 +177,7 @@ if st.session_state.page == "cabdin":
                 st.rerun()
 
 # =========================================================
-# HALAMAN SEKOLAH
+# HALAMAN SEKOLAH (DETAIL + PENGGANTI)
 # =========================================================
 elif st.session_state.page == "sekolah":
 
@@ -174,6 +191,7 @@ elif st.session_state.page == "sekolah":
     df_cab = apply_filter(df_ks[df_ks["Cabang Dinas"] == cabdin])
 
     for idx, row in df_cab.iterrows():
+
         nama_sekolah = row["Nama Sekolah"]
         status = row["Keterangan Akhir"]
         danger = status in ["Harus Diberhentikan", "Harap Segera Defenitifkan"]
@@ -186,16 +204,49 @@ elif st.session_state.page == "sekolah":
             <div class="school-title">🏫 {nama_sekolah}</div>
             👤 {row['Nama Kepala Sekolah']}<br>
             <b>{status}</b>
+            {f"<br>✅ Pengganti: <b>{perubahan_kepsek[nama_sekolah]}</b>" if sudah else ""}
         </div>
         """, unsafe_allow_html=True)
+
+        # 🔥 BAGIAN YANG SEBELUMNYA HILANG
+        with st.expander("🔍 Detail & Penanganan Kepala Sekolah"):
+            st.write(f"**NIP:** {row['NIP']}")
+            st.write(f"**Jenjang:** {row['Jenjang']}")
+            st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
+
+            if danger or sudah:
+                default_idx = (
+                    guru_list.index(perubahan_kepsek[nama_sekolah])
+                    if sudah and perubahan_kepsek[nama_sekolah] in guru_list
+                    else 0
+                )
+
+                calon = st.selectbox(
+                    "👤 Pilih Calon Pengganti (SIMPEG)",
+                    guru_list,
+                    index=default_idx,
+                    key=f"calon_{idx}"
+                )
+
+                col_a, col_b = st.columns(2)
+
+                with col_a:
+                    if st.button("💾 SIMPAN PENGGANTI", key=f"save_{idx}", use_container_width=True):
+                        perubahan_kepsek[nama_sekolah] = calon
+                        save_perubahan(perubahan_kepsek)
+                        st.success("✅ Calon pengganti berhasil disimpan")
+                        st.rerun()
+
+                if sudah:
+                    with col_b:
+                        if st.button("✏️ Ubah Kembali", key=f"edit_{idx}", use_container_width=True):
+                            del perubahan_kepsek[nama_sekolah]
+                            save_perubahan(perubahan_kepsek)
+                            st.warning("✏️ Mode edit dibuka kembali")
+                            st.rerun()
 
 # =========================================================
 # FOOTER
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
-
-
-
