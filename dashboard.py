@@ -244,10 +244,98 @@ elif st.session_state.page == "sekolah":
                             save_perubahan(perubahan_kepsek)
                             st.warning("✏️ Mode edit dibuka kembali")
                             st.rerun()
+# =========================================================
+# 📊 REKAP & ANALISIS PIMPINAN (TAMBAHAN RESMI DINAS)
+# =========================================================
+st.divider()
+st.markdown("## 📑 Rekap & Analisis Kepala Sekolah (Pimpinan)")
+
+# ---------------------------------------------------------
+# NORMALISASI STATUS SESUAI REGULASI
+# ---------------------------------------------------------
+def map_status(status):
+    if "Periode 1" in status:
+        return "Aktif Periode 1"
+    if "Periode 2" in status:
+        return "Aktif Periode 2"
+    if "Definitif" in status or "PLT" in status:
+        return "PLT / Harap Definitif"
+    if "Diberhentikan" in status:
+        return "Harus Diberhentikan"
+    return "Lainnya"
+
+df_rekap = df_ks.copy()
+df_rekap["Status Regulatif"] = df_rekap["Keterangan Akhir"].astype(str).apply(map_status)
+
+# ---------------------------------------------------------
+# 📊 REKAP PER CABANG DINAS
+# ---------------------------------------------------------
+rekap_cabdin = (
+    df_rekap
+    .groupby(["Cabang Dinas", "Status Regulatif"])
+    .size()
+    .unstack(fill_value=0)
+    .reset_index()
+)
+
+st.subheader("📌 Rekap Kepala Sekolah per Cabang Dinas")
+st.dataframe(rekap_cabdin, use_container_width=True)
+
+# ---------------------------------------------------------
+# 📥 DOWNLOAD EXCEL REKAP
+# ---------------------------------------------------------
+excel_file = "rekap_kepala_sekolah_per_cabdin.xlsx"
+rekap_cabdin.to_excel(excel_file, index=False)
+
+with open(excel_file, "rb") as f:
+    st.download_button(
+        label="📥 Download Rekap Kepala Sekolah (Excel)",
+        data=f,
+        file_name=excel_file,
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+# ---------------------------------------------------------
+# 📈 GRAFIK STATUS KEPALA SEKOLAH
+# ---------------------------------------------------------
+st.subheader("📊 Grafik Status Kepala Sekolah")
+
+grafik_data = (
+    df_rekap["Status Regulatif"]
+    .value_counts()
+    .reindex([
+        "Aktif Periode 1",
+        "Aktif Periode 2",
+        "PLT / Harap Definitif",
+        "Harus Diberhentikan"
+    ], fill_value=0)
+)
+
+st.bar_chart(grafik_data)
+
+# ---------------------------------------------------------
+# ⚖️ DASAR HUKUM (PERMENDIKDASMEN)
+# ---------------------------------------------------------
+st.divider()
+st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
+
+st.info("""
+**Permendikdasmen Nomor 7 Tahun 2025**
+
+**Pokok Ketentuan:**
+1. Kepala Sekolah diberikan tugas maksimal **2 (dua) periode**
+2. Satu periode = **4 (empat) tahun**
+3. Kepala Sekolah yang telah menjabat **2 periode wajib diberhentikan**
+4. Sekolah tanpa Kepala Sekolah definitif **wajib segera diisi (PLT/Definitif)**
+5. Penugasan Kepala Sekolah merupakan **tugas tambahan ASN**
+""")
+
+st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselaraskan dengan Permendikdasmen No. 7 Tahun 2025")
 
 # =========================================================
 # FOOTER
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
