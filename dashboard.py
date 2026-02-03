@@ -280,7 +280,6 @@ if (danger or sudah) and not boleh_edit:
         "ℹ️ Anda login sebagai **Kadis (View Only)**. "
         "Perubahan data hanya dapat dilakukan oleh Operator atau Kabid PTK."
     )
-
             st.write(f"**NIP:** {row['NIP']}")
             st.write(f"**Jenjang:** {row['Jenjang']}")
             st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
@@ -409,6 +408,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
