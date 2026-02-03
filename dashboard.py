@@ -14,44 +14,45 @@ st.set_page_config(
 # ======================
 @st.cache_data
 def load_data():
-    ks = pd.read_excel("data_kepala_sekolah.xlsx")
-    guru = pd.read_excel("data_guru_simpeg.xlsx")
+    ks = pd.read_excel(
+        "data_kepala_sekolah.xlsx",
+        sheet_name="KEPALA_SEKOLAH"
+    )
+    guru = pd.read_excel(
+        "data_kepala_sekolah.xlsx",
+        sheet_name="GURU_SIMPEG"
+    )
     return ks, guru
 
 df_ks, df_guru = load_data()
 
 # ======================
-# VALIDASI KOLOM KS
+# VALIDASI KOLOM
 # ======================
-kolom_ks = [
+kolom_ks_wajib = [
     "Cabang Dinas", "Nama Sekolah", "Nama Kepala Sekolah",
-    "NIP", "Jabatan", "Jenjang",
-    "Sertifikat BCKS", "Tahun Pengangkatan",
-    "Keterangan Akhir"
+    "NIP", "Jenjang", "Jabatan",
+    "Sertifikat BCKS", "Tahun Pengangkatan", "Keterangan Akhir"
 ]
 
-for k in kolom_ks:
-    if k not in df_ks.columns:
-        st.error(f"❌ Kolom '{k}' tidak ada di data_kepala_sekolah.xlsx")
+for col in kolom_ks_wajib:
+    if col not in df_ks.columns:
+        st.error(f"❌ Kolom '{col}' tidak ditemukan di sheet KEPALA_SEKOLAH")
         st.stop()
 
-# ======================
-# TENTUKAN KOLOM NAMA GURU (INI PENTING)
-# ======================
-# 🔴 SESUAIKAN DENGAN EXCEL SIMPEG ANDA
-NAMA_GURU_COL = "NAMA"   # ← GANTI JIKA DI EXCEL BEDA
-
-if NAMA_GURU_COL not in df_guru.columns:
-    st.error(
-        f"❌ Kolom '{NAMA_GURU_COL}' tidak ditemukan di data_guru_simpeg.xlsx\n\n"
-        f"👉 Buka Excel SIMPEG dan SESUAIKAN nama kolom"
-    )
+if "NAMA GURU" not in df_guru.columns:
+    st.error("❌ Kolom 'NAMA GURU' tidak ditemukan di sheet GURU_SIMPEG")
     st.stop()
 
 # ======================
 # HEADER
 # ======================
-st.title("📊 Dashboard Kepala Sekolah – Dinas Pendidikan")
+st.markdown("""
+<h1 style='color:#0B5394; font-weight:800;'>
+📊 DASHBOARD KEPALA SEKOLAH DINAS PENDIDIKAN
+</h1>
+<hr>
+""", unsafe_allow_html=True)
 
 # ======================
 # FILTER SIDEBAR
@@ -67,52 +68,79 @@ if jenjang != "Semua":
     df_ks = df_ks[df_ks["Jenjang"] == jenjang]
 
 # ======================
-# TAMPILAN CABANG DINAS
+# CSS
+# ======================
+st.markdown("""
+<style>
+.card {
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 14px;
+    background-color: #f4f6f9;
+    border-left: 6px solid #1f77b4;
+}
+.card-danger {
+    background-color: #fdecea;
+    border-left: 6px solid #d93025;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ======================
+# CABANG DINAS
 # ======================
 st.subheader("🏢 Cabang Dinas Wilayah")
+st.caption("Klik Cabang Dinas → Sekolah → Detail Kepala Sekolah")
 
-for cabdin in sorted(df_ks["Cabang Dinas"].unique()):
-    with st.expander(f"📍 {cabdin}", expanded=False):
+cabdin_list = sorted(df_ks["Cabang Dinas"].unique())
+cols = st.columns(4)
 
-        df_cab = df_ks[df_ks["Cabang Dinas"] == cabdin]
+for i, cabdin in enumerate(cabdin_list):
+    with cols[i % 4]:
+        with st.expander(f"📍 {cabdin}", expanded=False):
 
-        for _, row in df_cab.iterrows():
+            df_cab = df_ks[df_ks["Cabang Dinas"] == cabdin]
 
-            status = row["Keterangan Akhir"]
-            warna = "red" if status in ["PLT", "Harus Diberhentikan"] else "green"
+            for idx, row in df_cab.iterrows():
 
-            st.markdown(
-                f"""
-                **🏫 {row['Nama Sekolah']}**  
-                👤 {row['Nama Kepala Sekolah']}  
-                <span style="color:{warna}; font-weight:700;">{status}</span>
-                """,
-                unsafe_allow_html=True
-            )
+                status = row["Keterangan Akhir"]
+                danger = status in ["PLT", "Harus Diberhentikan"]
+                card_class = "card-danger" if danger else "card"
 
-            with st.expander("🔍 Lihat Detail"):
-                st.write(f"**NIP:** {row['NIP']}")
-                st.write(f"**Jabatan:** {row['Jabatan']}")
-                st.write(f"**Jenjang:** {row['Jenjang']}")
-                st.write(f"**BCKS:** {row['Sertifikat BCKS']}")
-                st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
+                st.markdown(f"""
+                <div class="{card_class}">
+                    <b>🏫 {row['Nama Sekolah']}</b><br>
+                    👤 {row['Nama Kepala Sekolah']}<br>
+                    <span style="color:red; font-weight:700;">
+                        {status}
+                    </span>
+                </div>
+                """, unsafe_allow_html=True)
 
-                # ======================
-                # CALON PENGGANTI
-                # ======================
-                if status in ["PLT", "Harus Diberhentikan"]:
-                    st.warning("⚠ Kepala Sekolah perlu diganti")
+                with st.expander("🔍 Lihat Detail"):
+                    st.write(f"**NIP:** {row['NIP']}")
+                    st.write(f"**Jabatan:** {row['Jabatan']}")
+                    st.write(f"**Jenjang:** {row['Jenjang']}")
+                    st.write(f"**Sertifikat BCKS:** {row['Sertifikat BCKS']}")
+                    st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
 
-                    calon = st.selectbox(
-                        "Pilih Calon Pengganti (Guru SIMPEG)",
-                        options=sorted(df_guru[NAMA_GURU_COL].dropna().unique()),
-                        key=f"{row['Nama Sekolah']}_pengganti"
-                    )
-
-                    st.success(f"✅ Calon Pengganti Dipilih: **{calon}**")
+                    # ======================
+                    # CALON PENGGANTI
+                    # ======================
+                    if danger:
+                        calon = st.selectbox(
+                            "👤 Pilih Calon Pengganti",
+                            sorted(df_guru["NAMA GURU"].dropna().unique()),
+                            key=f"calon_{idx}"
+                        )
+                        st.success(f"Calon pengganti dipilih: **{calon}**")
 
 # ======================
 # FOOTER
 # ======================
-st.markdown("---")
-st.caption("Dashboard Kepala Sekolah • Streamlit • Dinas Pendidikan")
+st.markdown("""
+<hr>
+<p style='text-align:center; color:gray; font-size:13px;'>
+Dashboard Kepala Sekolah • Dinas Pendidikan Provinsi • Streamlit
+</p>
+""", unsafe_allow_html=True)
