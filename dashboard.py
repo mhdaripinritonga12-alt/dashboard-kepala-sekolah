@@ -1,3 +1,65 @@
+import streamlit as st
+import pandas as pd
+
+# ======================
+# KONFIGURASI HALAMAN
+# ======================
+st.set_page_config(
+    page_title="Dashboard Kepala Sekolah",
+    layout="wide"
+)
+
+# ======================
+# LOAD DATA
+# ======================
+@st.cache_data
+def load_data():
+    ks = pd.read_excel(
+        "data_kepala_sekolah.xlsx",
+        sheet_name="KEPALA_SEKOLAH"
+    )
+    guru = pd.read_excel(
+        "data_kepala_sekolah.xlsx",
+        sheet_name="GURU_SIMPEG"
+    )
+    return ks, guru
+
+df_ks, df_guru = load_data()
+
+# ======================
+# VALIDASI KOLOM
+# ======================
+wajib_ks = [
+    "Cabang Dinas", "Nama Sekolah", "Nama Kepala Sekolah",
+    "NIP", "Jabatan", "Jenjang",
+    "Sertifikat BCKS", "Tahun Pengangkatan", "Keterangan Akhir"
+]
+
+for col in wajib_ks:
+    if col not in df_ks.columns:
+        st.error(f"❌ Kolom '{col}' tidak ada di sheet KEPALA_SEKOLAH")
+        st.stop()
+
+if "NAMA GURU" not in df_guru.columns:
+    st.error("❌ Kolom 'NAMA GURU' tidak ada di sheet GURU_SIMPEG")
+    st.stop()
+
+# ======================
+# SESSION STATE NAVIGASI
+# ======================
+if "page" not in st.session_state:
+    st.session_state.page = "cabdin"
+
+if "selected_cabdin" not in st.session_state:
+    st.session_state.selected_cabdin = None
+
+if "selected_school" not in st.session_state:
+    st.session_state.selected_school = None
+
+# ======================
+# HEADER
+# ======================
+st.markdown("""
 <h1 style='color:#0B5394;font-weight:800'>
 📊 DASHBOARD KEPALA SEKOLAH DINAS PENDIDIKAN
 </h1>
@@ -97,4 +159,4 @@ st.markdown("""
 <p style="text-align:center;color:gray;font-size:13px">
 Dashboard Kepala Sekolah • Dinas Pendidikan Provinsi
 </p>
-""", unsafe_allow_html=True)
+""", un
