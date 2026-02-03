@@ -10,128 +10,112 @@ st.set_page_config(
 )
 
 # ======================
-# LOAD DATA (FIX)
+# LOAD DATA
 # ======================
 @st.cache_data
 def load_data():
-    ks = pd.read_excel(
-        "data_kepala_sekolah.xlsx",
-        sheet_name="Dashboard_Kepala_Sekolah"
-    )
+    return pd.read_excel("data_kepala_sekolah.xlsx")
 
-    guru = pd.read_excel(
-        "data_guru_simpeg.xlsx",
-        sheet_name="GURU"
-    )
+df = load_data()
 
-    return ks, guru
-
-df_ks, df_guru = load_data()
+# VALIDASI KOLOM
+required_cols = ["Cabang Dinas", "Nama Sekolah", "Nama Kepala Sekolah", "Keterangan Akhir"]
+for col in required_cols:
+    if col not in df.columns:
+        st.error(f"❌ Kolom '{col}' tidak ditemukan di Excel")
+        st.stop()
 
 # ======================
-# JUDUL
+# HEADER
 # ======================
 st.markdown("""
-<h1 style='color:#0B5394;'>📊 DASHBOARD KEPALA SEKOLAH DINAS PENDIDIKAN</h1>
+<h1 style='color:#0B5394; font-weight:800;'>
+📊 DASHBOARD KEPALA SEKOLAH DINAS PENDIDIKAN
+</h1>
 <hr>
 """, unsafe_allow_html=True)
-
-# ======================
-# SEARCH GLOBAL KEPALA SEKOLAH
-# ======================
-search_nama = st.text_input("🔍 Cari Nama Kepala Sekolah")
-
-if search_nama:
-    df_ks = df_ks[df_ks["Nama Kepala Sekolah"]
-                  .str.contains(search_nama, case=False, na=False)]
 
 # ======================
 # SIDEBAR FILTER
 # ======================
 st.sidebar.header("🔎 Filter Data")
 
-filter_jenjang = st.sidebar.selectbox(
+jenjang = st.sidebar.selectbox(
     "Jenjang",
-    ["Semua"] + sorted(df_ks["Jenjang"].dropna().unique())
+    ["Semua"] + sorted(df["Jenjang"].dropna().unique())
 )
 
-filter_status = st.sidebar.selectbox(
-    "Keterangan Akhir",
-    ["Semua"] + sorted(df_ks["Keterangan Akhir"].dropna().unique())
-)
-
-if filter_jenjang != "Semua":
-    df_ks = df_ks[df_ks["Jenjang"] == filter_jenjang]
-
-if filter_status != "Semua":
-    df_ks = df_ks[df_ks["Keterangan Akhir"] == filter_status]
+if jenjang != "Semua":
+    df = df[df["Jenjang"] == jenjang]
 
 # ======================
-# TAMPILAN CARD CABDIN
+# CSS CARD
 # ======================
-st.subheader("🏢 Cabang Dinas")
+st.markdown("""
+<style>
+.card {
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: #f4f6f9;
+    border-left: 6px solid #1f77b4;
+}
+.card-danger {
+    background-color: #fdecea;
+    border-left: 6px solid #d93025;
+}
+.card h4 {
+    margin: 0;
+}
+</style>
+""", unsafe_allow_html=True)
 
-cabdin_list = sorted(df_ks["Cabang Dinas"].unique())
+# ======================
+# TAMPILAN CABANG DINAS (CARD)
+# ======================
+st.subheader("🏢 Cabang Dinas Wilayah")
+st.caption("Klik Cabang Dinas → Sekolah → Detail Kepala Sekolah")
+
+cabdin_list = sorted(df["Cabang Dinas"].unique())
 
 cols = st.columns(4)
 
 for i, cabdin in enumerate(cabdin_list):
     with cols[i % 4]:
-        jumlah = df_ks[df_ks["Cabang Dinas"] == cabdin].shape[0]
-        st.markdown(f"""
-        <div style='border-radius:12px;padding:15px;
-        background:#f4f7fb;border-left:6px solid #0B5394;'>
-        <h4>📍 {cabdin}</h4>
-        <b>{jumlah} Kepala Sekolah</b>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.expander(f"📍 {cabdin}", expanded=False):
 
-# ======================
-# DETAIL PER CABDIN
-# ======================
-st.subheader("📂 Data Kepala Sekolah per Cabang Dinas")
+            df_cab = df[df["Cabang Dinas"] == cabdin]
 
-for cabdin in cabdin_list:
-    with st.expander(f"📍 {cabdin}", expanded=False):
+            for _, row in df_cab.iterrows():
+                danger = row["Keterangan Akhir"] == "Harus Diberhentikan"
+                card_class = "card-danger" if danger else "card"
 
-        df_c = df_ks[df_ks["Cabang Dinas"] == cabdin]
-
-        for _, row in df_c.iterrows():
-
-            warna = "#ffd6d6" if row["Keterangan Akhir"] == "Harus Diberhentikan" else "#f9f9f9"
-
-            with st.expander(
-                f"🏫 {row['Nama Sekolah']} — {row['Nama Kepala Sekolah']}"
-            ):
                 st.markdown(
-                    f"<div style='background:{warna};padding:15px;border-radius:10px'>",
+                    f"""
+                    <div class="{card_class}">
+                        <h4>🏫 {row['Nama Sekolah']}</h4>
+                        <b>👤 {row['Nama Kepala Sekolah']}</b><br>
+                        <span style="color:red; font-weight:700;">
+                            {row['Keterangan Akhir']}
+                        </span>
+                    </div>
+                    """,
                     unsafe_allow_html=True
                 )
 
-                st.write("**Nama Kepala Sekolah:**", row["Nama Kepala Sekolah"])
-                st.write("**NIP:**", row["NIP"])
-                st.write("**Jenjang:**", row["Jenjang"])
-                st.write("**Status Jabatan:**", row["Status Jabatan"])
-                st.write("**Keterangan Akhir:**", row["Keterangan Akhir"])
+                with st.expander("🔍 Lihat Detail", expanded=False):
+                    st.write(f"**NIP:** {row.get('NIP','-')}")
+                    st.write(f"**Jabatan:** {row.get('Jabatan','-')}")
+                    st.write(f"**Jenjang:** {row.get('Jenjang','-')}")
+                    st.write(f"**Sertifikat BCKS:** {row.get('Sertifikat BCKS','-')}")
+                    st.write(f"**Tahun Pengangkatan:** {row.get('Tahun Pengangkatan','-')}")
 
-                # ======================
-                # CALON PENGGANTI
-                # ======================
-                if row["Keterangan Akhir"] == "Harus Diberhentikan" or row["Status Jabatan"] == "PLT":
-
-                    calon = df_guru[
-                        (df_guru["Jenjang"] == row["Jenjang"]) &
-                        (df_guru["Cabang Dinas"] == cabdin)
-                    ]["Nama Guru"].tolist()
-
-                    if calon:
-                        pengganti = st.selectbox(
-                            "👤 Pilih Calon Pengganti",
-                            calon,
-                            key=f"{row['NIP']}"
-                        )
-                        st.success(f"Calon pengganti dipilih: {pengganti}")
-                    else:
-                        st.warning("Tidak ada data guru SIMPEG sesuai")
-
-                st.markdown("</div>", unsafe_allow_html=True)
+# ======================
+# FOOTER
+# ======================
+st.markdown("""
+<hr>
+<p style='text-align:center; color:gray; font-size:13px;'>
+Dashboard Kepala Sekolah • Dinas Pendidikan Provinsi • Streamlit
+</p>
+""", unsafe_allow_html=True)
