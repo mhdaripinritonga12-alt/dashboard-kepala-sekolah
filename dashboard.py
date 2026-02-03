@@ -41,7 +41,7 @@ st.markdown("""
 }
 
 .login-box {
-    width: 60px;
+    width: 250px;
     padding: 28px;
     border-radius: 16px;
     background: linear-gradient(130deg, #1f2fd2, #150fa3);
@@ -99,7 +99,7 @@ if not st.session_state.login:
     st.markdown("<div class='login-box'>", unsafe_allow_html=True)
 
     st.image(
-        "https://upload.wikimedia.org/wikipedia/commons/8/8e/Logo_Pemerintah_Provinsi_Sumatera_Utara.png",
+        "https://share.google/0PJFr2gpECt7dqRUK",
         width=90
     )
 
@@ -246,5 +246,6 @@ st.markdown("""
 Dashboard Kepala Sekolah • Streamlit
 </p>
 """, unsafe_allow_html=True)
+
 
 
