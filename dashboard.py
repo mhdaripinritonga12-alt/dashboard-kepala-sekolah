@@ -81,7 +81,7 @@ if not st.session_state.login:
         user = st.text_input("Username")
         pwd = st.text_input("Password", type="password")
         if st.button("Login", use_container_width=True):
-            if user == "aripin" and pwd == "ritonga":
+            if user == "aripin" and pwd == "@Ritonga":
                 st.session_state.login = True
                 st.rerun()
             else:
@@ -222,4 +222,5 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
