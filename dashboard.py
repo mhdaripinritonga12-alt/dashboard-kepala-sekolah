@@ -22,49 +22,48 @@ if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
 
 # =========================================================
-# CSS GLOBAL (LOGIN + DASHBOARD)
+# CSS GLOBAL
 # =========================================================
 st.markdown("""
 <style>
-/* ================= BACKGROUND ================= */
+
+/* ===== BACKGROUND DASHBOARD ===== */
 .stApp {
-    background: #d3d3d3; /* biru tua */
+    background-color: #f0f0f0;
     color: black;
 }
 
-/* ================= LOGIN ================= */
+/* ===== LOGIN ===== */
 .login-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 85vh;
+    height: 90vh;
 }
 
 .login-box {
-    width: 250px;
-    padding: 28px;
-    border-radius: 16px;
-    background: linear-gradient(130deg, #1f2fd2, #150fa3);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+    width: 280px;
+    padding: 22px;
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     text-align: center;
 }
 
 .login-title {
-    color: white;
-    font-weight: 100;
-    font-size: 18px;
-    margin-top: 10px;
-    margin-bottom: 18px;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 10px 0 15px 0;
 }
 
-/* ================= CARD SEKOLAH ================= */
+/* ===== CARD SEKOLAH ===== */
 .school-card {
-    background:#eaf2fb;
+    background:#ffffff;
     border-left:6px solid #1f77b4;
     border-radius:12px;
-    padding:20px;
-    margin-bottom:25px;
-    font-size:20px;
+    padding:14px;
+    margin-bottom:16px;
+    font-size:14px;
     color:black;
 }
 
@@ -77,33 +76,30 @@ st.markdown("""
     font-weight:700;
 }
 
-/* ================= BUTTON ================= */
+/* ===== BUTTON ===== */
 button {
     border-radius:10px !important;
     font-weight:600 !important;
 }
 
-.logout-btn button {
-    background:#0000ff !important;
-    color:white !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# LOGIN (GABUNGAN RUMUS 1 + 2)
+# LOGIN
 # =========================================================
 if not st.session_state.login:
 
     st.markdown("<div class='login-wrapper'>", unsafe_allow_html=True)
     st.markdown("<div class='login-box'>", unsafe_allow_html=True)
 
+    # LOGO SUMUT (ONLINE - AMAN)
     st.image(
-     "https://upload.wikimedia.org/wikipedia/commons/8/8e/Logo_Pemerintah_Provinsi_Sumatera_Utara.png",
+        "https://upload.wikimedia.org/wikipedia/commons/8/8e/Logo_Pemerintah_Provinsi_Sumatera_Utara.png",
         width=90
     )
 
-    st.markdown("<div class='login-title'>🔐 LOGIN DASHBOARD</div>", unsafe_allow_html=True)
+    st.markdown("<div class='login-title'>LOGIN DASHBOARD</div>", unsafe_allow_html=True)
 
     user = st.text_input("Username")
     pwd = st.text_input("Password", type="password")
@@ -135,18 +131,14 @@ df_ks, df_guru = load_data()
 col1, col2 = st.columns([6,1])
 
 with col1:
-    st.markdown(
-        "<h2 style='color:black;'>📊 Dashboard Kepala Sekolah</h2>",
-        unsafe_allow_html=True
-    )
+    st.markdown("<h2>📊 Dashboard Kepala Sekolah</h2>", unsafe_allow_html=True)
 
 with col2:
-    with st.container():
-        if st.button("🚪 Logout", use_container_width=True):
-            st.session_state.login = False
-            st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
-            st.rerun()
+    if st.button("🚪 Logout", use_container_width=True):
+        st.session_state.login = False
+        st.session_state.page = "cabdin"
+        st.session_state.selected_cabdin = None
+        st.rerun()
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
@@ -173,8 +165,7 @@ def apply_filter(df):
     if ket_filter != "Semua":
         df = df[df["Keterangan Akhir"] == ket_filter]
     if search_nama:
-        df = df[df["Nama Kepala Sekolah"]
-                .str.contains(search_nama, case=False, na=False)]
+        df = df[df["Nama Kepala Sekolah"].str.contains(search_nama, case=False, na=False)]
     return df
 
 # =========================================================
@@ -219,7 +210,7 @@ elif st.session_state.page == "sekolah":
         <div class="{card_class}">
             <div class="school-title">🏫 {row['Nama Sekolah']}</div>
             👤 {row['Nama Kepala Sekolah']}<br>
-            <b style="color:red">{status}</b>
+            <b>{status}</b>
         </div>
         """, unsafe_allow_html=True)
 
@@ -242,17 +233,7 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 st.markdown("""
 <hr>
-<p style='text-align:center; color:black; font-size:12px'>
+<p style='text-align:center; font-size:12px'>
 Dashboard Kepala Sekolah • Streamlit
 </p>
 """, unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
