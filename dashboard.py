@@ -271,15 +271,6 @@ elif st.session_state.page == "sekolah":
         </div>
         """, unsafe_allow_html=True)
 
-        # 🔥 BAGIAN YANG SEBELUMNYA HILANG
-# =========================================================
-# 🔒 BLOK AKSES EDIT UNTUK KADIS (VIEW ONLY)
-# =========================================================
-if (danger or sudah) and not boleh_edit:
-    st.info(
-        "ℹ️ Anda login sebagai **Kadis (View Only)**. "
-        "Perubahan data hanya dapat dilakukan oleh Operator atau Kabid PTK."
-    )
         with st.expander("🔍 Detail & Penanganan Kepala Sekolah"):
             st.write(f"**NIP:** {row['NIP']}")
             st.write(f"**Jenjang:** {row['Jenjang']}")
@@ -409,6 +400,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
