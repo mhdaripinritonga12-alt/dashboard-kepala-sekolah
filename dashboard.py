@@ -22,96 +22,53 @@ if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
 
 # =========================================================
-# CSS GLOBAL
+# CSS GLOBAL (AMAN)
 # =========================================================
 st.markdown("""
 <style>
-
-/* ===== BACKGROUND DASHBOARD ===== */
+/* Background setelah login */
 .stApp {
-    background-color: #f0f0f0;
+    background-color: #eef4fb;
     color: black;
 }
 
-/* ===== LOGIN ===== */
-.login-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 90vh;
-}
-
-.login-box {
-    width: 280px;
-    padding: 22px;
-    border-radius: 14px;
-    background: white;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    text-align: center;
-}
-
-.login-title {
-    font-size: 17px;
-    font-weight: 700;
-    margin: 10px 0 15px 0;
-}
-
-/* ===== CARD SEKOLAH ===== */
+/* Card sekolah */
 .school-card {
-    background:#ffffff;
-    border-left:6px solid #1f77b4;
-    border-radius:12px;
-    padding:14px;
-    margin-bottom:16px;
-    font-size:14px;
-    color:black;
+    background: white;
+    border-left: 6px solid #1f77b4;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
 }
-
 .school-danger {
-    background:#fdecea;
-    border-left:6px solid #d93025;
+    background: #fdecea;
+    border-left: 6px solid #d93025;
 }
-
 .school-title {
-    font-weight:700;
+    font-weight: 700;
 }
-
-/* ===== BUTTON ===== */
-button {
-    border-radius:10px !important;
-    font-weight:600 !important;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# LOGIN
+# LOGIN (STABIL – TANPA HTML ANEH)
 # =========================================================
 if not st.session_state.login:
 
-    st.markdown("<div class='login-wrapper'>", unsafe_allow_html=True)
-    st.markdown("<div class='login-box'>", unsafe_allow_html=True)
+    st.markdown("## 🔐 LOGIN DASHBOARD")
 
-    # LOGO SUMUT (ONLINE - AMAN)
-    st.image(
-        "https://upload.wikimedia.org/wikipedia/commons/8/8e/Logo_Pemerintah_Provinsi_Sumatera_Utara.png",
-        width=90
-    )
+    col1, col2, col3 = st.columns([2,3,2])
+    with col2:
+        user = st.text_input("Username")
+        pwd = st.text_input("Password", type="password")
 
-    st.markdown("<div class='login-title'>LOGIN DASHBOARD</div>", unsafe_allow_html=True)
+        if st.button("Login", use_container_width=True):
+            if user == "aripin" and pwd == "ritonga":
+                st.session_state.login = True
+                st.rerun()
+            else:
+                st.error("❌ Username atau Password salah")
 
-    user = st.text_input("Username")
-    pwd = st.text_input("Password", type="password")
-
-    if st.button("Login", use_container_width=True):
-        if user == "aripin" and pwd == "ritonga":
-            st.session_state.login = True
-            st.rerun()
-        else:
-            st.error("❌ Username atau Password salah")
-
-    st.markdown("</div></div>", unsafe_allow_html=True)
     st.stop()
 
 # =========================================================
@@ -129,10 +86,8 @@ df_ks, df_guru = load_data()
 # HEADER + LOGOUT
 # =========================================================
 col1, col2 = st.columns([6,1])
-
 with col1:
-    st.markdown("<h2>📊 Dashboard Kepala Sekolah</h2>", unsafe_allow_html=True)
-
+    st.markdown("## 📊 Dashboard Kepala Sekolah")
 with col2:
     if st.button("🚪 Logout", use_container_width=True):
         st.session_state.login = False
@@ -140,7 +95,7 @@ with col2:
         st.session_state.selected_cabdin = None
         st.rerun()
 
-st.markdown("<hr>", unsafe_allow_html=True)
+st.divider()
 
 # =========================================================
 # SIDEBAR FILTER
@@ -194,7 +149,7 @@ elif st.session_state.page == "sekolah":
     cabdin = st.session_state.selected_cabdin
     st.subheader(f"🏫 Sekolah — {cabdin}")
 
-    if st.button("⬅ Kembali ke Cabang Dinas"):
+    if st.button("⬅ Kembali"):
         st.session_state.page = "cabdin"
         st.rerun()
 
@@ -231,9 +186,5 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 # FOOTER
 # =========================================================
-st.markdown("""
-<hr>
-<p style='text-align:center; font-size:12px'>
-Dashboard Kepala Sekolah • Streamlit
-</p>
-""", unsafe_allow_html=True)
+st.divider()
+st.caption("Dashboard Kepala Sekolah • Streamlit")
