@@ -5,19 +5,22 @@ import os
 # =========================================================
 # KONFIGURASI
 # =========================================================
-st.set_page_config(
-    page_title="Dashboard Kepala Sekolah",
-    layout="wide"
-)
+st.set_page_config(page_title="Dashboard Kepala Sekolah", layout="wide")
 
 DATA_SAVE = "perubahan_kepsek.xlsx"
 
 # =========================================================
-# SESSION STATE
+# AUTH VIA QUERY PARAM
 # =========================================================
-if "login" not in st.session_state:
-    st.session_state.login = False
+query = st.query_params
+is_auth = query.get("auth", ["0"])[0] == "1"
 
+if "login" not in st.session_state:
+    st.session_state.login = is_auth
+
+# =========================================================
+# SESSION STATE LAIN
+# =========================================================
 if "page" not in st.session_state:
     st.session_state.page = "cabdin"
 
@@ -25,7 +28,7 @@ if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
 
 # =========================================================
-# FUNGSI SIMPAN & LOAD PERUBAHAN
+# FUNGSI SIMPAN & LOAD
 # =========================================================
 def load_perubahan():
     if os.path.exists(DATA_SAVE):
@@ -33,11 +36,10 @@ def load_perubahan():
         return dict(zip(df["Nama Sekolah"], df["Calon Pengganti"]))
     return {}
 
-def save_perubahan(data_dict):
-    df = pd.DataFrame([
-        {"Nama Sekolah": k, "Calon Pengganti": v}
-        for k, v in data_dict.items()
-    ])
+def save_perubahan(data):
+    df = pd.DataFrame(
+        [{"Nama Sekolah": k, "Calon Pengganti": v} for k, v in data.items()]
+    )
     df.to_excel(DATA_SAVE, index=False)
 
 perubahan_kepsek = load_perubahan()
@@ -48,22 +50,12 @@ perubahan_kepsek = load_perubahan()
 st.markdown("""
 <style>
 .stApp { background:#d3d3d3; color:black; }
-
 .school-card {
-    background:white;
-    border-left:6px solid #1f77b4;
-    border-radius:10px;
-    padding:16px;
-    margin-bottom:14px;
+    background:white; border-left:6px solid #1f77b4;
+    border-radius:10px; padding:16px; margin-bottom:14px;
 }
-.school-danger {
-    background:#fdecea;
-    border-left:6px solid #d93025;
-}
-.school-saved {
-    background:#e6f4ea;
-    border-left:6px solid #1e8e3e;
-}
+.school-danger { background:#fdecea; border-left:6px solid #d93025; }
+.school-saved { background:#e6f4ea; border-left:6px solid #1e8e3e; }
 .school-title { font-weight:700; }
 </style>
 """, unsafe_allow_html=True)
@@ -73,16 +65,20 @@ st.markdown("""
 # =========================================================
 if not st.session_state.login:
     st.markdown("## 🔐 LOGIN DASHBOARD")
+
     col1, col2, col3 = st.columns([2,3,2])
     with col2:
         user = st.text_input("Username")
         pwd = st.text_input("Password", type="password")
+
         if st.button("Login", use_container_width=True):
             if user == "aripin" and pwd == "ritonga":
                 st.session_state.login = True
+                st.query_params["auth"] = "1"   # <<< KUNCI UTAMA
                 st.rerun()
             else:
                 st.error("❌ Username / Password salah")
+
     st.stop()
 
 # =========================================================
@@ -97,7 +93,7 @@ def load_data():
 df_ks, df_guru = load_data()
 
 # =========================================================
-# HEADER
+# HEADER + LOGOUT
 # =========================================================
 col1, col2 = st.columns([6,1])
 with col1:
@@ -105,6 +101,7 @@ with col1:
 with col2:
     if st.button("🚪 Logout", use_container_width=True):
         st.session_state.login = False
+        st.query_params.clear()   # <<< HAPUS AUTH
         st.session_state.page = "cabdin"
         st.session_state.selected_cabdin = None
         st.rerun()
@@ -135,6 +132,7 @@ if st.session_state.page == "cabdin":
     st.subheader("🏢 Cabang Dinas Wilayah")
     df_view = apply_filter(df_ks)
     cols = st.columns(4)
+
     for i, cabdin in enumerate(sorted(df_view["Cabang Dinas"].unique())):
         with cols[i % 4]:
             if st.button(f"📍 {cabdin}", use_container_width=True):
@@ -156,19 +154,19 @@ elif st.session_state.page == "sekolah":
     df_cab = apply_filter(df_ks[df_ks["Cabang Dinas"] == cabdin])
 
     for idx, row in df_cab.iterrows():
-        nama_sekolah = row["Nama Sekolah"]
+        nama = row["Nama Sekolah"]
         status = row["Keterangan Akhir"]
         danger = status in ["Harus Diberhentikan", "Harap Segera Defenitifkan"]
-        sudah = nama_sekolah in perubahan_kepsek
+        saved = nama in perubahan_kepsek
 
-        card = "school-saved" if sudah else "school-danger" if danger else "school-card"
+        card = "school-saved" if saved else "school-danger" if danger else "school-card"
 
         st.markdown(f"""
         <div class="{card}">
-            <div class="school-title">🏫 {nama_sekolah}</div>
+            <div class="school-title">🏫 {nama}</div>
             👤 {row['Nama Kepala Sekolah']}<br>
             <b>{status}</b>
-            {f"<br>✅ Pengganti: <b>{perubahan_kepsek[nama_sekolah]}</b>" if sudah else ""}
+            {f"<br>✅ Pengganti: <b>{perubahan_kepsek[nama]}</b>" if saved else ""}
         </div>
         """, unsafe_allow_html=True)
 
@@ -177,27 +175,27 @@ elif st.session_state.page == "sekolah":
             st.write(f"Jenjang: {row['Jenjang']}")
             st.write(f"Tahun Pengangkatan: {row['Tahun Pengangkatan']}")
 
-            if danger or sudah:
+            if danger or saved:
                 calon = st.selectbox(
                     "👤 Pilih / Ubah Calon Pengganti",
                     sorted(df_guru["NAMA GURU"].dropna().unique()),
-                    index=0 if not sudah else
-                    sorted(df_guru["NAMA GURU"].dropna().unique()).index(perubahan_kepsek[nama_sekolah]),
+                    index=0 if not saved else
+                    sorted(df_guru["NAMA GURU"].dropna().unique()).index(perubahan_kepsek[nama]),
                     key=f"calon_{idx}"
                 )
 
                 col1, col2 = st.columns(2)
                 with col1:
                     if st.button("💾 SAVE", key=f"save_{idx}", use_container_width=True):
-                        perubahan_kepsek[nama_sekolah] = calon
+                        perubahan_kepsek[nama] = calon
                         save_perubahan(perubahan_kepsek)
                         st.success("✅ Data tersimpan permanen")
                         st.rerun()
 
-                if sudah:
+                if saved:
                     with col2:
                         if st.button("✏️ Ubah Kembali", key=f"edit_{idx}", use_container_width=True):
-                            del perubahan_kepsek[nama_sekolah]
+                            del perubahan_kepsek[nama]
                             save_perubahan(perubahan_kepsek)
                             st.warning("✏️ Mode edit aktif")
                             st.rerun()
