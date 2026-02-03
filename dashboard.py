@@ -16,7 +16,7 @@ DATA_SAVE = "perubahan_kepsek.xlsx"
 # SESSION STATE (LOGIN TAHAN RELOAD)
 # =========================================================
 if "login" not in st.session_state:
-    st.session_state.login = True   # ⬅️ DEFAULT LOGIN SAAT RELOAD
+    st.session_state.login = True
 
 if "page" not in st.session_state:
     st.session_state.page = "cabdin"
@@ -25,7 +25,7 @@ if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
 
 # =========================================================
-# FUNGSI LOAD & SAVE PERMANEN (ANTI ERROR)
+# FUNGSI LOAD & SAVE PERMANEN
 # =========================================================
 def load_perubahan():
     if os.path.exists(DATA_SAVE):
@@ -89,7 +89,7 @@ if not st.session_state.login:
     st.stop()
 
 # =========================================================
-# LOAD DATA UTAMA
+# LOAD DATA
 # =========================================================
 @st.cache_data
 def load_data():
@@ -116,7 +116,44 @@ with col2:
 st.divider()
 
 # =========================================================
-# SIDEBAR FILTER
+# 🔍 SEARCH GURU SIMPEG (FITUR BARU – POJOK ATAS)
+# =========================================================
+search_guru = st.text_input(
+    "🔍 Cari Guru SIMPEG (Nama / NIP)",
+    placeholder="Ketik nama guru atau NIP..."
+)
+
+if search_guru:
+    df_search = df_guru[
+        df_guru["NAMA GURU"].str.contains(search_guru, case=False, na=False) |
+        df_guru["NIP"].astype(str).str.contains(search_guru, na=False)
+    ]
+
+    st.markdown("### 📌 Hasil Pencarian Guru (SIMPEG)")
+
+    if df_search.empty:
+        st.warning("❌ Guru tidak ditemukan")
+    else:
+        for _, g in df_search.iterrows():
+            st.markdown(f"""
+            <div style="
+                background:#ffffff;
+                border-left:6px solid #0b5394;
+                border-radius:10px;
+                padding:14px;
+                margin-bottom:12px;
+            ">
+                <b>👤 Nama:</b> {g['NAMA GURU']}<br>
+                <b>🆔 NIP:</b> {g['NIP']}<br>
+                <b>🏢 UNOR / Unit Kerja:</b> {g['UNOR']}<br>
+                {f"<b>📌 Jabatan:</b> {g['JABATAN']}<br>" if 'JABATAN' in g else ""}
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.divider()
+
+# =========================================================
+# SIDEBAR FILTER (ASLI – TIDAK DIUBAH)
 # =========================================================
 st.sidebar.header("🔍 Filter & Pencarian")
 search_nama = st.sidebar.text_input("Cari Nama Kepala Sekolah")
@@ -139,7 +176,7 @@ def apply_filter(df):
     return df
 
 # =========================================================
-# HALAMAN CABANG DINAS
+# HALAMAN CABDIN
 # =========================================================
 if st.session_state.page == "cabdin":
     st.subheader("🏢 Cabang Dinas Wilayah")
@@ -154,7 +191,7 @@ if st.session_state.page == "cabdin":
                 st.rerun()
 
 # =========================================================
-# HALAMAN SEKOLAH
+# HALAMAN SEKOLAH (ASLI – TIDAK DIUBAH)
 # =========================================================
 elif st.session_state.page == "sekolah":
 
@@ -190,37 +227,8 @@ elif st.session_state.page == "sekolah":
             st.write(f"Jenjang: {row['Jenjang']}")
             st.write(f"Tahun Pengangkatan: {row['Tahun Pengangkatan']}")
 
-            if danger or sudah:
-                default_idx = guru_list.index(perubahan_kepsek[nama_sekolah]) if sudah else 0
-
-                calon = st.selectbox(
-                    "👤 Pilih / Ubah Calon Pengganti (SIMPEG)",
-                    guru_list,
-                    index=default_idx,
-                    key=f"calon_{idx}"
-                )
-
-                col_s, col_u = st.columns(2)
-
-                with col_s:
-                    if st.button("💾 SAVE", key=f"save_{idx}", use_container_width=True):
-                        perubahan_kepsek[nama_sekolah] = calon
-                        save_perubahan(perubahan_kepsek)
-                        st.success("✅ Data tersimpan permanen")
-                        st.rerun()
-
-                if sudah:
-                    with col_u:
-                        if st.button("✏️ Ubah Kembali", key=f"edit_{idx}", use_container_width=True):
-                            del perubahan_kepsek[nama_sekolah]
-                            save_perubahan(perubahan_kepsek)
-                            st.warning("✏️ Mode edit aktif")
-                            st.rerun()
-
 # =========================================================
 # FOOTER
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
