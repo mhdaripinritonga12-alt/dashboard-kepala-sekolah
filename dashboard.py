@@ -24,6 +24,49 @@ if "page" not in st.session_state:
 
 if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
+    # =========================================================
+# 🔐 SISTEM LOGIN & ROLE USER (WAJIB LOGIN)
+# =========================================================
+
+# DAFTAR USER (HARDCODE – AMAN UNTUK INTERNAL DINAS)
+USERS = {
+    "operator": {
+        "password": "operator123",
+        "role": "Operator"
+    },
+    "kabidptk": {
+        "password": "kabid123",
+        "role": "Kabid"
+    },
+    "kadis": {
+        "password": "kadis123",
+        "role": "Kadis"
+    }
+}
+
+# SESSION ROLE
+if "role" not in st.session_state:
+    st.session_state.role = None
+
+# LOGIN WAJIB SEBELUM AKSES DASHBOARD
+if not st.session_state.login:
+    st.markdown("## 🔐 Login Dashboard Kepala Sekolah")
+
+    col1, col2, col3 = st.columns([2,3,2])
+    with col2:
+        username = st.text_input("👤 Username")
+        password = st.text_input("🔑 Password", type="password")
+
+        if st.button("🔓 Login", use_container_width=True):
+            if username in USERS and USERS[username]["password"] == password:
+                st.session_state.login = True
+                st.session_state.role = USERS[username]["role"]
+                st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
+                st.rerun()
+            else:
+                st.error("❌ Username atau Password salah")
+
+    st.stop()
 
 # =========================================================
 # FUNGSI SIMPAN & LOAD PERUBAHAN KEPSEK
@@ -338,6 +381,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
