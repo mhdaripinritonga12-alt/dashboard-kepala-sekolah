@@ -73,7 +73,7 @@ border-radius:10px; padding:16px; margin-bottom:14px; }
 """, unsafe_allow_html=True)
 
 # =========================================================
-# HEADER + LOGOUT + REFRESH
+# HEADER + LOGOUT + REFRESH + REFRESH
 # =========================================================
 col1, col2, col3 = st.columns([6,2,2])
 
@@ -194,4 +194,5 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
