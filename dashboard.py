@@ -73,7 +73,7 @@ border-radius:10px; padding:12px; margin-bottom:14px; }
 """, unsafe_allow_html=True)
 
 # =========================================================
-# HEADER + LOGOUT + REFRESH + REFRESH
+# HEADER + LOGOUT + REFRESH
 # =========================================================
 col1, col2, col3 = st.columns([6,2,2])
 
@@ -81,7 +81,7 @@ with col1:
     st.markdown("## 📊 Dashboard Kepala Sekolah")
 
 with col2:
-    if st.button("🔄 Refresh SIMPEG", use_container_width=True):
+              if st.button("🔄 Refresh SIMPEG", use_container_width=True):
         st.cache_data.clear()
         st.success("✅ Data SIMPEG dimuat ulang")
         st.rerun()
@@ -194,6 +194,7 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
