@@ -272,17 +272,28 @@ elif st.session_state.page == "sekolah":
         """, unsafe_allow_html=True)
 
                # ߔ BAGIAN YANG SEBELUMNYA HILANG
-        with st.expander("ߔ Detail & Penanganan Kepala Sekolah"):
-            st.write(f"**NIP:** {row['NIP']}")
-            st.write(f"**Jenjang:** {row['Jenjang']}")
-            st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
+        with st.expander("🔍 Detail & Penanganan Kepala Sekolah"):
 
-            if danger or sudah:
-                default_idx = (
-                    guru_list.index(perubahan_kepsek[nama_sekolah])
-                    if sudah and perubahan_kepsek[nama_sekolah] in guru_list
-                    else 0 
-                )
+    # =========================================================
+    # 🔒 BLOK AKSES EDIT UNTUK KADIS (VIEW ONLY)
+    # =========================================================
+    if (danger or sudah) and not boleh_edit:
+        st.info(
+            "ℹ️ Anda login sebagai **Kadis (View Only)**. "
+            "Perubahan data hanya dapat dilakukan oleh Operator atau Kabid PTK."
+        )
+
+    st.write(f"**NIP:** {row['NIP']}")
+    st.write(f"**Jenjang:** {row['Jenjang']}")
+    st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
+
+    if danger or sudah:
+        default_idx = (
+            guru_list.index(perubahan_kepsek[nama_sekolah])
+            if sudah and perubahan_kepsek[nama_sekolah] in guru_list
+            else 0
+        )
+
 
                 calon = st.selectbox(
                     "👤 Pilih Calon Pengganti (SIMPEG)",
@@ -401,6 +412,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
