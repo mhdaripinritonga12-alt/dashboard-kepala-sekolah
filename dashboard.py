@@ -273,7 +273,6 @@ elif st.session_state.page == "sekolah":
 
                # ߔ BAGIAN YANG SEBELUMNYA HILANG
         with st.expander("🔍 Detail & Penanganan Kepala Sekolah"):
-
     # =========================================================
     # 🔒 BLOK AKSES EDIT UNTUK KADIS (VIEW ONLY)
     # =========================================================
@@ -412,6 +411,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
