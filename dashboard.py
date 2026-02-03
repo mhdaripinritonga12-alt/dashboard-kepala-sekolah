@@ -41,7 +41,7 @@ st.markdown("""
 }
 
 .login-box {
-    width: 260px;
+    width: 60px;
     padding: 28px;
     border-radius: 16px;
     background: linear-gradient(130deg, #1f2fd2, #150fa3);
@@ -62,9 +62,9 @@ st.markdown("""
     background:#eaf2fb;
     border-left:6px solid #1f77b4;
     border-radius:12px;
-    padding:14px;
-    margin-bottom:12px;
-    font-size:14px;
+    padding:20px;
+    margin-bottom:25px;
+    font-size:20px;
     color:black;
 }
 
@@ -246,4 +246,5 @@ st.markdown("""
 Dashboard Kepala Sekolah • Streamlit
 </p>
 """, unsafe_allow_html=True)
+
 
