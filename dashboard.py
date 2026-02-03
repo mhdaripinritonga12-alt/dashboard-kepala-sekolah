@@ -286,13 +286,13 @@ elif st.session_state.page == "sekolah":
     st.write(f"**Jenjang:** {row['Jenjang']}")
     st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
 
+    if danger or sudah:
+        default_idx = (
+            guru_list.index(perubahan_kepsek[nama_sekolah])
+            if sudah and perubahan_kepsek[nama_sekolah] in guru_list
+            else 0
+        )
 
-            if danger or sudah:
-                default_idx = (
-                    guru_list.index(perubahan_kepsek[nama_sekolah])
-                    if sudah and perubahan_kepsek[nama_sekolah] in guru_list
-                    else 0
-                )
 
                 calon = st.selectbox(
                     "👤 Pilih Calon Pengganti (SIMPEG)",
@@ -411,6 +411,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
