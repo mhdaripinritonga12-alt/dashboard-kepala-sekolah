@@ -271,7 +271,7 @@ elif st.session_state.page == "sekolah":
         </div>
         """, unsafe_allow_html=True)
 
-         with st.expander("🔍 Detail & Penanganan Kepala Sekolah"):
+    with st.expander("🔍 Detail & Penanganan Kepala Sekolah"):
     # =========================================================
     # 🔒 BLOK AKSES EDIT UNTUK KADIS (VIEW ONLY)
     # =========================================================
@@ -410,6 +410,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
