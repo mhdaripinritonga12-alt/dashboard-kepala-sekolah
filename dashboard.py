@@ -16,7 +16,7 @@ DATA_SAVE = "perubahan_kepsek.xlsx"
 # SESSION STATE (LOGIN TAHAN RELOAD)
 # =========================================================
 if "login" not in st.session_state:
-    st.session_state.login = True   # DEFAULT LOGIN SAAT RELOAD
+    st.session_state.login = True
 
 if "page" not in st.session_state:
     st.session_state.page = "cabdin"
@@ -89,7 +89,7 @@ if not st.session_state.login:
     st.stop()
 
 # =========================================================
-# LOAD DATA UTAMA
+# LOAD DATA UTAMA (DENGAN CACHE)
 # =========================================================
 @st.cache_data
 def load_data():
@@ -98,10 +98,10 @@ def load_data():
     return df_ks, df_guru
 
 df_ks, df_guru = load_data()
-guru_list = sorted(df_guru["NAMA GURU"].dropna().unique())
+guru_list = sorted(df_guru["NAMA GURU"].dropna().astype(str).unique())
 
 # =========================================================
-# HEADER + SEARCH GURU SIMPEG
+# HEADER + LOGOUT
 # =========================================================
 col1, col2 = st.columns([6,1])
 with col1:
@@ -113,23 +113,30 @@ with col2:
         st.session_state.selected_cabdin = None
         st.rerun()
 
-# 🔍 SEARCH GURU SIMPEG (TAMBAHAN BARU)
+# 🔄 REFRESH DATA SIMPEG (WAJIB)
+if st.button("🔄 Refresh Data SIMPEG"):
+    st.cache_data.clear()
+    st.success("✅ Cache dibersihkan, data SIMPEG dimuat ulang")
+    st.rerun()
+
+# =========================================================
+# SEARCH GURU SIMPEG (AKURAT & CEPAT)
+# =========================================================
 with st.expander("🔍 Pencarian Guru (SIMPEG)"):
     search_guru = st.text_input(
         "Ketik Nama Guru / NIP (SIMPEG)",
-        placeholder="contoh: LIMASSO GULTOM"
+        placeholder="contoh: YUSMIATI atau 1965"
     )
 
     if search_guru:
         hasil = df_guru[
-            df_guru.apply(
-                lambda x: search_guru.lower() in str(x).lower(),
-                axis=1
-            )
+            df_guru.astype(str)
+            .apply(lambda col: col.str.lower().str.contains(search_guru.lower()))
+            .any(axis=1)
         ]
 
         if hasil.empty:
-            st.warning("❌ Guru tidak ditemukan di data SIMPEG")
+            st.error("❌ Guru tidak ditemukan di data SIMPEG")
         else:
             st.success(f"✅ Ditemukan {len(hasil)} data guru")
             st.dataframe(hasil, use_container_width=True)
@@ -141,10 +148,12 @@ st.divider()
 # =========================================================
 st.sidebar.header("🔍 Filter & Pencarian")
 search_nama = st.sidebar.text_input("Cari Nama Kepala Sekolah")
+
 jenjang_filter = st.sidebar.selectbox(
     "Jenjang",
     ["Semua"] + sorted(df_ks["Jenjang"].dropna().unique())
 )
+
 ket_filter = st.sidebar.selectbox(
     "Keterangan Akhir",
     ["Semua"] + sorted(df_ks["Keterangan Akhir"].dropna().unique())
@@ -165,8 +174,8 @@ def apply_filter(df):
 if st.session_state.page == "cabdin":
     st.subheader("🏢 Cabang Dinas Wilayah")
     df_view = apply_filter(df_ks)
-    cols = st.columns(4)
 
+    cols = st.columns(4)
     for i, cabdin in enumerate(sorted(df_view["Cabang Dinas"].unique())):
         with cols[i % 4]:
             if st.button(f"📍 {cabdin}", use_container_width=True):
