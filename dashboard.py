@@ -267,7 +267,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 # HALAMAN SEKOLAH
 # =========================================================
-    elif st.session_state.page == "sekolah":
+elif st.session_state.page == "sekolah":
 
     cabdin = st.session_state.selected_cabdin
     st.subheader(f"🏫 Sekolah — {cabdin}")
@@ -441,6 +441,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
