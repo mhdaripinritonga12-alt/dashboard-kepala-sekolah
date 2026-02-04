@@ -240,12 +240,13 @@ if st.session_state.page == "cabdin":
     df_view = apply_filter(df_ks)
 
     cols = st.columns(4)
-    for i, cabdin in enumerate(sorted(df_view["Cabang Dinas"].unique())):
-        with cols[i % 4]:
-            if st.button(f"📍 {cabdin}", use_container_width=True):
-                st.session_state.selected_cabdin = cabdin
-                st.session_state.page = "sekolah"
-                st.rerun()
+for i, cabdin in enumerate(sorted(df_view["Cabang Dinas"].unique())):
+    with cols[i % 4]:
+        if st.button(f"📍 {cabdin}", use_container_width=True):
+            st.session_state.selected_cabdin = cabdin
+            st.session_state.page = "sekolah"
+            st.rerun()
+
 
 # =========================================================
 # HALAMAN SEKOLAH (DETAIL + PENGGANTI)
@@ -408,6 +409,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
