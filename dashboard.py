@@ -276,62 +276,70 @@ elif st.session_state.page == "sekolah":
 
     df_cab = apply_filter(df_ks[df_ks["Cabang Dinas"] == cabdin])
 
-    for idx, row in df_cab.iterrows():
+for idx, row in df_cab.iterrows():
 
-        nama_sekolah = row["Nama Sekolah"]
-        status = row["Keterangan Akhir"]
-        danger = status in ["Harus Diberhentikan", "Harap Segera Defenitifkan"]
-        sudah = nama_sekolah in perubahan_kepsek
-        if not danger and not sudah and boleh_edit:
-            st.info("ℹ️ Perubahan manual diizinkan untuk Operator/Kabid")
+    nama_sekolah = row["Nama Sekolah"]
+    status = row["Keterangan Akhir"]
 
+    danger = status in [
+        "Harus Diberhentikan",
+        "Harap Segera Defenitifkan"
+    ]
 
-        card = "school-saved" if sudah else "school-danger" if danger else "school-card"
+    sudah = nama_sekolah in perubahan_kepsek
 
-        st.markdown(f"""
-        <div class="{card}">
-            <div class="school-title">🏫 {nama_sekolah}</div>
-            👤 {row['Nama Kepala Sekolah']}<br>
-            <b>{status}</b>
-            {f"<br>✅ Pengganti: <b>{perubahan_kepsek[nama_sekolah]}</b>" if sudah else ""}
-        </div>
-        """, unsafe_allow_html=True)
-                # ߔ BAGIAN YANG SEBELUMNYA HILANG
-        with st.expander("ߔ Detail & Penanganan Kepala Sekolah"):
-            st.write(f"**NIP:** {row['NIP']}")
-            st.write(f"**Jenjang:** {row['Jenjang']}")
-            st.write(f"**Tahun Pengangkatan:** {row['Tahun Pengangkatan']}")
+    # ===============================
+    # RUMUS PERUBAHAN MANUAL (FINAL)
+    # ===============================
+    boleh_manual = boleh_edit  # Operator & Kabid boleh kapan saja
 
-            if danger or sudah:
-                default_idx = (
-                    guru_list.index(perubahan_kepsek[nama_sekolah])
-                    if sudah and perubahan_kepsek[nama_sekolah] in guru_list
-                    else 0 
-                )
+    # INFO KE USER
+    if boleh_manual and not danger and not sudah:
+        st.info("ℹ️ Perubahan manual diizinkan meskipun masih Periode 1 / 2")
 
-                calon = st.selectbox(
-                    "👤 Pilih Calon Pengganti (SIMPEG)",
-                    guru_list,
-                    index=default_idx,
-                    key=f"calon_{idx}"
-                )
+    # ===============================
+    # AKTIFKAN PILIHAN CALON
+    # ===============================
+    if danger or sudah or boleh_manual:
 
-                col_a, col_b = st.columns(2)
+        default_idx = (
+            guru_list.index(perubahan_kepsek[nama_sekolah])
+            if sudah and perubahan_kepsek[nama_sekolah] in guru_list
+            else 0
+        )
 
-                with col_a:
-                    if st.button("💾 SIMPAN PENGGANTI", key=f"save_{idx}", use_container_width=True):
-                        perubahan_kepsek[nama_sekolah] = calon
-                        save_perubahan(perubahan_kepsek)
-                        st.success("✅ Calon pengganti berhasil disimpan")
-                        st.rerun()
+        calon = st.selectbox(
+            "👤 Pilih Calon Pengganti (SIMPEG)",
+            guru_list,
+            index=default_idx,
+            key=f"calon_{idx}"
+        )
 
-                if sudah:
-                    with col_b:
-                        if st.button("✏️ Ubah Kembali", key=f"edit_{idx}", use_container_width=True):
-                            del perubahan_kepsek[nama_sekolah]
-                            save_perubahan(perubahan_kepsek)
-                            st.warning("✏️ Mode edit dibuka kembali")
-                            st.rerun()
+        col_a, col_b = st.columns(2)
+
+        with col_a:
+            if st.button(
+                "💾 SIMPAN PENGGANTI",
+                key=f"save_{idx}",
+                use_container_width=True
+            ):
+                perubahan_kepsek[nama_sekolah] = calon
+                save_perubahan(perubahan_kepsek)
+                st.success("✅ Perubahan manual berhasil disimpan")
+                st.rerun()
+
+        if sudah:
+            with col_b:
+                if st.button(
+                    "✏️ Ubah Kembali",
+                    key=f"edit_{idx}",
+                    use_container_width=True
+                ):
+                    del perubahan_kepsek[nama_sekolah]
+                    save_perubahan(perubahan_kepsek)
+                    st.warning("✏️ Mode edit dibuka kembali")
+                    st.rerun()
+
 # =========================================================
 # 📊 REKAP & ANALISIS PIMPINAN (TAMBAHAN RESMI DINAS)
 # =========================================================
@@ -426,6 +434,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
