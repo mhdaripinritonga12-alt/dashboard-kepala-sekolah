@@ -320,7 +320,7 @@ elif st.session_state.page == "sekolah":
             with st.expander("🔍 Lihat Detail & Penanganan"):
                 st.write(f"👤 **Kepala Sekolah:** {row['Nama Kepala Sekolah']}")
                 st.write(f"📌 **Status:** {status}")
-
+        i += 1
         if sudah:
                     st.success(f"✅ Calon Pengganti: {perubahan_kepsek[nama_sekolah]}")
 
@@ -450,6 +450,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
