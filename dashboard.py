@@ -272,22 +272,39 @@ elif st.session_state.page == "sekolah":
     # ===============================
     # HEADER + TOMBOL KEMBALI
     # ===============================
-    col_a, col_b = st.columns([1, 5])
+    col_a, col_b = st.columns([1,9])
     with col_a:
-        if st.button("⬅️ Kembali", use_container_width=True):
+        if st.button("⬅️ Kembali"):
             st.session_state.page = "cabdin"
             st.session_state.selected_cabdin = None
             st.rerun()
 
-    # ===============================
-    # FILTER DATA CABANG DINAS
-    # ===============================
-df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin]
+    with col_b:
+        st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
-if search_sekolah:
-    df_cab = df_cab[
-        df_cab["Nama Sekolah"]
-        .str.contains(search_sekolah, case=False, na=False)
+    # ===============================
+    # 🔍 SEARCH SEKOLAH (WAJIB DI SINI)
+    # ===============================
+    search_sekolah = st.text_input(
+        "🔍 Cari Nama Sekolah",
+        placeholder="contoh: SMA Negeri 1"
+    )
+
+    # ===============================
+    # FILTER DATA CABDIN
+    # ===============================
+    df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin]
+
+    if search_sekolah:
+        df_cab = df_cab[
+            df_cab["Nama Sekolah"]
+            .astype(str)
+            .str.contains(search_sekolah, case=False, na=False)
+        ]
+
+    if df_cab.empty:
+        st.warning("⚠️ Tidak ada sekolah sesuai pencarian")
+        st.stop()
     ]
     # ===============================
     # GRID 5 KOLOM (WAJIB DI LUAR LOOP)
@@ -475,6 +492,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
