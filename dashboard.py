@@ -346,16 +346,16 @@ elif st.session_state.page == "sekolah":
         else:
                     st.warning("⛔ Tidak dapat memilih calon baru karena masih Aktif Periode 1")
 
-        if boleh_batalkan:
-        if st.button(
-                        "✏️ Kembalikan ke Kepala Sekolah Lama",
-                        key=f"undo_{widget_id}",
-                        use_container_width=True
-                    ):
-                        perubahan_kepsek.pop(nama_sekolah, None)
-                        save_perubahan(perubahan_kepsek)
-                        st.success("🔄 Calon pengganti dibersihkan")
-                        st.rerun()
+if boleh_batalkan:
+    if st.button(
+        "✏️ Kembalikan ke Kepala Sekolah Lama",
+        key=f"undo_{widget_id}",
+        use_container_width=True
+    ):
+        perubahan_kepsek.pop(nama_sekolah, None)
+        save_perubahan(perubahan_kepsek)
+        st.success("🔄 Calon pengganti dibersihkan")
+        st.rerun()
 
 # =========================================================
 # 📊 REKAP & ANALISIS PIMPINAN (TAMBAHAN RESMI DINAS)
@@ -450,6 +450,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
