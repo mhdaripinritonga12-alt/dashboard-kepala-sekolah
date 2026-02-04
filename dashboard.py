@@ -379,9 +379,6 @@ rekap_cabdin = (
     .reset_index()
 )
 
-st.subheader("📌 Rekap Kepala Sekolah per Cabang Dinas")
-st.dataframe(rekap_cabdin, use_container_width=True)
-
 # ---------------------------------------------------------
 # 📥 DOWNLOAD EXCEL REKAP
 # ---------------------------------------------------------
@@ -439,6 +436,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
