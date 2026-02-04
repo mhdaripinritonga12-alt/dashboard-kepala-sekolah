@@ -251,7 +251,7 @@ for i, cabdin in enumerate(sorted(df_view["Cabang Dinas"].unique())):
 # =========================================================
 # HALAMAN SEKOLAH (DETAIL + PENGGANTI)
 # =========================================================
-elif st.session_state.page == "sekolah":
+    elif st.session_state.page == "sekolah":
     cabdin = st.session_state.selected_cabdin
     st.subheader(f"🏫 Sekolah — {cabdin}")
 
@@ -408,6 +408,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
