@@ -312,13 +312,13 @@ for _, row in df_cab.iterrows():
             st.write(f"👤 **Kepala Sekolah:** {row['Nama Kepala Sekolah']}")
             st.write(f"📌 **Status:** {status}")
 
-                if sudah:
+        if sudah:
                     st.success(f"✅ Calon Pengganti: {perubahan_kepsek[nama_sekolah]}")
 
-                if boleh_ganti_baru:
+        if boleh_ganti_baru:
                     default_idx = (
                         guru_list.index(perubahan_kepsek[nama_sekolah])
-                        if sudah and perubahan_kepsek[nama_sekolah] in guru_list
+        if sudah and perubahan_kepsek[nama_sekolah] in guru_list
                         else 0
                     )
 
@@ -329,7 +329,7 @@ for _, row in df_cab.iterrows():
                         key=f"calon_{widget_id}"
                     )
 
-                    if st.button("💾 Simpan", key=f"save_{widget_id}", use_container_width=True):
+        if st.button("💾 Simpan", key=f"save_{widget_id}", use_container_width=True):
                         perubahan_kepsek[nama_sekolah] = calon
                         save_perubahan(perubahan_kepsek)
                         st.success("✅ Pengganti disimpan")
@@ -337,8 +337,8 @@ for _, row in df_cab.iterrows():
                 else:
                     st.warning("⛔ Tidak dapat memilih calon baru karena masih Aktif Periode 1")
 
-                if boleh_batalkan:
-                    if st.button(
+        if boleh_batalkan:
+        if st.button(
                         "✏️ Kembalikan ke Kepala Sekolah Lama",
                         key=f"undo_{widget_id}",
                         use_container_width=True
@@ -441,6 +441,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
