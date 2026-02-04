@@ -347,7 +347,7 @@ if df_cab.empty:
         cols = st.columns(5)
         idx = 0
 
-    for _, row in df_cab.iterrows():
+for _, row in df_cab.iterrows():
 
         nama_sekolah = row.get("Nama Sekolah", "-")
         nama_kepsek = row.get("Nama Kepala Sekolah", "-")
@@ -527,6 +527,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
