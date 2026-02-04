@@ -278,8 +278,6 @@ elif st.session_state.page == "sekolah":
     df_ks[df_ks["Cabang Dinas"] == cabdin]
 )
 
-    df_cab = apply_filter(df_ks[df_ks["Cabang Dinas"] == cabdin])
-
 for idx, row in df_cab.iterrows():
 
     nama_sekolah = row["Nama Sekolah"]
@@ -449,6 +447,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
