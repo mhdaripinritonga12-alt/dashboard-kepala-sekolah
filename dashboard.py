@@ -183,6 +183,7 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
 # =========================================================
 # HEADER + REFRESH + LOGOUT
 # =========================================================
@@ -462,6 +463,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
