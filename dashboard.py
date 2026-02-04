@@ -235,36 +235,39 @@ def urutkan_cabdin(cabdin_list):
 # =========================================================
 # HALAMAN CABANG DINAS
 # =========================================================
-cabdin_list = urutkan_cabdin(df_view["Cabang Dinas"].unique())
+if st.session_state.page == "cabdin":
+    st.subheader("🏢 Cabang Dinas Wilayah")
+    df_view = apply_filter(df_ks)
 
-rows = [
-    cabdin_list[0:4],    # 1–4
-    cabdin_list[4:7],    # 5–7
-    cabdin_list[7:11],   # 8–11
-    cabdin_list[11:14],  # 12–14
-]
+    cabdin_list = urutkan_cabdin(df_view["Cabang Dinas"].unique())
 
-for r_idx, row in enumerate(rows):
-    cols = st.columns(4)
-    for i, cabdin in enumerate(row):
-        with cols[i]:
-            if st.button(
-                f"📍 {cabdin}",
-                key=f"cabdin_{r_idx}_{i}_{cabdin}",
-                use_container_width=True
-            ):
-                st.session_state.selected_cabdin = cabdin
-                st.session_state.page = "sekolah"
-                st.rerun()
-rerun()
+    rows = [
+        cabdin_list[0:4],
+        cabdin_list[4:7],
+        cabdin_list[7:11],
+        cabdin_list[11:14],
+    ]
 
+    for r_idx, row in enumerate(rows):
+        cols = st.columns(4)
+        for i, cabdin in enumerate(row):
+            with cols[i]:
+                if st.button(
+                    f"📍 {cabdin}",
+                    key=f"cabdin_{r_idx}_{i}_{cabdin}",
+                    use_container_width=True
+                ):
+                    st.session_state.selected_cabdin = cabdin
+                    st.session_state.page = "sekolah"
+                    st.rerun()
 
 # =========================================================
 # HALAMAN SEKOLAH (DETAIL + PENGGANTI)
 # =========================================================
-    elif st.session_state.page == "sekolah":
+elif st.session_state.page == "sekolah":
     cabdin = st.session_state.selected_cabdin
     st.subheader(f"🏫 Sekolah — {cabdin}")
+
 
     if st.button("⬅ Kembali"):
         st.session_state.page = "cabdin"
@@ -419,6 +422,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
