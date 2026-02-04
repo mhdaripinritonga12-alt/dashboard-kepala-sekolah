@@ -324,33 +324,51 @@ for idx, row in df_cab.reset_index(drop=True).iterrows():
             if sudah:
                 st.success(f"✅ Calon Pengganti: {perubahan_kepsek[nama_sekolah]}")
 
-            # ===============================
-            # FORM GANTI (AMAN)
-            # ===============================
-            if danger or sudah or boleh_manual:
+           # ===============================
+# FORM GANTI (AMAN)
+# ===============================
+if danger or sudah or boleh_manual:
 
-                default_idx = (
-                    guru_list.index(perubahan_kepsek[nama_sekolah])
-                    if sudah and perubahan_kepsek[nama_sekolah] in guru_list
-                    else 0
-                )
+    default_idx = (
+        guru_list.index(perubahan_kepsek[nama_sekolah])
+        if sudah and perubahan_kepsek[nama_sekolah] in guru_list
+        else 0
+    )
 
-                calon = st.selectbox(
-                    "👤 Pilih Calon Pengganti (SIMPEG)",
-                    guru_list,
-                    index=default_idx,
-                    key=f"calon_{idx}"
-                )
+    calon = st.selectbox(
+        "👤 Pilih Calon Pengganti (SIMPEG)",
+        guru_list,
+        index=default_idx,
+        key=f"calon_{idx}"
+    )
 
-                if st.button(
-                    "💾 Simpan Pengganti",
-                    key=f"save_{idx}",
-                    use_container_width=True
-                ):
-                    perubahan_kepsek[nama_sekolah] = calon
-                    save_perubahan(perubahan_kepsek)
-                    st.success("✅ Perubahan berhasil disimpan")
-                    st.rerun()
+    col_a, col_b = st.columns(2)
+
+    with col_a:
+        if st.button(
+            "💾 Simpan Pengganti",
+            key=f"save_{idx}",
+            use_container_width=True
+        ):
+            perubahan_kepsek[nama_sekolah] = calon
+            save_perubahan(perubahan_kepsek)
+            st.success("✅ Calon pengganti berhasil disimpan")
+            st.rerun()
+
+    # ===============================
+    # ✏️ RUBAH KEMBALI (BATALKAN)
+    # ===============================
+    if sudah:
+        with col_b:
+            if st.button(
+                "✏️ Ubah Kembali",
+                key=f"undo_{idx}",
+                use_container_width=True
+            ):
+                del perubahan_kepsek[nama_sekolah]
+                save_perubahan(perubahan_kepsek)
+                st.warning("🔄 Calon pengganti dibatalkan, kembali ke Kepala Sekolah lama")
+                st.rerun()
 
 # =========================================================
 # 📊 REKAP & ANALISIS PIMPINAN (TAMBAHAN RESMI DINAS)
@@ -446,6 +464,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
