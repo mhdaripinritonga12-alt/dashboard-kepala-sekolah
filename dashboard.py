@@ -235,17 +235,28 @@ def urutkan_cabdin(cabdin_list):
 # =========================================================
 # HALAMAN CABANG DINAS
 # =========================================================
-if st.session_state.page == "cabdin":
-    st.subheader("🏢 Cabang Dinas Wilayah")
-    df_view = apply_filter(df_ks)
+cabdin_list = urutkan_cabdin(df_view["Cabang Dinas"].unique())
 
+rows = [
+    cabdin_list[0:4],    # 1–4
+    cabdin_list[4:7],    # 5–7
+    cabdin_list[7:11],   # 8–11
+    cabdin_list[11:14],  # 12–14
+]
+
+for r_idx, row in enumerate(rows):
     cols = st.columns(4)
-for i, cabdin in enumerate(sorted(df_view["Cabang Dinas"].unique())):
-    with cols[i % 4]:
-        if st.button(f"📍 {cabdin}", use_container_width=True):
-            st.session_state.selected_cabdin = cabdin
-            st.session_state.page = "sekolah"
-            st.rerun()
+    for i, cabdin in enumerate(row):
+        with cols[i]:
+            if st.button(
+                f"📍 {cabdin}",
+                key=f"cabdin_{r_idx}_{i}_{cabdin}",
+                use_container_width=True
+            ):
+                st.session_state.selected_cabdin = cabdin
+                st.session_state.page = "sekolah"
+                st.rerun()
+rerun()
 
 
 # =========================================================
@@ -408,6 +419,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
