@@ -324,28 +324,29 @@ elif st.session_state.page == "sekolah":
 
                 calon_tersimpan = perubahan_kepsek.get(nama_sekolah)
 
-                if not boleh_edit:
-                    st.warning("⛔ Tidak dapat diganti karena masih Aktif Periode 1")
+if not boleh_edit:
+    st.warning("⛔ Tidak dapat diganti karena masih Aktif Periode 1")
 
-                else:
-                if not daftar_guru_simpeg:
-                    st.error("❌ Data guru SIMPEG tidak tersedia")
-                else:
-                    calon = st.selectbox(
-                    "👤 Pilih Calon Pengganti (SIMPEG)",
-                    daftar_guru_simpeg,
-                    key=f"calon_{nama_sekolah}"
-                        )
+else:
+    # ===== ISI ELSE HARUS MENJOROK =====
+    if not daftar_guru_simpeg:
+        st.error("❌ Data guru SIMPEG tidak tersedia")
+    else:
+        calon = st.selectbox(
+            "👤 Pilih Calon Pengganti (SIMPEG)",
+            daftar_guru_simpeg,
+            key=f"calon_{nama_sekolah}"
+        )
 
-                    if st.button(
-                        "💾 Simpan Pengganti",
-                        key=f"simpan_{nama_sekolah}",
-                        use_container_width=True
-                    ):
-                        perubahan_kepsek[nama_sekolah] = calon
-                        save_perubahan(perubahan_kepsek)
-                        st.success(f"✅ Diganti dengan: {calon}")
-                        st.rerun()
+        if st.button(
+            "💾 Simpan Pengganti",
+            key=f"simpan_{nama_sekolah}",
+            use_container_width=True
+        ):
+            perubahan_kepsek[nama_sekolah] = calon
+            save_perubahan(perubahan_kepsek)
+            st.success(f"✅ Diganti dengan: {calon}")
+            st.rerun()
 
                 if calon_tersimpan and boleh_edit:
                     st.info(f"🔁 Pengganti Saat Ini: {calon_tersimpan}")
@@ -454,6 +455,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
