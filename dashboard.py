@@ -279,6 +279,7 @@ elif st.session_state.page == "sekolah":
 for idx, row in df_cab.iterrows():
 
     nama_sekolah = row["Nama Sekolah"]
+    nama_kepsek_lama = row["Nama Kepala Sekolah"]
     status = row["Keterangan Akhir"]
 
     danger = status in [
@@ -287,19 +288,29 @@ for idx, row in df_cab.iterrows():
     ]
 
     sudah = nama_sekolah in perubahan_kepsek
+    boleh_manual = boleh_edit  # Operator & Kabid
 
-    # ===============================
-    # RUMUS PERUBAHAN MANUAL (FINAL)
-    # ===============================
-    boleh_manual = boleh_edit  # Operator & Kabid boleh kapan saja
+    # =========================================
+    # 1️⃣ TAMPILKAN DATA KEPALA SEKOLAH LAMA
+    # =========================================
+    st.markdown(f"""
+    <div class="school-card">
+        <div class="school-title">🏫 {nama_sekolah}</div>
+        👤 <b>Kepala Sekolah Saat Ini:</b> {nama_kepsek_lama}<br>
+        📌 <b>Status:</b> {status}
+        {f"<br>✅ <b>Calon Pengganti:</b> {perubahan_kepsek[nama_sekolah]}" if sudah else ""}
+    </div>
+    """, unsafe_allow_html=True)
 
-    # INFO KE USER
+    # =========================================
+    # 2️⃣ INFO MANUAL (JIKA PERIODE 1 / 2)
+    # =========================================
     if boleh_manual and not danger and not sudah:
         st.info("ℹ️ Perubahan manual diizinkan meskipun masih Periode 1 / 2")
 
-    # ===============================
-    # AKTIFKAN PILIHAN CALON
-    # ===============================
+    # =========================================
+    # 3️⃣ FORM PERUBAHAN (TANPA HILANGKAN DATA LAMA)
+    # =========================================
     if danger or sudah or boleh_manual:
 
         default_idx = (
@@ -325,7 +336,7 @@ for idx, row in df_cab.iterrows():
             ):
                 perubahan_kepsek[nama_sekolah] = calon
                 save_perubahan(perubahan_kepsek)
-                st.success("✅ Perubahan manual berhasil disimpan")
+                st.success("✅ Perubahan berhasil disimpan")
                 st.rerun()
 
         if sudah:
@@ -434,6 +445,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
