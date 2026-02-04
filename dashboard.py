@@ -278,15 +278,6 @@ elif st.session_state.page == "sekolah":
             st.session_state.page = "cabdin"
             st.session_state.selected_cabdin = None
             st.rerun()
-# ===============================
-# 🔍 SEARCH SEKOLAH
-# ===============================
-search_sekolah = st.text_input(
-    "🔍 Cari Nama Sekolah",
-    placeholder="contoh: SMA Negeri 1"
-)
-with col_b:
-        st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
     # ===============================
     # FILTER DATA CABANG DINAS
@@ -484,6 +475,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
