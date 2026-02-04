@@ -283,7 +283,7 @@ elif st.session_state.page == "sekolah":
         danger = status in ["Harus Diberhentikan", "Harap Segera Defenitifkan"]
         sudah = nama_sekolah in perubahan_kepsek
         if not danger and not sudah and boleh_edit:
-        st.info("ℹ️ Perubahan manual diizinkan untuk Operator/Kabid")
+            st.info("ℹ️ Perubahan manual diizinkan untuk Operator/Kabid")
 
 
         card = "school-saved" if sudah else "school-danger" if danger else "school-card"
@@ -426,6 +426,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
