@@ -305,7 +305,7 @@ elif st.session_state.page == "sekolah":
     if df_cab.empty:
         st.warning("⚠️ Tidak ada sekolah sesuai pencarian")
         st.stop()
-    ]
+    
     # ===============================
     # GRID 5 KOLOM (WAJIB DI LUAR LOOP)
     # ===============================
@@ -492,6 +492,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
