@@ -49,8 +49,15 @@ USERS = {
     "kadis": {
         "password": "kadis123",
         "role": "Kadis"
+    },
+
+    # ✅ USER BARU: VIEW ONLY
+    "viewer": {
+        "password": "viewer123",
+        "role": "View"
     }
 }
+
 
 # SESSION ROLE
 if "role" not in st.session_state:
@@ -477,6 +484,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
