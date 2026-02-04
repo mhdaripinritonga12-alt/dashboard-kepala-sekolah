@@ -132,7 +132,7 @@ st.markdown("""
     border-radius: 12px;
     padding: 14px;
     margin-bottom: 16px;
-    height: 120px;                 /* ⬅ tinggi seragam */
+    height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -148,7 +148,7 @@ st.markdown("""
     line-height: 1.3em;
 }
 
-/* Expander agar tidak bikin card loncat */
+/* Rapikan expander */
 .streamlit-expanderHeader {
     font-size: 13px !important;
 }
@@ -157,10 +157,11 @@ st.markdown("""
 [data-testid="column"] {
     padding: 8px !important;
 }
-</style>
-""", unsafe_allow_html=True)
-<style>
-/* ===== WARNA STATUS KEPALA SEKOLAH ===== */
+
+/* ==============================
+   WARNA STATUS KEPALA SEKOLAH
+   ============================== */
+
 .card-periode-1 {
     background: #e3f2fd;   /* biru muda */
     border-left: 6px solid #2196f3;
@@ -182,22 +183,6 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-# ===============================
-# TENTUKAN WARNA CARD BERDASARKAN STATUS
-# ===============================
-status_lower = status.lower()
-
-if "periode 1" in status_lower:
-    card_class = "card-periode-1"
-elif "periode 2" in status_lower:
-    card_class = "card-periode-2"
-elif "diberhentikan" in status_lower:
-    card_class = "card-berhenti"
-elif "plt" in status_lower or "definitif" in status_lower:
-    card_class = "card-plt"
-else:
-    card_class = ""
-
 # =========================================================
 # HEADER + REFRESH + LOGOUT
 # =========================================================
@@ -477,6 +462,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
