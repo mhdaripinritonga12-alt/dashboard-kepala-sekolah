@@ -295,14 +295,14 @@ elif st.session_state.page == "sekolah":
     # =========================================
     # 1️⃣ TAMPILKAN DATA KEPALA SEKOLAH LAMA
     # =========================================
-    st.markdown(f"""
-    <div class="school-card">
-        <div class="school-title">🏫 {nama_sekolah}</div>
-        👤 <b>Kepala Sekolah Saat Ini:</b> {nama_kepsek_lama}<br>
-        📌 <b>Status:</b> {status}
-        {f"<br>✅ <b>Calon Pengganti:</b> {perubahan_kepsek[nama_sekolah]}" if sudah else ""}
-    </div>
-    """, unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="school-card">
+            <div class="school-title">🏫 {nama_sekolah}</div>
+            👤 <b>Kepala Sekolah Saat Ini:</b> {nama_kepsek_lama}<br>
+            📌 <b>Status:</b> {status}
+            {f"<br>✅ <b>Calon Pengganti:</b> {perubahan_kepsek[nama_sekolah]}" if sudah else ""}
+        </div>
+        """, unsafe_allow_html=True)
 
     # =========================================
     # 2️⃣ INFO MANUAL (JIKA PERIODE 1 / 2)
@@ -447,6 +447,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
