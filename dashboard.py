@@ -123,10 +123,6 @@ guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 # =========================================================
 st.markdown("""
 <style>
-/* ==============================
-   GRID CARD SEKOLAH – RAPI TOTAL
-   ============================== */
-
 .school-card {
     background: #ffffff;
     border-radius: 12px;
@@ -142,25 +138,14 @@ st.markdown("""
     box-shadow: 0 3px 8px rgba(0,0,0,0.12);
 }
 
-/* Judul sekolah */
 .school-card b {
     display: block;
     line-height: 1.3em;
 }
 
-/* Rapikan expander */
-.streamlit-expanderHeader {
-    font-size: 13px !important;
-}
-
-/* Rapikan kolom */
 [data-testid="column"] {
     padding: 8px !important;
 }
-
-/* ==============================
-   WARNA STATUS KEPALA SEKOLAH
-   ============================== */
 
 .card-periode-1 {
     background: #e3f2fd !important;
@@ -462,6 +447,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
