@@ -271,6 +271,11 @@ elif st.session_state.page == "sekolah":
 
     st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
+    # Tombol kembali
+    if st.button("⬅ Kembali"):
+        st.session_state.page = "cabdin"
+        st.rerun()
+
     # Filter data sesuai Cabang Dinas
     df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin]
 
@@ -320,7 +325,8 @@ elif st.session_state.page == "sekolah":
             with st.expander("🔍 Lihat Detail & Penanganan"):
                 st.write(f"👤 **Kepala Sekolah:** {row['Nama Kepala Sekolah']}")
                 st.write(f"📌 **Status:** {status}")
-        i += 1
+
+        i += 1  # ⬅️ INI WAJIB, TADI HILANG
         if sudah:
                     st.success(f"✅ Calon Pengganti: {perubahan_kepsek[nama_sekolah]}")
 
@@ -450,6 +456,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
