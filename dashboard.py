@@ -271,29 +271,41 @@ elif st.session_state.page == "sekolah":
 
     st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
-    # Tombol kembali
     if st.button("⬅ Kembali"):
         st.session_state.page = "cabdin"
         st.rerun()
 
-    # Filter data sesuai Cabang Dinas
-    df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin]
+    # ===============================
+    # FILTER CABANG DINAS (AMAN)
+    # ===============================
+    df_cab = df_ks[
+        df_ks["Cabang Dinas"].astype(str).str.strip()
+        == str(st.session_state.selected_cabdin).strip()
+    ]
 
-    # Grid 5 kolom
+    if df_cab.empty:
+        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini")
+        st.stop()
+
     cols = st.columns(5)
     i = 0
 
     for _, row in df_cab.iterrows():
 
-        # ===============================
-        # DATA DASAR
-        # ===============================
-        nama_sekolah = row["Nama Sekolah"]
-        status = str(row["Keterangan Akhir"])
+        nama_sekolah = row.get("Nama Sekolah", "-")
+        nama_kepsek = row.get("Nama Kepala Sekolah", "-")
+        status = str(row.get("Keterangan Akhir", ""))
+
         status_lower = status.lower()
 
         # ===============================
-        # TENTUKAN WARNA CARD
+        # STATUS LOGIKA (ANTI ERROR)
+        # ===============================
+        sudah = "periode 2" in status_lower or "diberhentikan" in status_lower
+        boleh_batalkan = "plt" in status_lower or "pengganti" in status_lower
+
+        # ===============================
+        # WARNA CARD
         # ===============================
         if "periode 1" in status_lower:
             card_class = "card-periode-1"
@@ -301,14 +313,11 @@ elif st.session_state.page == "sekolah":
             card_class = "card-periode-2"
         elif "diberhentikan" in status_lower:
             card_class = "card-berhenti"
-        elif "plt" in status_lower or "definitif" in status_lower:
+        elif "plt" in status_lower:
             card_class = "card-plt"
         else:
             card_class = ""
 
-        # ===============================
-        # TAMPILKAN CARD SEKOLAH
-        # ===============================
         with cols[i % 5]:
             st.markdown(
                 f"""
@@ -319,14 +328,25 @@ elif st.session_state.page == "sekolah":
                 unsafe_allow_html=True
             )
 
-            # ===============================
-            # DETAIL SEKOLAH
-            # ===============================
             with st.expander("🔍 Lihat Detail & Penanganan"):
-                st.write(f"👤 **Kepala Sekolah:** {row['Nama Kepala Sekolah']}")
+                st.write(f"👤 **Kepala Sekolah:** {nama_kepsek}")
                 st.write(f"📌 **Status:** {status}")
 
-        i += 1  # ⬅️ INI WAJIB, TADI HILANG
+                if boleh_batalkan:
+                    if st.button(
+                        "✏️ Kembalikan ke Kepala Sekolah Lama",
+                        key=f"undo_{i}",
+                        use_container_width=True
+                    ):
+                        perubahan_kepsek.pop(nama_sekolah, None)
+                        save_perubahan(perubahan_kepsek)
+                        st.success("🔄 Perubahan dibatalkan")
+                        st.rerun()
+
+                if sudah:
+                    st.warning("⛔ Tidak dapat diubah (Periode 2 / Diberhentikan)")
+
+        i += 1
         if sudah:
                     st.success(f"✅ Calon Pengganti: {perubahan_kepsek[nama_sekolah]}")
 
@@ -456,6 +476,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
