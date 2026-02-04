@@ -319,7 +319,7 @@ for _, row in df_cab.iterrows():
                     default_idx = (
                         guru_list.index(perubahan_kepsek[nama_sekolah])
         if sudah and perubahan_kepsek[nama_sekolah] in guru_list
-                        else 0
+        else 0
                     )
 
                     calon = st.selectbox(
@@ -334,7 +334,7 @@ for _, row in df_cab.iterrows():
                         save_perubahan(perubahan_kepsek)
                         st.success("✅ Pengganti disimpan")
                         st.rerun()
-                else:
+        else:
                     st.warning("⛔ Tidak dapat memilih calon baru karena masih Aktif Periode 1")
 
         if boleh_batalkan:
@@ -441,6 +441,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
