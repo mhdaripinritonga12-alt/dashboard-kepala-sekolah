@@ -266,31 +266,31 @@ if st.session_state.page == "cabdin":
 # HALAMAN SEKOLAH (DETAIL + PENGGANTI)
 # =========================================================
 elif st.session_state.page == "sekolah":
+
     cabdin = st.session_state.selected_cabdin
     st.subheader(f"🏫 Sekolah — {cabdin}")
-
 
     if st.button("⬅ Kembali"):
         st.session_state.page = "cabdin"
         st.rerun()
 
     df_cab = apply_filter(
-    df_ks[df_ks["Cabang Dinas"] == cabdin]
-)
+        df_ks[df_ks["Cabang Dinas"] == cabdin]
+    )
 
-for idx, row in df_cab.iterrows():
+    for idx, row in df_cab.iterrows():
 
-    nama_sekolah = row["Nama Sekolah"]
-    nama_kepsek_lama = row["Nama Kepala Sekolah"]
-    status = row["Keterangan Akhir"]
+        nama_sekolah = row["Nama Sekolah"]
+        nama_kepsek_lama = row["Nama Kepala Sekolah"]
+        status = row["Keterangan Akhir"]
 
-    danger = status in [
-        "Harus Diberhentikan",
-        "Harap Segera Defenitifkan"
-    ]
+        danger = status in [
+            "Harus Diberhentikan",
+            "Harap Segera Defenitifkan"
+        ]
 
-    sudah = nama_sekolah in perubahan_kepsek
-    boleh_manual = boleh_edit  # Operator & Kabid
+        sudah = nama_sekolah in perubahan_kepsek
+        boleh_manual = boleh_edit
 
     # =========================================
     # 1️⃣ TAMPILKAN DATA KEPALA SEKOLAH LAMA
@@ -447,6 +447,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
