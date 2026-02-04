@@ -123,29 +123,42 @@ guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 # =========================================================
 st.markdown("""
 <style>
-/* ===== CABANG DINAS CARD BESAR ===== */
-.cabdin-card {
-    background: white;
-    border-radius: 16px;
-    padding: 26px 18px;
-    margin-bottom: 20px;
+/* ==============================
+   GRID CARD SEKOLAH – RAPI TOTAL
+   ============================== */
+
+.school-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+    height: 120px;                 /* ⬅ tinggi seragam */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    font-size: 20px;
-    font-weight: 700;
-    border-left: 10px solid #1f77b4;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-    cursor: pointer;
-    transition: 0.2s;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
 }
 
-.cabdin-card:hover {
-    background: #eef4ff;
-    transform: scale(1.02);
+/* Judul sekolah */
+.school-card b {
+    display: block;
+    line-height: 1.3em;
+}
+
+/* Expander agar tidak bikin card loncat */
+.streamlit-expanderHeader {
+    font-size: 13px !important;
+}
+
+/* Rapikan kolom */
+[data-testid="column"] {
+    padding: 8px !important;
 }
 </style>
 """, unsafe_allow_html=True)
-
-
 # =========================================================
 # HEADER + REFRESH + LOGOUT
 # =========================================================
@@ -426,6 +439,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
