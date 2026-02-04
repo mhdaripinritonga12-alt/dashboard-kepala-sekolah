@@ -325,9 +325,11 @@ for idx, row in df_cab.reset_index(drop=True).iterrows():
                 st.success(f"✅ Calon Pengganti: {perubahan_kepsek[nama_sekolah]}")
 
 # ===============================
-# FORM GANTI (AMAN)
+# FORM GANTI (FIX & FINAL)
 # ===============================
 if danger or sudah or boleh_manual:
+
+    widget_id = nama_sekolah.replace(" ", "_")
 
     default_idx = (
         guru_list.index(perubahan_kepsek[nama_sekolah])
@@ -339,7 +341,7 @@ if danger or sudah or boleh_manual:
         "👤 Pilih Calon Pengganti (SIMPEG)",
         guru_list,
         index=default_idx,
-        key=f"calon_{idx}"
+        key=f"calon_{widget_id}"
     )
 
     col_a, col_b = st.columns(2)
@@ -347,7 +349,7 @@ if danger or sudah or boleh_manual:
     with col_a:
         if st.button(
             "💾 Simpan Pengganti",
-            key=f"save_{idx}",
+            key=f"save_{widget_id}",
             use_container_width=True
         ):
             perubahan_kepsek[nama_sekolah] = calon
@@ -356,18 +358,18 @@ if danger or sudah or boleh_manual:
             st.rerun()
 
     # ===============================
-    # ✏️ RUBAH KEMBALI (BATALKAN)
+    # ✏️ UBAH KEMBALI (INI YANG FIX)
     # ===============================
     if sudah:
         with col_b:
             if st.button(
                 "✏️ Ubah Kembali",
-                key=f"undo_{idx}",
+                key=f"undo_{widget_id}",
                 use_container_width=True
             ):
-                del perubahan_kepsek[nama_sekolah]
+                perubahan_kepsek.pop(nama_sekolah, None)
                 save_perubahan(perubahan_kepsek)
-                st.warning("🔄 Calon pengganti dibatalkan, kembali ke Kepala Sekolah lama")
+                st.warning("🔄 Calon pengganti dibatalkan")
                 st.rerun()
 # =========================================================
 # 📊 REKAP & ANALISIS PIMPINAN (TAMBAHAN RESMI DINAS)
@@ -463,6 +465,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
