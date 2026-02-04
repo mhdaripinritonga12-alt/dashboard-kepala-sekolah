@@ -182,6 +182,22 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+# ===============================
+# TENTUKAN WARNA CARD BERDASARKAN STATUS
+# ===============================
+status_lower = status.lower()
+
+if "periode 1" in status_lower:
+    card_class = "card-periode-1"
+elif "periode 2" in status_lower:
+    card_class = "card-periode-2"
+elif "diberhentikan" in status_lower:
+    card_class = "card-berhenti"
+elif "plt" in status_lower or "definitif" in status_lower:
+    card_class = "card-plt"
+else:
+    card_class = ""
+
 # =========================================================
 # HEADER + REFRESH + LOGOUT
 # =========================================================
@@ -461,6 +477,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
