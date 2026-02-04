@@ -163,22 +163,22 @@ st.markdown("""
    ============================== */
 
 .card-periode-1 {
-    background: #e3f2fd;
+    background: #e3f2fd !important;
     border-left: 6px solid #2196f3;
 }
 
 .card-periode-2 {
-    background: #fff8e1;
+    background: #fff8e1 !important;
     border-left: 6px solid #fbc02d;
 }
 
 .card-berhenti {
-    background: #fdecea;
+    background: #fdecea !important;
     border-left: 6px solid #d32f2f;
 }
 
 .card-plt {
-    background: #e8f5e9;
+    background: #e8f5e9 !important;
     border-left: 6px solid #2e7d32;
 }
 </style>
@@ -462,6 +462,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
