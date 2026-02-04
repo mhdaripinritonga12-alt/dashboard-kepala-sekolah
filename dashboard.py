@@ -344,7 +344,7 @@ if df_cab.empty:
     # ===============================
     # GRID 5 KOLOM (WAJIB DI LUAR LOOP)
     # ===============================
-    cols = st.columns(5)
+        cols = st.columns(5)
     idx = 0
 
     for _, row in df_cab.iterrows():
@@ -527,6 +527,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
