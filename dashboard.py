@@ -163,27 +163,26 @@ st.markdown("""
    ============================== */
 
 .card-periode-1 {
-    background: #e3f2fd;   /* biru muda */
+    background: #e3f2fd;
     border-left: 6px solid #2196f3;
 }
 
 .card-periode-2 {
-    background: #fff8e1;   /* kuning muda */
+    background: #fff8e1;
     border-left: 6px solid #fbc02d;
 }
 
 .card-berhenti {
-    background: #fdecea;   /* merah muda */
+    background: #fdecea;
     border-left: 6px solid #d32f2f;
 }
 
 .card-plt {
-    background: #e8f5e9;   /* hijau muda */
+    background: #e8f5e9;
     border-left: 6px solid #2e7d32;
 }
 </style>
 """, unsafe_allow_html=True)
-
 # =========================================================
 # HEADER + REFRESH + LOGOUT
 # =========================================================
@@ -463,6 +462,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
