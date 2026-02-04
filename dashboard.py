@@ -348,10 +348,10 @@ else:
             st.success(f"✅ Diganti dengan: {calon}")
             st.rerun()
 
-                if calon_tersimpan and boleh_edit:
+        if calon_tersimpan and boleh_edit:
                     st.info(f"🔁 Pengganti Saat Ini: {calon_tersimpan}")
 
-                    if st.button(
+        if st.button(
                         "✏️ Kembalikan ke Kepala Sekolah Lama",
                         key=f"undo_{nama_sekolah}",
                         use_container_width=True
@@ -455,6 +455,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
