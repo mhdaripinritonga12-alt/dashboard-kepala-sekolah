@@ -337,38 +337,48 @@ elif st.session_state.page == "sekolah":
             # ===============================
             # DETAIL & PENANGANAN
             # ===============================
-            with st.expander("🔍 Lihat Detail & Penanganan"):
+           with st.expander("🔍 Lihat Detail & Penanganan"):
 
-                st.write(f"👤 **Kepala Sekolah:** {nama_kepsek}")
-                st.write(f"📌 **Status:** {status}")
+    st.write(f"👤 **Kepala Sekolah:** {nama_kepsek}")
+    st.write(f"📌 **Status:** {status}")
 
-                # ===============================
-                # DATA PERUBAHAN (AMAN)
-                # ===============================
-                calon_tersimpan = perubahan_kepsek.get(nama_sekolah)
+    calon_tersimpan = perubahan_kepsek.get(nama_sekolah)
 
-                # ❌ PERIODE 1 TERKUNCI
-                if not boleh_edit:
-                    st.warning("⛔ Tidak dapat diubah (masih Aktif Periode 1)")
+    # ⛔ PERIODE 1 → TIDAK BOLEH
+    if not boleh_edit:
+        st.warning("⛔ Tidak dapat diganti karena masih Aktif Periode 1")
 
-                # ✅ BOLEH DIGANTI
-                else:
-                    calon = st.selectbox(
-                        "👤 Pilih Calon Pengganti (SIMPEG)",
-                        daftar_guru_simpeg,
-                        key=f"calon_{nama_sekolah}"
-                    )
+    # ✅ SEMUA SELAIN PERIODE 1 → BOLEH
+    else:
+        calon = st.selectbox(
+            "👤 Pilih Calon Pengganti (SIMPEG)",
+            daftar_guru_simpeg,
+            key=f"calon_{nama_sekolah}"
+        )
 
-                    if st.button(
-                        "💾 Simpan Pengganti",
-                        key=f"simpan_{nama_sekolah}",
-                        use_container_width=True
-                    ):
-                        perubahan_kepsek[nama_sekolah] = calon
-                        save_perubahan(perubahan_kepsek)
-                        st.success(f"✅ Calon Pengganti: {calon}")
-                        st.rerun()
+        if st.button(
+            "💾 Simpan Pengganti",
+            key=f"simpan_{nama_sekolah}",
+            use_container_width=True
+        ):
+            perubahan_kepsek[nama_sekolah] = calon
+            save_perubahan(perubahan_kepsek)
+            st.success(f"✅ Diganti dengan: {calon}")
+            st.rerun()
 
+    # 🔄 BISA DIKEMBALIKAN (SELAMA BUKAN PERIODE 1)
+    if calon_tersimpan and boleh_edit:
+        st.info(f"🔁 Pengganti Saat Ini: {calon_tersimpan}")
+
+        if st.button(
+            "✏️ Kembalikan ke Kepala Sekolah Lama",
+            key=f"undo_{nama_sekolah}",
+            use_container_width=True
+        ):
+            perubahan_kepsek.pop(nama_sekolah, None)
+            save_perubahan(perubahan_kepsek)
+            st.success("🔄 Berhasil dikembalikan")
+            st.rerun()
                 # ===============================
                 # BATALKAN PENGGANTI
                 # ===============================
@@ -480,6 +490,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
