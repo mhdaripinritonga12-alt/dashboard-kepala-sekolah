@@ -271,24 +271,16 @@ elif st.session_state.page == "sekolah":
 
     st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
-    # ===============================
-    # FILTER DATA CABANG DINAS
-    # ===============================
+    # Filter data cabang dinas
     df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin]
 
     if df_cab.empty:
-        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
+        st.warning("⚠️ Tidak ada data sekolah.")
         st.stop()
 
-    # ===============================
-    # GRID 5 KOLOM
-    # ===============================
     cols = st.columns(5)
     col_idx = 0
 
-    # ===============================
-    # LOOP SEKOLAH
-    # ===============================
     for _, row in df_cab.iterrows():
 
         nama_sekolah = row.get("Nama Sekolah", "-")
@@ -296,35 +288,25 @@ elif st.session_state.page == "sekolah":
         status = str(row.get("Keterangan Akhir", ""))
         status_lower = status.lower()
 
-        # ===============================
-        # LOGIKA STATUS (AMAN)
-        # ===============================
-        is_periode_1 = "periode 1" in status_lower
-        is_periode_2 = "periode 2" in status_lower
-        is_plt = "plt" in status_lower
-        is_berhenti = "diberhentikan" in status_lower
+        # ⛔ HANYA PERIODE 1 TERKUNCI
+        terkunci = "periode 1" in status_lower
+        boleh_edit = not terkunci
 
-        # BOLEH DIGANTI?
-        boleh_edit = not is_periode_1
-
-        # ===============================
-        # WARNA CARD
-        # ===============================
-        if is_periode_1:
+        # Warna card (TAMPILAN SAJA)
+        if "periode 1" in status_lower:
             card_class = "card-periode-1"
-        elif is_periode_2:
+        elif "periode 2" in status_lower:
             card_class = "card-periode-2"
-        elif is_berhenti:
-            card_class = "card-berhenti"
-        elif is_plt:
+        elif "plt" in status_lower:
             card_class = "card-plt"
+        elif "diberhentikan" in status_lower:
+            card_class = "card-berhenti"
         else:
             card_class = ""
 
-        # ===============================
-        # TAMPILKAN CARD SEKOLAH
-        # ===============================
         with cols[col_idx % 5]:
+
+            # CARD SEKOLAH
             st.markdown(
                 f"""
                 <div class="school-card {card_class}">
@@ -334,55 +316,35 @@ elif st.session_state.page == "sekolah":
                 unsafe_allow_html=True
             )
 
-            # ===============================
             # DETAIL & PENANGANAN
-            # ===============================
-           with st.expander("🔍 Lihat Detail & Penanganan"):
+            with st.expander("🔍 Lihat Detail & Penanganan"):
 
-    st.write(f"👤 **Kepala Sekolah:** {nama_kepsek}")
-    st.write(f"📌 **Status:** {status}")
+                st.write(f"👤 **Kepala Sekolah:** {nama_kepsek}")
+                st.write(f"📌 **Status:** {status}")
 
-    calon_tersimpan = perubahan_kepsek.get(nama_sekolah)
+                calon_tersimpan = perubahan_kepsek.get(nama_sekolah)
 
-    # ⛔ PERIODE 1 → TIDAK BOLEH
-    if not boleh_edit:
-        st.warning("⛔ Tidak dapat diganti karena masih Aktif Periode 1")
+                if not boleh_edit:
+                    st.warning("⛔ Tidak dapat diganti karena masih Aktif Periode 1")
 
-    # ✅ SEMUA SELAIN PERIODE 1 → BOLEH
-    else:
-        calon = st.selectbox(
-            "👤 Pilih Calon Pengganti (SIMPEG)",
-            daftar_guru_simpeg,
-            key=f"calon_{nama_sekolah}"
-        )
+                else:
+                    calon = st.selectbox(
+                        "👤 Pilih Calon Pengganti (SIMPEG)",
+                        daftar_guru_simpeg,
+                        key=f"calon_{nama_sekolah}"
+                    )
 
-        if st.button(
-            "💾 Simpan Pengganti",
-            key=f"simpan_{nama_sekolah}",
-            use_container_width=True
-        ):
-            perubahan_kepsek[nama_sekolah] = calon
-            save_perubahan(perubahan_kepsek)
-            st.success(f"✅ Diganti dengan: {calon}")
-            st.rerun()
+                    if st.button(
+                        "💾 Simpan Pengganti",
+                        key=f"simpan_{nama_sekolah}",
+                        use_container_width=True
+                    ):
+                        perubahan_kepsek[nama_sekolah] = calon
+                        save_perubahan(perubahan_kepsek)
+                        st.success(f"✅ Diganti dengan: {calon}")
+                        st.rerun()
 
-    # 🔄 BISA DIKEMBALIKAN (SELAMA BUKAN PERIODE 1)
-    if calon_tersimpan and boleh_edit:
-        st.info(f"🔁 Pengganti Saat Ini: {calon_tersimpan}")
-
-        if st.button(
-            "✏️ Kembalikan ke Kepala Sekolah Lama",
-            key=f"undo_{nama_sekolah}",
-            use_container_width=True
-        ):
-            perubahan_kepsek.pop(nama_sekolah, None)
-            save_perubahan(perubahan_kepsek)
-            st.success("🔄 Berhasil dikembalikan")
-            st.rerun()
-                # ===============================
-                # BATALKAN PENGGANTI
-                # ===============================
-                if calon_tersimpan:
+                if calon_tersimpan and boleh_edit:
                     st.info(f"🔁 Pengganti Saat Ini: {calon_tersimpan}")
 
                     if st.button(
@@ -392,11 +354,10 @@ elif st.session_state.page == "sekolah":
                     ):
                         perubahan_kepsek.pop(nama_sekolah, None)
                         save_perubahan(perubahan_kepsek)
-                        st.success("🔄 Pengganti dibatalkan")
+                        st.success("🔄 Berhasil dikembalikan")
                         st.rerun()
 
         col_idx += 1
-
 # =========================================================
 # 📊 REKAP & ANALISIS PIMPINAN (TAMBAHAN RESMI DINAS)
 # =========================================================
@@ -490,6 +451,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
