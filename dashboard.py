@@ -228,7 +228,8 @@ def apply_filter(df):
     return df
 def urutkan_cabdin(cabdin_list):
     def ambil_angka(text):
-        return int("".join(filter(str.isdigit, text)))
+        angka = "".join(filter(str.isdigit, str(text)))
+        return int(angka) if angka else 999  # aman jika tidak ada angka
     return sorted(cabdin_list, key=ambil_angka)
 
 
@@ -422,6 +423,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
