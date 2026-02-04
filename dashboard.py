@@ -226,6 +226,11 @@ def apply_filter(df):
     if search_nama:
         df = df[df["Nama Kepala Sekolah"].str.contains(search_nama, case=False, na=False)]
     return df
+def urutkan_cabdin(cabdin_list):
+    def ambil_angka(text):
+        return int("".join(filter(str.isdigit, text)))
+    return sorted(cabdin_list, key=ambil_angka)
+
 
 # =========================================================
 # HALAMAN CABANG DINAS
@@ -403,6 +408,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
