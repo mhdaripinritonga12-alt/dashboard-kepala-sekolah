@@ -272,9 +272,9 @@ elif st.session_state.page == "sekolah":
     # ===============================
     # HEADER + TOMBOL KEMBALI
     # ===============================
-    col_a, col_b = st.columns([1,9])
+    col_a, col_b = st.columns([1, 5])
     with col_a:
-        if st.button("⬅️ Kembali"):
+        if st.button("⬅️ Kembali", use_container_width=True):
             st.session_state.page = "cabdin"
             st.session_state.selected_cabdin = None
             st.rerun()
@@ -283,35 +283,21 @@ elif st.session_state.page == "sekolah":
         st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
     # ===============================
-    # 🔍 SEARCH SEKOLAH (WAJIB DI SINI)
-    # ===============================
-    search_sekolah = st.text_input(
-        "🔍 Cari Nama Sekolah",
-        placeholder="contoh: SMA Negeri 1"
-    )
-
-    # ===============================
-    # FILTER DATA CABDIN
+    # FILTER DATA CABANG DINAS
     # ===============================
     df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin]
 
-    if search_sekolah:
-        df_cab = df_cab[
-            df_cab["Nama Sekolah"]
-            .astype(str)
-            .str.contains(search_sekolah, case=False, na=False)
-        ]
-if df_cab.empty:
-        st.warning("⚠️ Tidak ada sekolah sesuai pencarian")
+    if df_cab.empty:
+        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
         st.stop()
-    
+
     # ===============================
     # GRID 5 KOLOM (WAJIB DI LUAR LOOP)
     # ===============================
-        cols = st.columns(5)
-        idx = 0
+    cols = st.columns(5)
+    idx = 0
 
-for _, row in df_cab.iterrows():
+    for _, row in df_cab.iterrows():
 
         nama_sekolah = row.get("Nama Sekolah", "-")
         nama_kepsek = row.get("Nama Kepala Sekolah", "-")
@@ -491,21 +477,6 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
