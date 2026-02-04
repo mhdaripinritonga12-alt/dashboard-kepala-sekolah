@@ -301,36 +301,6 @@ elif st.session_state.page == "sekolah":
             .astype(str)
             .str.contains(search_sekolah, case=False, na=False)
         ]
-# 📥 DOWNLOAD DATA PER CABANG DINAS
-# =========================================================
-st.markdown("### 📥 Download Data Cabang Dinas")
-
-nama_cabdin = str(st.session_state.selected_cabdin or "cabdin")
-nama_cabdin = nama_cabdin.replace(" ", "_").replace("/", "_")
-
-# --------- EXCEL ----------
-buffer_excel = BytesIO()
-df_cab.to_excel(buffer_excel, index=False)
-buffer_excel.seek(0)
-
-st.download_button(
-    label="📥 Download Excel (Per Cabdin)",
-    data=buffer_excel,
-    file_name=f"data_kepala_sekolah_{nama_cabdin}.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    use_container_width=True
-)
-
-# --------- CSV ----------
-csv_data = df_cab.to_csv(index=False).encode("utf-8")
-
-st.download_button(
-    label="📥 Download CSV (Per Cabdin)",
-    data=csv_data,
-    file_name=f"data_kepala_sekolah_{nama_cabdin}.csv",
-    mime="text/csv",
-    use_container_width=True
-)
 if df_cab.empty:
         st.warning("⚠️ Tidak ada sekolah sesuai pencarian")
         st.stop()
@@ -521,6 +491,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
