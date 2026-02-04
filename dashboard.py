@@ -123,25 +123,28 @@ guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 # =========================================================
 st.markdown("""
 <style>
-.stApp { background:#d3d3d3; color:black; }
-.school-card {
-    background:white;
-    border-left:6px solid #1f77b4;
-    border-radius:10px;
-    padding:16px;
-    margin-bottom:14px;
+/* ===== CABANG DINAS CARD BESAR ===== */
+.cabdin-card {
+    background: white;
+    border-radius: 16px;
+    padding: 26px 18px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    border-left: 10px solid #1f77b4;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    cursor: pointer;
+    transition: 0.2s;
 }
-.school-danger {
-    background:#fdecea;
-    border-left:6px solid #d93025;
+
+.cabdin-card:hover {
+    background: #eef4ff;
+    transform: scale(1.02);
 }
-.school-saved {
-    background:#e6f4ea;
-    border-left:6px solid #1e8e3e;
-}
-.school-title { font-weight:700; font-size:16px; }
 </style>
 """, unsafe_allow_html=True)
+
 
 # =========================================================
 # HEADER + REFRESH + LOGOUT
@@ -400,6 +403,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
