@@ -301,32 +301,27 @@ elif st.session_state.page == "sekolah":
             .astype(str)
             .str.contains(search_sekolah, case=False, na=False)
         ]
-# ===============================
-# 📥 DOWNLOAD DATA PER CABDIN
-# ===============================
+# 📥 DOWNLOAD DATA PER CABANG DINAS
+# =========================================================
 st.markdown("### 📥 Download Data Cabang Dinas")
 
-# Pastikan selected_cabdin adalah string
 nama_cabdin = str(st.session_state.selected_cabdin or "cabdin")
+nama_cabdin = nama_cabdin.replace(" ", "_").replace("/", "_")
 
-nama_cabdin = (
-    nama_cabdin
-    .replace(" ", "_")
-    .replace("/", "_")
-)
-
-# --------- DOWNLOAD EXCEL ----------
-excel_buffer = df_cab.to_excel(index=False)
+# --------- EXCEL ----------
+buffer_excel = BytesIO()
+df_cab.to_excel(buffer_excel, index=False)
+buffer_excel.seek(0)
 
 st.download_button(
     label="📥 Download Excel (Per Cabdin)",
-    data=excel_buffer,
+    data=buffer_excel,
     file_name=f"data_kepala_sekolah_{nama_cabdin}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     use_container_width=True
 )
 
-# --------- DOWNLOAD CSV ----------
+# --------- CSV ----------
 csv_data = df_cab.to_csv(index=False).encode("utf-8")
 
 st.download_button(
@@ -526,6 +521,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
