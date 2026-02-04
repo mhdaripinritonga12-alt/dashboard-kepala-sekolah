@@ -124,7 +124,6 @@ guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 st.markdown("""
 <style>
 .school-card {
-    background: #ffffff;
     border-radius: 12px;
     padding: 14px;
     margin-bottom: 16px;
@@ -138,15 +137,7 @@ st.markdown("""
     box-shadow: 0 3px 8px rgba(0,0,0,0.12);
 }
 
-.school-card b {
-    display: block;
-    line-height: 1.3em;
-}
-
-[data-testid="column"] {
-    padding: 8px !important;
-}
-
+/* WARNA STATUS */
 .card-periode-1 {
     background: #e3f2fd !important;
     border-left: 6px solid #2196f3;
@@ -291,32 +282,35 @@ elif st.session_state.page == "sekolah":
 
     cols = st.columns(5)
 
-    for i, row in df_cab.reset_index(drop=True).iterrows():
+ for _, row in df_cab.iterrows():
 
-        with cols[i % 5]:
+        nama_sekolah = row["Nama Sekolah"]
+        status = str(row["Keterangan Akhir"])  # STATUS TERAKHIR
+        status_lower = status.lower()
 
-            nama_sekolah = row["Nama Sekolah"]
-            nama_kepsek  = row["Nama Kepala Sekolah"]
-            status       = row["Keterangan Akhir"]
+        # TENTUKAN WARNA CARD
+        if "periode 1" in status_lower:
+            card_class = "card-periode-1"
+        elif "periode 2" in status_lower:
+            card_class = "card-periode-2"
+        elif "diberhentikan" in status_lower:
+            card_class = "card-berhenti"
+        elif "plt" in status_lower or "definitif" in status_lower:
+            card_class = "card-plt"
+        else:
+            card_class = ""
 
-            sudah = nama_sekolah in perubahan_kepsek
-            boleh_ganti_baru = status != "Aktif Periode 1"
-            boleh_batalkan   = sudah
+        # CARD GRID SEKOLAH
+        st.markdown(f"""
+        <div class="school-card {card_class}">
+            🏫 {nama_sekolah}
+        </div>
+        """, unsafe_allow_html=True)
 
-            widget_id = nama_sekolah.replace(" ", "_")
-
-            st.markdown(f"""
-            <div class="school-card">
-                <b>🏫 {nama_sekolah}</b>
-            </div>
-            """, unsafe_allow_html=True)
-
-            with st.expander("🔍 Lihat Detail & Penanganan"):
-
-                st.markdown(f"""
-                👤 **Kepala Sekolah Saat Ini:** {nama_kepsek}  
-                📌 **Status:** {status}
-                """)
+        # DETAIL SEKOLAH
+        with st.expander("🔍 Lihat Detail & Penanganan"):
+            st.write(f"👤 **Kepala Sekolah:** {row['Nama Kepala Sekolah']}")
+            st.write(f"📌 **Status:** {status}")
 
                 if sudah:
                     st.success(f"✅ Calon Pengganti: {perubahan_kepsek[nama_sekolah]}")
@@ -447,6 +441,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
