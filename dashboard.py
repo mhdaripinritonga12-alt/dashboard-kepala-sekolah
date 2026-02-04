@@ -324,7 +324,7 @@ for idx, row in df_cab.reset_index(drop=True).iterrows():
             if sudah:
                 st.success(f"✅ Calon Pengganti: {perubahan_kepsek[nama_sekolah]}")
 
-           # ===============================
+# ===============================
 # FORM GANTI (AMAN)
 # ===============================
 if danger or sudah or boleh_manual:
@@ -369,7 +369,6 @@ if danger or sudah or boleh_manual:
                 save_perubahan(perubahan_kepsek)
                 st.warning("🔄 Calon pengganti dibatalkan, kembali ke Kepala Sekolah lama")
                 st.rerun()
-
 # =========================================================
 # 📊 REKAP & ANALISIS PIMPINAN (TAMBAHAN RESMI DINAS)
 # =========================================================
@@ -464,6 +463,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
