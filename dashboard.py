@@ -337,7 +337,7 @@ st.download_button(
     mime="text/csv",
     use_container_width=True
 )
-    if df_cab.empty:
+if df_cab.empty:
         st.warning("⚠️ Tidak ada sekolah sesuai pencarian")
         st.stop()
     
@@ -527,6 +527,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
