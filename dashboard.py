@@ -328,11 +328,15 @@ elif st.session_state.page == "sekolah":
                     st.warning("⛔ Tidak dapat diganti karena masih Aktif Periode 1")
 
                 else:
-                    calon = st.selectbox(
-                        "👤 Pilih Calon Pengganti (SIMPEG)",
-                        daftar_guru_simpeg,
-                        key=f"calon_{nama_sekolah}"
-                    )
+                    if not daftar_guru_simpeg:
+    st.error("❌ Data guru SIMPEG tidak tersedia")
+else:
+    calon = st.selectbox(
+        "👤 Pilih Calon Pengganti (SIMPEG)",
+        daftar_guru_simpeg,
+        key=f"calon_{nama_sekolah}"
+    )
+
 
                     if st.button(
                         "💾 Simpan Pengganti",
@@ -451,6 +455,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
