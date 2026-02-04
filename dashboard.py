@@ -268,12 +268,17 @@ if st.session_state.page == "cabdin":
 
 with st.expander("🔍 Lihat Detail & Penanganan"):
 
+   for i, row in df_cab.reset_index(drop=True).iterrows():
+
+    nama_sekolah = row["Nama Sekolah"]
+    nama_kepsek = row["Nama Kepala Sekolah"]   # 🔴 WAJIB ADA
+    status = row["Keterangan Akhir"]
+
     st.markdown(f"""
     👤 **Kepala Sekolah Saat Ini:** {nama_kepsek}  
     📌 **Status:** {status}
     """)
 
-    sudah = nama_sekolah in perubahan_kepsek
 
     # ===============================
     # TAMPILKAN JIKA ADA CALON NYANGKUT
@@ -429,6 +434,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
