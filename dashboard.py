@@ -319,7 +319,7 @@ def map_status(row):
     if "lebih dari 2" in masa or ">2" in masa:
         return "Lebih dari 2 Periode"
     if "plt" in masa:
-        return "PLT"
+        return "Plt"
 
     # ✅ jika masa kosong, cek dari Keterangan Akhir
     if "Harus diberhentikan" in ket_akhir:
@@ -334,7 +334,7 @@ def map_status(row):
     if "lebih dari 2" in ket_akhir or ">2" in ket_akhir:
         return "Lebih dari 2 Periode"
     if "plt" in ket_akhir:
-        return "PLT"
+        return "Plt"
 
     return "Lainnya"
 
@@ -358,7 +358,7 @@ def cek_boleh_diganti(row):
     if "lebih dari 2" in masa or ">2" in masa:
         return True
 
-    # ✅ PLT boleh diganti
+    # ✅ Plt boleh diganti
     if "plt" in masa or "plt" in ket_akhir:
         return True
 
@@ -616,17 +616,17 @@ elif st.session_state.page == "sekolah":
             "Aktif Periode 1",
             "Aktif Periode 2",
             "Lebih dari 2 Periode",
-            "PLT",
+            "Plt",
             "Harus Diberhentikan",
             "Lainnya"
         ], fill_value=0)
     )
 
     colx1, colx2, colx3, colx4, colx5, colx6 = st.columns(6)
-    colx1.metric("Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
-    colx2.metric("Periode 2", int(rekap_status_cab["Aktif Periode 2"]))
-    colx3.metric(">2 Periode", int(rekap_status_cab["Lebih dari 2 Periode"]))
-    colx4.metric("Plt", int(rekap_status_cab["PLT"]))
+    colx1.metric("dalam Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
+    colx2.metric("dalamPeriode 2", int(rekap_status_cab["Aktif Periode 2"]))
+    colx3.metric("Lebih 2 Periode", int(rekap_status_cab["Lebih dari 2 Periode"]))
+    colx4.metric("Plt", int(rekap_status_cab["Plt"]))
     colx5.metric("Harus Diberhentikan", int(rekap_status_cab["Harus Diberhentikan"]))
     colx6.metric("Lainnya", int(rekap_status_cab["Lainnya"]))
 
@@ -813,7 +813,7 @@ grafik_data = (
         "Aktif Periode 1",
         "Aktif Periode 2",
         "Lebih dari 2 Periode",
-        "PLT",
+        "Plt",
         "Harus Diberhentikan",
         "Lainnya"
     ], fill_value=0)
@@ -835,7 +835,7 @@ st.info("""
 2. Satu periode = **4 (empat) tahun**
 3. Kepala Sekolah yang telah menjabat **Lebih 2 periode wajib diberhentikan sesuai pasal 31**
 4. Kepala Sekolah yang telah menjabat **1 periode bisa diperpanjang jika memiliki Sertifikat BCKS (Pasal 32)**
-5. Sekolah tanpa Kepala Sekolah definitif **wajib segera diisi (PLT/Definitif)**
+5. Sekolah tanpa Kepala Sekolah definitif **wajib segera diisi (Plt/Definitif)**
 6. Penugasan Kepala Sekolah merupakan **tugas tambahan ASN**
 """)
 
@@ -846,6 +846,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
