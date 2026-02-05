@@ -283,9 +283,9 @@ def map_status(row):
     masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
     ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
 
-    if "periode 1" in masa:
+    if "dalam periode 1" in masa:
         return "Aktif Periode 1"
-    if "periode 2" in masa:
+    if "dalam periode 2" in masa:
         return "Aktif Periode 2"
     if "lebih dari 2" in masa or ">2" in masa:
         return "Lebih dari 2 Periode"
@@ -805,6 +805,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
