@@ -201,9 +201,9 @@ rename_map_ks = {
     # ==========================
     # MASA PERIODE KSPSTK (TYPO)
     # ==========================
-    "Masa Periode Sisuai KSPSTK": "Masa Periode Sesuai KSPSTK",
+    "Masa Periode Sesuai KSPSTK": "Masa Periode Sesuai KSPSTK",
     "Masa Periode Sesuai KSPSTK ": "Masa Periode Sesuai KSPSTK",
-    "Masa Periode Sisuai KSPSTK ": "Masa Periode Sesuai KSPSTK",
+    "Masa Periode Sesuai KSPSTK ": "Masa Periode Sesuai KSPSTK",
 }
 
 rename_map_guru = {
@@ -805,6 +805,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
