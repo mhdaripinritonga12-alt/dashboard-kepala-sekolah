@@ -120,16 +120,16 @@ perubahan_kepsek = load_perubahan()
 def load_data():
     xls = pd.ExcelFile(DATA_FILE)
 
-    # AMBIL SEMUA SHEET CABDIS_1 s/d CABDIS_14
-    cabdis_sheets = [s for s in xls.sheet_names if "CABDIS" in s.upper()]
+    # AMBIL SEMUA SHEET CABANG DINAS PENDIDIKAN WILAYAH_1 s/d CABANG DINAS PENDIDIKAN WILAYAH_14
+    CABANG DINAS PENDIDIKAN WILAYAH_sheets = [s for s in xls.sheet_names if "CABANG DINAS PENDIDIKAN WILAYAH" in s.upper()]
 
-    if len(cabdis_sheets) == 0:
-        st.error("❌ Sheet CABDIS tidak ditemukan di Excel")
+    if len(CABANG DINAS PENDIDIKAN WILAYAH_sheets) == 0:
+        st.error("❌ Sheet CABANG DINAS PENDIDIKAN WILAYAH tidak ditemukan di Excel")
         st.stop()
 
-    # GABUNG SEMUA CABDIS MENJADI 1 DATAFRAME
+    # GABUNG SEMUA CABANG DINAS PENDIDIKAN WILAYAH MENJADI 1 DATAFRAME
     df_list = []
-    for sh in cabdis_sheets:
+    for sh in CABANG DINAS PENDIDIKAN WILAYAH_sheets:
         df_temp = pd.read_excel(DATA_FILE, sheet_name=sh)
         df_temp["Cabang Dinas"] = sh.replace("_", " ")
         df_list.append(df_temp)
@@ -170,8 +170,8 @@ rename_map_ks = {
     "KETERANGAN": "Keterangan Akhir",
     "Keterangan Akhir ": "Keterangan Akhir",
     "KETERANGAN AKHIR": "Keterangan Akhir",
-    "Cabdis": "Cabang Dinas",
-    "CABDIS": "Cabang Dinas",
+    "CABANG DINAS PENDIDIKAN WILAYAH": "Cabang Dinas",
+    "CABANG DINAS PENDIDIKAN WILAYAH": "Cabang Dinas",
     "Cabang Dinas ": "Cabang Dinas",
 }
 
@@ -518,7 +518,7 @@ elif st.session_state.page == "sekolah":
         idx += 1
 
 # =========================================================
-# 🔢 FUNGSI URUT CABDIN CABDIS 1 - 14
+# 🔢 FUNGSI URUT CABDIN CABANG DINAS PENDIDIKAN WILAYAH 1 - 14
 # =========================================================
 def urutkan_cabdin(cabdin_list):
     def ambil_angka(text):
@@ -559,7 +559,7 @@ rekap_cabdin = (
     .reset_index()
 )
 # =========================================================
-# 🔥 URUTKAN CABANG DINAS (CABDIS 1 - 14)
+# 🔥 URUTKAN CABANG DINAS (CABANG DINAS PENDIDIKAN WILAYAH 1 - 14)
 # =========================================================
 rekap_cabdin["__urut__"] = rekap_cabdin["Cabang Dinas"].apply(
     lambda x: int("".join(filter(str.isdigit, str(x)))) if "".join(filter(str.isdigit, str(x))) else 999
@@ -626,6 +626,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
