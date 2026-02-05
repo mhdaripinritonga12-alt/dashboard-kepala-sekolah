@@ -226,6 +226,35 @@ df_ks.rename(columns=rename_map_ks, inplace=True)
 df_guru.rename(columns=rename_map_guru, inplace=True)
 
 # =========================================================
+# ✅ FIX GABUNG KOLOM MASA PERIODE (BIAR WIL 1-14 TERBACA)
+# =========================================================
+if "Masa Periode Sesuai KSPSTK" not in df_ks.columns:
+    df_ks["Masa Periode Sesuai KSPSTK"] = ""
+
+# kalau masih ada kolom typo, gabungkan isinya
+if "Masa Periode Sisuai KSPSTK" in df_ks.columns:
+    df_ks["Masa Periode Sesuai KSPSTK"] = df_ks["Masa Periode Sesuai KSPSTK"].fillna("")
+    df_ks["Masa Periode Sisuai KSPSTK"] = df_ks["Masa Periode Sisuai KSPSTK"].fillna("")
+
+    df_ks["Masa Periode Sesuai KSPSTK"] = df_ks["Masa Periode Sesuai KSPSTK"].astype(str).str.strip()
+    df_ks["Masa Periode Sisuai KSPSTK"] = df_ks["Masa Periode Sisuai KSPSTK"].astype(str).str.strip()
+
+    df_ks.loc[
+        (df_ks["Masa Periode Sesuai KSPSTK"] == "") | (df_ks["Masa Periode Sesuai KSPSTK"].str.lower() == "nan"),
+        "Masa Periode Sesuai KSPSTK"
+    ] = df_ks["Masa Periode Sisuai KSPSTK"]
+
+    # hapus kolom typo supaya tidak bikin bingung
+    df_ks.drop(columns=["Masa Periode Sisuai KSPSTK"], inplace=True, errors="ignore")
+
+# rapikan nilai akhir
+df_ks["Masa Periode Sesuai KSPSTK"] = (
+    df_ks["Masa Periode Sesuai KSPSTK"]
+    .astype(str)
+    .str.replace("\xa0", " ", regex=False)
+    .str.strip()
+)
+# =========================================================
 # ✅ STRIP LAGI SETELAH RENAME
 # =========================================================
 df_ks.columns = df_ks.columns.astype(str).str.strip()
@@ -306,11 +335,11 @@ def cek_boleh_diganti(row):
     sertifikat = str(row.get("Ket Sertifikat BCKS", row.get("Sertifikat BCKS", ""))).lower()
 
     # ❌ periode 1 tidak boleh
-    if "dalam periode 1" in masa:
+    if "periode 1" in masa:
         return False
 
     # ✅ periode 2 boleh
-    if "dalam periode 2" in masa:
+    if "periode 2" in masa:
         return True
 
     # ✅ lebih dari 2 periode boleh
@@ -805,6 +834,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
