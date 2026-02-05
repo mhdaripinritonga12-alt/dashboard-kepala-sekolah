@@ -309,8 +309,8 @@ guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 # ✅ MAP STATUS (PAKAI KOLOM MASA PERIODE SESUAI KSPSTK)
 # =========================================================
 def map_status(row):
-    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
-    ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).strip().lower()
+    ket_akhir = str(row.get("Keterangan Akhir", "")).strip().lower()
 
     if "periode 1" in masa:
         return "Aktif Periode 1"
@@ -321,8 +321,20 @@ def map_status(row):
     if "plt" in masa:
         return "PLT"
 
-    if "Keterangan Akhir" in ket_akhir or "Harus Diberhentikan" in ket_akhir:
+    # ✅ jika masa kosong, cek dari Keterangan Akhir
+    if "harus diberhentikan" in ket_akhir:
         return "Harus Diberhentikan"
+    if "diberhentikan" in ket_akhir:
+        return "Harus Diberhentikan"
+
+    if "periode 1" in ket_akhir:
+        return "Aktif Periode 1"
+    if "periode 2" in ket_akhir:
+        return "Aktif Periode 2"
+    if "lebih dari 2" in ket_akhir or ">2" in ket_akhir:
+        return "Lebih dari 2 Periode"
+    if "plt" in ket_akhir:
+        return "PLT"
 
     return "Lainnya"
 
@@ -834,6 +846,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
