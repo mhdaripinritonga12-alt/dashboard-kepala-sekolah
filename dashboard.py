@@ -152,6 +152,12 @@ df_ks, df_guru = load_data()
 df_ks.columns = df_ks.columns.astype(str).str.strip()
 df_guru.columns = df_guru.columns.astype(str).str.strip()
 
+# =========================================================
+# 🔧 NORMALISASI NAMA KOLOM
+# =========================================================
+df_ks.columns = df_ks.columns.astype(str).str.strip()
+df_guru.columns = df_guru.columns.astype(str).str.strip()
+
 rename_map_ks = {
     "NAMA SEKOLAH": "Nama Sekolah",
     "Nama Sekolah ": "Nama Sekolah",
@@ -163,16 +169,15 @@ rename_map_ks = {
     "KETERANGAN": "Keterangan Akhir",
     "KETERANGAN AKHIR": "Keterangan Akhir",
 
-    # ✅ FIX TYPO DARI EXCEL KAMU
     "Keteranngan Akhir": "Keterangan Akhir",
 
     "Cabang Dinas ": "Cabang Dinas",
     "Ket. Sertifikat BCKS": "Ket Sertifikat BCKS",
     "Ket. Sertifikat": "Ket Sertifikat BCKS",
 
-    # optional tambahan
     "Masa Periode Sisuai KSPSTK": "Masa Periode Sesuai KSPSTK",
 }
+
 rename_map_guru = {
     "NAMA GURU ": "NAMA GURU",
     "Nama Guru": "NAMA GURU",
@@ -183,8 +188,12 @@ rename_map_guru = {
     "NIP.": "NIP",
     "NIP GURU": "NIP",
 }
+
+# ✅ INI YANG KAMU LUPA
+df_ks.rename(columns=rename_map_ks, inplace=True)
 df_guru.rename(columns=rename_map_guru, inplace=True)
 
+# rapikan lagi
 df_ks.columns = df_ks.columns.astype(str).str.strip()
 df_guru.columns = df_guru.columns.astype(str).str.strip()
 
@@ -743,6 +752,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
