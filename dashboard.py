@@ -153,6 +153,47 @@ df_ks.columns = df_ks.columns.astype(str).str.strip()
 df_guru.columns = df_guru.columns.astype(str).str.strip()
 
 guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
+# =========================================================
+# 🔧 NORMALISASI NAMA KOLOM (ANTI KEYERROR)
+# =========================================================
+df_ks.columns = df_ks.columns.astype(str).str.strip()
+df_guru.columns = df_guru.columns.astype(str).str.strip()
+
+# jika ada variasi nama kolom, kita samakan
+rename_map_ks = {
+    "Nama Sekolah": "Nama Sekolah",
+    "NAMA SEKOLAH": "Nama Sekolah",
+    "Nama Kasek": "Nama Kepala Sekolah",
+    "NAMA KASEK": "Nama Kepala Sekolah",
+    "Nama Kepsek": "Nama Kepala Sekolah",
+    "Keterangan": "Keterangan Akhir",
+    "KETERANGAN": "Keterangan Akhir",
+    "Keterangan Akhir ": "Keterangan Akhir",
+    "KETERANGAN AKHIR": "Keterangan Akhir",
+    "Cabdis": "Cabang Dinas",
+    "CABDIS": "Cabang Dinas",
+    "Cabang Dinas ": "Cabang Dinas",
+}
+
+df_ks.rename(columns=rename_map_ks, inplace=True)
+
+rename_map_guru = {
+    "NAMA GURU ": "NAMA GURU",
+    "NAMA": "NAMA GURU",
+    "NIP ": "NIP",
+}
+
+df_guru.rename(columns=rename_map_guru, inplace=True)
+
+# =========================================================
+# 🔍 CEK KOLOM WAJIB
+# =========================================================
+kolom_wajib = ["Jenjang", "Cabang Dinas", "Keterangan Akhir", "Nama Kepala Sekolah", "Nama Sekolah"]
+
+for k in kolom_wajib:
+    if k not in df_ks.columns:
+        st.error(f"❌ Kolom wajib '{k}' tidak ditemukan di Excel. Kolom yang tersedia: {list(df_ks.columns)}")
+        st.stop()
 
 # =========================================================
 # NORMALISASI NAMA KOLOM (ANTI ERROR)
@@ -519,6 +560,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
