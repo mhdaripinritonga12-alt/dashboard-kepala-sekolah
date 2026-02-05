@@ -330,13 +330,6 @@ def urutkan_cabdin(cabdin_list):
 
 
 # =========================================================
-# HALAMAN CABANG DINAS
-# =========================================================
-if st.session_state.page == "cabdin":
-
-    st.subheader("🏢 Cabang Dinas Wilayah")
-    df_view = apply_filter(df_ks)
-# =========================================================
 # NORMALISASI STATUS SESUAI REGULASI (WAJIB DI ATAS SEMUA HALAMAN)
 # =========================================================
 def map_status(status):
@@ -352,8 +345,17 @@ def map_status(status):
         return "Harus Diberhentikan"
 
     return "Lainnya"
-    
-    cabdin_list = urutkan_cabdin(df_view["Cabang Dinas"].unique())
+
+
+# =========================================================
+# HALAMAN CABANG DINAS
+# =========================================================
+if st.session_state.page == "cabdin":
+
+    st.subheader("🏢 Cabang Dinas Wilayah")
+    df_view = apply_filter(df_ks)
+
+    cabdin_list = urutkan_cabdin(df_view["Cabang Dinas"].dropna().unique())
     cols = st.columns(4)
 
     for i, cabdin in enumerate(cabdin_list):
@@ -362,6 +364,7 @@ def map_status(status):
                 st.session_state.selected_cabdin = cabdin
                 st.session_state.page = "sekolah"
                 st.rerun()
+
 
 # =========================================================
 # HALAMAN SEKOLAH
@@ -372,6 +375,7 @@ elif st.session_state.page == "sekolah":
     # HEADER + TOMBOL KEMBALI
     # ===============================
     col_a, col_b = st.columns([1, 5])
+
     with col_a:
         if st.button("⬅️ Kembali", use_container_width=True):
             st.session_state.page = "cabdin"
@@ -381,11 +385,18 @@ elif st.session_state.page == "sekolah":
     with col_b:
         st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
+
     # ===============================
     # FILTER DATA CABANG DINAS
     # ===============================
     df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin]
-# =========================================================
+
+    if df_cab.empty:
+        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
+        st.stop()
+
+
+    # =========================================================
     # 📌 REKAP STATUS CABANG DINAS INI
     # =========================================================
     st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
@@ -414,38 +425,7 @@ elif st.session_state.page == "sekolah":
 
     st.divider()
 
-    if df_cab.empty:
-        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
-        st.stop()
-# =========================================================
-    # 📌 REKAP KHUSUS CABANG DINAS YANG DIPILIH
-    # =========================================================
-    st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
 
-    df_cab_rekap = df_cab.copy()
-    df_cab_rekap["Status Regulatif"] = df_cab_rekap["Keterangan Akhir"].astype(str).apply(map_status)
-
-    rekap_cabdis_detail = (
-        df_cab_rekap["Status Regulatif"]
-        .value_counts()
-        .reindex([
-            "Aktif Periode 1",
-            "Aktif Periode 2",
-            "PLT / Harap Definitif",
-            "Harus Diberhentikan",
-            "Lainnya"
-        ], fill_value=0)
-    )
-
-    colx1, colx2, colx3, colx4, colx5 = st.columns(5)
-
-    colx1.metric("Aktif Periode 1", int(rekap_cabdis_detail["Aktif Periode 1"]))
-    colx2.metric("Aktif Periode 2", int(rekap_cabdis_detail["Aktif Periode 2"]))
-    colx3.metric("PLT / Definitif", int(rekap_cabdis_detail["PLT / Harap Definitif"]))
-    colx4.metric("Harus Diberhentikan", int(rekap_cabdis_detail["Harus Diberhentikan"]))
-    colx5.metric("Lainnya", int(rekap_cabdis_detail["Lainnya"]))
-
-    st.divider()
     # ===============================
     # GRID 5 KOLOM (WAJIB DI LUAR LOOP)
     # ===============================
@@ -463,7 +443,7 @@ elif st.session_state.page == "sekolah":
         # LOGIKA KUNCI (HANYA PERIODE 1)
         # ===============================
         terkunci = "periode 1" in status_lower
-        boleh_edit = not terkunci
+        boleh_edit_status = not terkunci
 
         # ===============================
         # WARNA CARD
@@ -484,7 +464,6 @@ elif st.session_state.page == "sekolah":
         # ===============================
         with cols[idx % 5]:
 
-            # CARD SEKOLAH
             st.markdown(
                 f"""
                 <div class="school-card {card_class}">
@@ -494,16 +473,14 @@ elif st.session_state.page == "sekolah":
                 unsafe_allow_html=True
             )
 
-            # DETAIL & PENANGANAN
             with st.expander("🔍 Lihat Detail & Penanganan"):
-
                 st.write(f"👤 **Kepala Sekolah:** {nama_kepsek}")
                 st.write(f"📌 **Status:** {status}")
 
                 calon_tersimpan = perubahan_kepsek.get(nama_sekolah)
 
                 # ⛔ TERKUNCI
-                if not boleh_edit:
+                if not boleh_edit_status:
                     st.warning("⛔ Tidak dapat diganti karena masih Aktif Periode 1")
 
                 # ✅ BOLEH DIGANTI
@@ -525,7 +502,7 @@ elif st.session_state.page == "sekolah":
                         st.rerun()
 
                 # 🔄 UNDO (SELAMA BUKAN PERIODE 1)
-                if calon_tersimpan and boleh_edit:
+                if calon_tersimpan and boleh_edit_status:
                     st.info(f"🔁 Pengganti Saat Ini: {calon_tersimpan}")
 
                     if st.button(
@@ -539,6 +516,7 @@ elif st.session_state.page == "sekolah":
                         st.rerun()
 
         idx += 1
+
 # =========================================================
 # 🔢 FUNGSI URUT CABDIN CABDIS 1 - 14
 # =========================================================
@@ -648,6 +626,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
