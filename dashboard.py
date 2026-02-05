@@ -336,7 +336,23 @@ if st.session_state.page == "cabdin":
 
     st.subheader("🏢 Cabang Dinas Wilayah")
     df_view = apply_filter(df_ks)
+# =========================================================
+# NORMALISASI STATUS SESUAI REGULASI (WAJIB DI ATAS SEMUA HALAMAN)
+# =========================================================
+def map_status(status):
+    status = str(status).lower()
 
+    if "periode 1" in status:
+        return "Aktif Periode 1"
+    if "periode 2" in status:
+        return "Aktif Periode 2"
+    if "plt" in status or "harus segera defenitif" in status or "definitif" in status:
+        return "PLT / Harap Definitif"
+    if "diberhentikan" in status or "harus diberhentikan" in status:
+        return "Harus Diberhentikan"
+
+    return "Lainnya"
+    
     cabdin_list = urutkan_cabdin(df_view["Cabang Dinas"].unique())
     cols = st.columns(4)
 
@@ -604,6 +620,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
