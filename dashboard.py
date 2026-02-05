@@ -143,7 +143,12 @@ def load_data():
     # ==============================
     df_guru = pd.read_excel(DATA_FILE, sheet_name="GURU_SIMPEG")
 
-    return df_ks, df_guru
+    return df_ks, df_guru = load_data ()
+# =========================================================
+# NORMALISASI NAMA KOLOM (ANTI ERROR)
+# =========================================================
+df_ks.columns = df_ks.columns.astype(str).str.strip()
+df_guru.columns = df_guru.columns.astype(str).str.strip()
 
 # =========================================================
 # CSS (TAMPILAN DINAS)
@@ -504,6 +509,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
