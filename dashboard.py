@@ -153,49 +153,102 @@ df_ks.columns = df_ks.columns.astype(str).str.strip()
 df_guru.columns = df_guru.columns.astype(str).str.strip()
 
 # =========================================================
-# 🔧 NORMALISASI NAMA KOLOM
+# 🔧 NORMALISASI NAMA KOLOM (FIX TOTAL + ANTI ERROR)
 # =========================================================
 df_ks.columns = df_ks.columns.astype(str).str.strip()
 df_guru.columns = df_guru.columns.astype(str).str.strip()
 
 rename_map_ks = {
+    # ==========================
+    # NAMA SEKOLAH
+    # ==========================
     "NAMA SEKOLAH": "Nama Sekolah",
     "Nama Sekolah ": "Nama Sekolah",
+    "Nama sekolah": "Nama Sekolah",
+
+    # ==========================
+    # NAMA KEPALA SEKOLAH
+    # ==========================
     "NAMA KASEK": "Nama Kepala Sekolah",
     "Nama Kasek": "Nama Kepala Sekolah",
     "Nama Kepsek": "Nama Kepala Sekolah",
+    "Nama Kepala Sekolah ": "Nama Kepala Sekolah",
 
+    # ==========================
+    # KETERANGAN AKHIR (TYPO EXCEL)
+    # ==========================
     "Keterangan": "Keterangan Akhir",
     "KETERANGAN": "Keterangan Akhir",
     "KETERANGAN AKHIR": "Keterangan Akhir",
-
     "Keteranngan Akhir": "Keterangan Akhir",
+    "Keteranngan akhir": "Keterangan Akhir",
+    "Keterangan Akhir ": "Keterangan Akhir",
 
+    # ==========================
+    # CABANG DINAS
+    # ==========================
     "Cabang Dinas ": "Cabang Dinas",
-    "Ket. Sertifikat BCKS": "Ket Sertifikat BCKS",
-    "Ket. Sertifikat": "Ket Sertifikat BCKS",
+    "CABANG DINAS": "Cabang Dinas",
 
+    # ==========================
+    # SERTIFIKAT BCKS
+    # ==========================
+    "Ket. Sertifikat BCKS": "Ket Sertifikat BCKS",
+    "Ket Sertifikat BCKS ": "Ket Sertifikat BCKS",
+    "Ket. Sertifikat": "Ket Sertifikat BCKS",
+    "Sertifikat BCKS": "Ket Sertifikat BCKS",
+
+    # ==========================
+    # MASA PERIODE KSPSTK (TYPO)
+    # ==========================
     "Masa Periode Sisuai KSPSTK": "Masa Periode Sesuai KSPSTK",
+    "Masa Periode Sesuai KSPSTK ": "Masa Periode Sesuai KSPSTK",
+    "Masa Periode Sisuai KSPSTK ": "Masa Periode Sesuai KSPSTK",
 }
 
 rename_map_guru = {
     "NAMA GURU ": "NAMA GURU",
     "Nama Guru": "NAMA GURU",
+    "Nama guru": "NAMA GURU",
     "NAMA": "NAMA GURU",
     "NAMA ": "NAMA GURU",
 
     "NIP ": "NIP",
     "NIP.": "NIP",
     "NIP GURU": "NIP",
+    "NIP Guru": "NIP",
 }
 
-# ✅ INI YANG KAMU LUPA
+# =========================================================
+# ✅ RENAME KOLOM
+# =========================================================
 df_ks.rename(columns=rename_map_ks, inplace=True)
 df_guru.rename(columns=rename_map_guru, inplace=True)
 
-# rapikan lagi
+# =========================================================
+# ✅ STRIP LAGI SETELAH RENAME
+# =========================================================
 df_ks.columns = df_ks.columns.astype(str).str.strip()
 df_guru.columns = df_guru.columns.astype(str).str.strip()
+
+# =========================================================
+# ✅ FIX KOLOM DUPLIKAT (INI WAJIB!)
+# supaya df_ks["Keterangan Akhir"] tidak jadi DataFrame
+# =========================================================
+df_ks = df_ks.loc[:, ~df_ks.columns.duplicated()]
+df_guru = df_guru.loc[:, ~df_guru.columns.duplicated()]
+
+# =========================================================
+# ✅ PAKSA KOLOM WAJIB ADA (BIAR TIDAK ERROR)
+# =========================================================
+if "Keterangan Akhir" not in df_ks.columns:
+    df_ks["Keterangan Akhir"] = ""
+
+if "Masa Periode Sesuai KSPSTK" not in df_ks.columns:
+    df_ks["Masa Periode Sesuai KSPSTK"] = ""
+
+if "Nama Kepala Sekolah" not in df_ks.columns:
+    df_ks["Nama Kepala Sekolah"] = ""
 
 # =========================================================
 # 🔍 CEK KOLOM WAJIB
@@ -752,6 +805,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
