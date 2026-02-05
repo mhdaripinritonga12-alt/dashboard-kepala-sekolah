@@ -183,7 +183,16 @@ rename_map_ks = {
     "Masa Periode Sesuai KS PSTK": "Masa Periode Sesuai KSPSTK",
     "MASA PERIODE SESUAI KS PSTK": "Masa Periode Sesuai KSPSTK",
 }
+rename_map_guru = {
+    "NAMA GURU ": "NAMA GURU",
+    "Nama Guru": "NAMA GURU",
+    "NAMA": "NAMA GURU",
+    "NAMA ": "NAMA GURU",
 
+    "NIP ": "NIP",
+    "NIP.": "NIP",
+    "NIP GURU": "NIP",
+}
 df_guru.rename(columns=rename_map_guru, inplace=True)
 
 df_ks.columns = df_ks.columns.astype(str).str.strip()
@@ -744,6 +753,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
