@@ -283,16 +283,16 @@ def map_status(row):
     masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
     ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
 
-    if "dalam periode 1" in masa:
+    if "periode 1" in masa:
         return "Aktif Periode 1"
-    if "dalam periode 2" in masa:
+    if "periode 2" in masa:
         return "Aktif Periode 2"
     if "lebih dari 2" in masa or ">2" in masa:
         return "Lebih dari 2 Periode"
     if "plt" in masa:
         return "PLT"
 
-    if "Harus Hiberhentikan" in ket_akhir or "Hiberhentikan" in ket_akhir:
+    if "Harus Hiberhentikan" in ket_akhir or "Diberhentikan" in ket_akhir:
         return "Harus Diberhentikan"
 
     return "Lainnya"
@@ -306,11 +306,11 @@ def cek_boleh_diganti(row):
     sertifikat = str(row.get("Ket Sertifikat BCKS", row.get("Sertifikat BCKS", ""))).lower()
 
     # ❌ periode 1 tidak boleh
-    if "periode 1" in masa:
+    if "dalam periode 1" in masa:
         return False
 
     # ✅ periode 2 boleh
-    if "periode 2" in masa:
+    if "dalam periode 2" in masa:
         return True
 
     # ✅ lebih dari 2 periode boleh
@@ -805,6 +805,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
