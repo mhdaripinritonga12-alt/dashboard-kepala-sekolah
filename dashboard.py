@@ -624,9 +624,9 @@ elif st.session_state.page == "sekolah":
 
     colx1, colx2, colx3, colx4, colx5, colx6 = st.columns(6)
     colx1.metric("dalam Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
-    colx2.metric("dalamPeriode 2", int(rekap_status_cab["Aktif Periode 2"]))
+    colx2.metric("dalam Periode 2", int(rekap_status_cab["Aktif Periode 2"]))
     colx3.metric("Lebih 2 Periode", int(rekap_status_cab["Lebih dari 2 Periode"]))
-    colx4.metric("Plt", int(rekap_status_cab["Plt"]))
+    colx4.metric("Kasek Plt", int(rekap_status_cab["Plt"]))
     colx5.metric("Harus Diberhentikan", int(rekap_status_cab["Harus Diberhentikan"]))
     colx6.metric("Lainnya", int(rekap_status_cab["Lainnya"]))
 
@@ -846,6 +846,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
