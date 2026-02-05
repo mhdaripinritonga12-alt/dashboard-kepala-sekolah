@@ -153,6 +153,78 @@ df_ks.columns = df_ks.columns.astype(str).str.strip()
 df_guru.columns = df_guru.columns.astype(str).str.strip()
 
 # =========================================================
+# 🔧 NORMALISASI NAMA KOLOM (FIX TOTAL + ANTI ERROR)
+# =========================================================
+df_ks.columns = df_ks.columns.astype(str).str.strip()
+df_guru.columns = df_guru.columns.astype(str).str.strip()
+
+rename_map_ks = {
+    # ==========================
+    # NAMA SEKOLAH
+    # ==========================
+    "NAMA SEKOLAH": "Nama Sekolah",
+    "Nama Sekolah ": "Nama Sekolah",
+    "Nama sekolah": "Nama Sekolah",
+
+    # ==========================
+    # NAMA KEPALA SEKOLAH
+    # ==========================
+    "NAMA KASEK": "Nama Kepala Sekolah",
+    "Nama Kasek": "Nama Kepala Sekolah",
+    "Nama Kepsek": "Nama Kepala Sekolah",
+    "Nama Kepala Sekolah ": "Nama Kepala Sekolah",
+
+    # ==========================
+    # KETERANGAN AKHIR (TYPO EXCEL)
+    # ==========================
+    "Keterangan": "Keterangan Akhir",
+    "KETERANGAN": "Keterangan Akhir",
+    "KETERANGAN AKHIR": "Keterangan Akhir",
+    "Keteranngan Akhir": "Keterangan Akhir",
+    "Keteranngan akhir": "Keterangan Akhir",
+    "Keterangan Akhir ": "Keterangan Akhir",
+
+    # ==========================
+    # CABANG DINAS
+    # ==========================
+    "Cabang Dinas ": "Cabang Dinas",
+    "CABANG DINAS": "Cabang Dinas",
+
+    # ==========================
+    # SERTIFIKAT BCKS
+    # ==========================
+    "Ket. Sertifikat BCKS": "Ket Sertifikat BCKS",
+    "Ket Sertifikat BCKS ": "Ket Sertifikat BCKS",
+    "Ket. Sertifikat": "Ket Sertifikat BCKS",
+    "Sertifikat BCKS": "Ket Sertifikat BCKS",
+
+    # ==========================
+    # MASA PERIODE KSPSTK (TYPO)
+    # ==========================
+    "Masa Periode Sesuai KSPSTK": "Masa Periode Sesuai KSPSTK",
+    "Masa Periode Sesuai KSPSTK ": "Masa Periode Sesuai KSPSTK",
+    "Masa Periode Sesuai KSPSTK ": "Masa Periode Sesuai KSPSTK",
+}
+
+rename_map_guru = {
+    "NAMA GURU ": "NAMA GURU",
+    "Nama Guru": "NAMA GURU",
+    "Nama guru": "NAMA GURU",
+    "NAMA": "NAMA GURU",
+    "NAMA ": "NAMA GURU",
+
+    "NIP ": "NIP",
+    "NIP.": "NIP",
+    "NIP GURU": "NIP",
+    "NIP Guru": "NIP",
+}
+
+# =========================================================
+# ✅ RENAME KOLOM
+# =========================================================
+df_ks.rename(columns=rename_map_ks, inplace=True)
+df_guru.rename(columns=rename_map_guru, inplace=True)
+# =========================================================
 # 🔧 NORMALISASI NAMA KOLOM (FIX SEMUA SHEET CABDIN)
 # =========================================================
 df_ks.columns = df_ks.columns.astype(str).str.strip()
@@ -225,11 +297,6 @@ df_ks["Masa Periode Sesuai KSPSTK"] = df_ks["Masa Periode Sesuai KSPSTK"].astype
 
 # jika kosong, pakai fallback dari keterangan akhir
 df_ks["Masa Periode Sesuai KSPSTK"] = df_ks["Masa Periode Sesuai KSPSTK"].replace("nan", "").replace("None", "")
-# =========================================================
-# ✅ RENAME KOLOM
-# =========================================================
-df_ks.rename(columns=rename_map_ks, inplace=True)
-df_guru.rename(columns=rename_map_guru, inplace=True)
 
 # =========================================================
 # ✅ FIX GABUNG KOLOM MASA PERIODE (BIAR WIL 1-14 TERBACA)
@@ -852,8 +919,6 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
 
 
 
