@@ -385,6 +385,34 @@ elif st.session_state.page == "sekolah":
     # FILTER DATA CABANG DINAS
     # ===============================
     df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin]
+# =========================================================
+    # 📌 REKAP STATUS CABANG DINAS INI
+    # =========================================================
+    st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
+
+    df_cab_rekap = df_cab.copy()
+    df_cab_rekap["Status Regulatif"] = df_cab_rekap["Keterangan Akhir"].astype(str).apply(map_status)
+
+    rekap_status_cab = (
+        df_cab_rekap["Status Regulatif"]
+        .value_counts()
+        .reindex([
+            "Aktif Periode 1",
+            "Aktif Periode 2",
+            "PLT / Harap Definitif",
+            "Harus Diberhentikan",
+            "Lainnya"
+        ], fill_value=0)
+    )
+
+    colx1, colx2, colx3, colx4, colx5 = st.columns(5)
+    colx1.metric("Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
+    colx2.metric("Periode 2", int(rekap_status_cab["Aktif Periode 2"]))
+    colx3.metric("PLT/Definitif", int(rekap_status_cab["PLT / Harap Definitif"]))
+    colx4.metric("Harus Berhenti", int(rekap_status_cab["Harus Diberhentikan"]))
+    colx5.metric("Lainnya", int(rekap_status_cab["Lainnya"]))
+
+    st.divider()
 
     if df_cab.empty:
         st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
@@ -620,6 +648,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
