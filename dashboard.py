@@ -155,18 +155,29 @@ df_guru.columns = df_guru.columns.astype(str).str.strip()
 rename_map_ks = {
     "NAMA SEKOLAH": "Nama Sekolah",
     "Nama Sekolah ": "Nama Sekolah",
+
     "NAMA KASEK": "Nama Kepala Sekolah",
     "Nama Kasek": "Nama Kepala Sekolah",
     "Nama Kepsek": "Nama Kepala Sekolah",
+
     "Keterangan": "Keterangan Akhir",
     "KETERANGAN": "Keterangan Akhir",
     "KETERANGAN AKHIR": "Keterangan Akhir",
+
     "Cabang Dinas ": "Cabang Dinas",
+
     "Ket. Sertifikat BCKS": "Ket Sertifikat BCKS",
     "Ket. Sertifikat": "Ket Sertifikat BCKS",
-}
 
-df_ks.rename(columns=rename_map_ks, inplace=True)
+    # ==============================
+    # ✅ FIX UTAMA UNTUK WIL 3-14
+    # ==============================
+    "Masa Periode Sesuai KSPSTK ": "Masa Periode Sesuai KSPSTK",
+    "MASA PERIODE SESUAI KSPSTK": "Masa Periode Sesuai KSPSTK",
+    "MASA PERIODE SESUAI KSPSTK ": "Masa Periode Sesuai KSPSTK",
+    "Masa Periode Sesuai KS PSTK": "Masa Periode Sesuai KSPSTK",
+    "MASA PERIODE SESUAI KS PSTK": "Masa Periode Sesuai KSPSTK",
+}
 
 rename_map_guru = {
     "NAMA GURU ": "NAMA GURU",
@@ -734,3 +745,4 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
