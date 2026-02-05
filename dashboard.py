@@ -321,7 +321,7 @@ def map_status(row):
     if "plt" in masa:
         return "PLT"
 
-    if "Harus Hiberhentikan" in ket_akhir or "Diberhentikan" in ket_akhir:
+    if "Keterangan Akhir" in ket_akhir or "Harus Diberhentikan" in ket_akhir:
         return "Harus Diberhentikan"
 
     return "Lainnya"
@@ -834,6 +834,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
