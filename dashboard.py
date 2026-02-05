@@ -120,32 +120,40 @@ perubahan_kepsek = load_perubahan()
 def load_data():
     xls = pd.ExcelFile(DATA_FILE)
 
-    # ==============================
-    # AMBIL SEMUA SHEET CABDIS_
-    # ==============================
-    cabdis_sheets = [s for s in xls.sheet_names if s.upper().startswith("CABDIS_")]
+    # AMBIL SEMUA SHEET CABDIS_1 s/d CABDIS_14
+    cabdis_sheets = [s for s in xls.sheet_names if "CABDIS" in s.upper()]
 
-    list_df = []
+    if len(cabdis_sheets) == 0:
+        st.error("❌ Sheet CABDIS tidak ditemukan di Excel")
+        st.stop()
+
+    # GABUNG SEMUA CABDIS MENJADI 1 DATAFRAME
+    df_list = []
     for sh in cabdis_sheets:
         df_temp = pd.read_excel(DATA_FILE, sheet_name=sh)
+        df_temp["Cabang Dinas"] = sh.replace("_", " ")
+        df_list.append(df_temp)
 
-        # pastikan ada kolom Cabang Dinas
-        if "Cabang Dinas" not in df_temp.columns:
-            df_temp["Cabang Dinas"] = sh.replace("_", " ")
+    df_ks = pd.concat(df_list, ignore_index=True)
 
-        list_df.append(df_temp)
+    # LOAD DATA SIMPEG
+    if "GURU_SIMPEG" not in xls.sheet_names:
+        st.error("❌ Sheet GURU_SIMPEG tidak ditemukan di Excel")
+        st.stop()
 
-    # gabungkan semua cabdis jadi 1 dataframe besar
-    df_ks = pd.concat(list_df, ignore_index=True)
-
-    # ==============================
-    # LOAD SIMPEG
-    # ==============================
     df_guru = pd.read_excel(DATA_FILE, sheet_name="GURU_SIMPEG")
 
-    df_ks, df_guru = load_data()
-    df_ks.columns = df_ks.columns.astype(str).str.strip()
-    df_guru.columns = df_guru.columns.astype(str).str.strip()
+    return df_ks, df_guru
+# =========================================================
+# PANGGIL DATA HASIL LOAD
+# =========================================================
+df_ks, df_guru = load_data()
+
+df_ks.columns = df_ks.columns.astype(str).str.strip()
+df_guru.columns = df_guru.columns.astype(str).str.strip()
+
+guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
+
 # =========================================================
 # NORMALISASI NAMA KOLOM (ANTI ERROR)
 # =========================================================
@@ -511,6 +519,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
