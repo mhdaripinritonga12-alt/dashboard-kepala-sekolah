@@ -118,12 +118,32 @@ perubahan_kepsek = load_perubahan()
 # =========================================================
 @st.cache_data(show_spinner="📂 Memuat data Kepala Sekolah & SIMPEG...")
 def load_data():
-    df_ks = pd.read_excel(DATA_FILE, sheet_name="KEPALA_SEKOLAH")
-    df_guru = pd.read_excel(DATA_FILE, sheet_name="GURU_SIMPEG")
-    return df_ks, df_guru
+    xls = pd.ExcelFile(DATA_FILE)
 
-df_ks, df_guru = load_data()
-guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
+    # ==============================
+    # AMBIL SEMUA SHEET CABDIS_
+    # ==============================
+    cabdis_sheets = [s for s in xls.sheet_names if s.upper().startswith("CABDIS_")]
+
+    list_df = []
+    for sh in cabdis_sheets:
+        df_temp = pd.read_excel(DATA_FILE, sheet_name=sh)
+
+        # pastikan ada kolom Cabang Dinas
+        if "Cabang Dinas" not in df_temp.columns:
+            df_temp["Cabang Dinas"] = sh.replace("_", " ")
+
+        list_df.append(df_temp)
+
+    # gabungkan semua cabdis jadi 1 dataframe besar
+    df_ks = pd.concat(list_df, ignore_index=True)
+
+    # ==============================
+    # LOAD SIMPEG
+    # ==============================
+    df_guru = pd.read_excel(DATA_FILE, sheet_name="GURU_SIMPEG")
+
+    return df_ks, df_guru
 
 # =========================================================
 # CSS (TAMPILAN DINAS)
@@ -484,6 +504,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
