@@ -292,7 +292,7 @@ def map_status(row):
     if "plt" in masa:
         return "PLT"
 
-    if "harus diberhentikan" in ket_akhir or "diberhentikan" in ket_akhir:
+    if "Harus Hiberhentikan" in ket_akhir or "Hiberhentikan" in ket_akhir:
         return "Harus Diberhentikan"
 
     return "Lainnya"
@@ -321,8 +321,8 @@ def cek_boleh_diganti(row):
     if "plt" in masa or "plt" in ket_akhir:
         return True
 
-    # ✅ Harus diberhentikan boleh diganti
-    if "harus diberhentikan" in ket_akhir or "diberhentikan" in ket_akhir:
+    # ✅ Harus Diberhentikan boleh diganti
+    if "Harus Hiberhentikan" in ket_akhir or "Hiberhentikan" in ket_akhir:
         return True
 
     # ✅ Tidak memiliki sertifikat BCKS boleh diganti
@@ -612,7 +612,7 @@ elif st.session_state.page == "sekolah":
             card_class = "card-berhenti"
         elif "plt" in masa:
             card_class = "card-plt"
-        elif "diberhentikan" in ket_akhir:
+        elif "Diberhentikan" in ket_akhir:
             card_class = "card-berhenti"
         else:
             card_class = "card-plt"
@@ -805,6 +805,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
