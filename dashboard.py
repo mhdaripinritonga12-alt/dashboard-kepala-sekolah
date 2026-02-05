@@ -162,6 +162,8 @@ rename_map_ks = {
     "KETERANGAN": "Keterangan Akhir",
     "KETERANGAN AKHIR": "Keterangan Akhir",
     "Cabang Dinas ": "Cabang Dinas",
+    "Ket. Sertifikat BCKS": "Ket Sertifikat BCKS",
+    "Ket. Sertifikat": "Ket Sertifikat BCKS",
 }
 
 df_ks.rename(columns=rename_map_ks, inplace=True)
@@ -190,6 +192,10 @@ for k in kolom_wajib:
 if "Nama Kepala Sekolah" not in df_ks.columns:
     df_ks["Nama Kepala Sekolah"] = "-"
 
+# WAJIB ADA UNTUK REKAP (KOLOM MERAH DI EXCEL)
+if "Masa Periode Sesuai KSPSTK" not in df_ks.columns:
+    df_ks["Masa Periode Sesuai KSPSTK"] = ""
+
 # =========================================================
 # LIST GURU SIMPEG
 # =========================================================
@@ -200,46 +206,59 @@ if "NAMA GURU" not in df_guru.columns:
 guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 
 # =========================================================
-# NORMALISASI STATUS SESUAI REGULASI
+# ✅ MAP STATUS (PAKAI KOLOM MASA PERIODE SESUAI KSPSTK)
 # =========================================================
-def map_status(status):
-    status = str(status).lower()
+def map_status(row):
+    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+    ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
 
-    if "periode 1" in status:
+    if "periode 1" in masa:
         return "Aktif Periode 1"
-    if "periode 2" in status:
+    if "periode 2" in masa:
         return "Aktif Periode 2"
-    if "lebih dari 2" in status or ">2" in status:
+    if "lebih dari 2" in masa or ">2" in masa:
         return "Lebih dari 2 Periode"
-    if "plt" in status:
+    if "plt" in masa:
         return "PLT"
-    if "diberhentikan" in status or "harus diberhentikan" in status:
+
+    if "harus diberhentikan" in ket_akhir or "diberhentikan" in ket_akhir:
         return "Harus Diberhentikan"
 
     return "Lainnya"
 
 # =========================================================
-# LOGIKA BOLEH DIGANTI (PERIODE 1 TIDAK BOLEH)
+# ✅ LOGIKA BOLEH DIGANTI (Sesuai Permintaan)
 # =========================================================
 def cek_boleh_diganti(row):
-    ket = str(row.get("Keterangan Akhir", "")).lower()
-    sertifikat = str(row.get("Sertifikat BCKS", row.get("Ket. Sertifikat BCKS", ""))).lower()
+    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+    ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+    sertifikat = str(row.get("Ket Sertifikat BCKS", row.get("Sertifikat BCKS", ""))).lower()
 
-    if "periode 1" in ket or "aktif periode 1" in ket:
+    # ❌ periode 1 tidak boleh
+    if "periode 1" in masa:
         return False
 
-    if "periode 2" in ket:
-        return True
-    if "lebih dari 2" in ket:
-        return True
-    if "plt" in ket:
-        return True
-    if "harus diberhentikan" in ket or "diberhentikan" in ket:
+    # ✅ periode 2 boleh
+    if "periode 2" in masa:
         return True
 
-    if "belum" in sertifikat:
+    # ✅ lebih dari 2 periode boleh
+    if "lebih dari 2" in masa or ">2" in masa:
         return True
 
+    # ✅ PLT boleh diganti
+    if "plt" in masa or "plt" in ket_akhir:
+        return True
+
+    # ✅ Harus diberhentikan boleh diganti
+    if "harus diberhentikan" in ket_akhir or "diberhentikan" in ket_akhir:
+        return True
+
+    # ✅ Tidak memiliki sertifikat BCKS boleh diganti
+    if "belum" in sertifikat or "tidak" in sertifikat:
+        return True
+
+    # default boleh
     return True
 
 # =========================================================
@@ -471,12 +490,12 @@ elif st.session_state.page == "sekolah":
         st.stop()
 
     # =========================================================
-    # 📌 REKAP STATUS CABANG DINAS INI
+    # 📌 REKAP STATUS CABANG DINAS INI (TERKONEKSI MASA PERIODE)
     # =========================================================
     st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
 
     df_cab_rekap = df_cab.copy()
-    df_cab_rekap["Status Regulatif"] = df_cab_rekap["Keterangan Akhir"].astype(str).apply(map_status)
+    df_cab_rekap["Status Regulatif"] = df_cab_rekap.apply(map_status, axis=1)
 
     rekap_status_cab = (
         df_cab_rekap["Status Regulatif"]
@@ -510,16 +529,19 @@ elif st.session_state.page == "sekolah":
     for _, row in df_cab.iterrows():
 
         nama_sekolah = row.get("Nama Sekolah", "-")
-        status = str(row.get("Keterangan Akhir", ""))
-        status_lower = status.lower()
 
-        if "periode 1" in status_lower:
+        masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+        ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+
+        if "periode 1" in masa:
             card_class = "card-periode-1"
-        elif "periode 2" in status_lower:
+        elif "periode 2" in masa:
             card_class = "card-periode-2"
-        elif "plt" in status_lower:
+        elif "lebih dari 2" in masa or ">2" in masa:
+            card_class = "card-berhenti"
+        elif "plt" in masa:
             card_class = "card-plt"
-        elif "diberhentikan" in status_lower:
+        elif "diberhentikan" in ket_akhir:
             card_class = "card-berhenti"
         else:
             card_class = "card-plt"
@@ -593,7 +615,7 @@ elif st.session_state.page == "detail":
     st.divider()
 
     # =========================================================
-    # LOGIKA EDIT
+    # LOGIKA EDIT (PERIODE 1 TIDAK BOLEH)
     # =========================================================
     status_boleh = cek_boleh_diganti(row)
     is_view_only = st.session_state.role in ["Kadis", "View"]
@@ -635,7 +657,7 @@ st.divider()
 st.markdown("## 📑 Rekap & Analisis Kepala Sekolah (Pimpinan)")
 
 df_rekap = df_ks.copy()
-df_rekap["Status Regulatif"] = df_rekap["Keterangan Akhir"].astype(str).apply(map_status)
+df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
 
 rekap_cabdin = (
     df_rekap
