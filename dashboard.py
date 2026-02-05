@@ -572,8 +572,8 @@ elif st.session_state.page == "sekolah":
         df_cab_rekap["Status Regulatif"]
         .value_counts()
         .reindex([
-            "Aktif dalam Periode 1",
-            "Aktif dalam Periode 2",
+            "Aktif Periode 1",
+            "Aktif Periode 2",
             "Lebih dari 2 Periode",
             "PLT",
             "Harus Diberhentikan",
@@ -582,8 +582,8 @@ elif st.session_state.page == "sekolah":
     )
 
     colx1, colx2, colx3, colx4, colx5, colx6 = st.columns(6)
-    colx1.metric("Periode 1", int(rekap_status_cab["Aktif dalam Periode 1"]))
-    colx2.metric("Periode 2", int(rekap_status_cab["Aktif dalam Periode 2"]))
+    colx1.metric("Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
+    colx2.metric("Periode 2", int(rekap_status_cab["Aktif Periode 2"]))
     colx3.metric(">2 Periode", int(rekap_status_cab["Lebih dari 2 Periode"]))
     colx4.metric("Plt", int(rekap_status_cab["PLT"]))
     colx5.metric("Harus Diberhentikan", int(rekap_status_cab["Harus Diberhentikan"]))
@@ -769,8 +769,8 @@ grafik_data = (
     df_rekap["Status Regulatif"]
     .value_counts()
     .reindex([
-        "Aktif dalam Periode 1",
-        "Aktif dalam Periode 2",
+        "Aktif Periode 1",
+        "Aktif Periode 2",
         "Lebih dari 2 Periode",
         "PLT",
         "Harus Diberhentikan",
@@ -805,6 +805,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
