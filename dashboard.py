@@ -373,7 +373,35 @@ elif st.session_state.page == "sekolah":
     if df_cab.empty:
         st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
         st.stop()
+# =========================================================
+    # 📌 REKAP KHUSUS CABANG DINAS YANG DIPILIH
+    # =========================================================
+    st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
 
+    df_cab_rekap = df_cab.copy()
+    df_cab_rekap["Status Regulatif"] = df_cab_rekap["Keterangan Akhir"].astype(str).apply(map_status)
+
+    rekap_cabdis_detail = (
+        df_cab_rekap["Status Regulatif"]
+        .value_counts()
+        .reindex([
+            "Aktif Periode 1",
+            "Aktif Periode 2",
+            "PLT / Harap Definitif",
+            "Harus Diberhentikan",
+            "Lainnya"
+        ], fill_value=0)
+    )
+
+    colx1, colx2, colx3, colx4, colx5 = st.columns(5)
+
+    colx1.metric("Aktif Periode 1", int(rekap_cabdis_detail["Aktif Periode 1"]))
+    colx2.metric("Aktif Periode 2", int(rekap_cabdis_detail["Aktif Periode 2"]))
+    colx3.metric("PLT / Definitif", int(rekap_cabdis_detail["PLT / Harap Definitif"]))
+    colx4.metric("Harus Diberhentikan", int(rekap_cabdis_detail["Harus Diberhentikan"]))
+    colx5.metric("Lainnya", int(rekap_cabdis_detail["Lainnya"]))
+
+    st.divider()
     # ===============================
     # GRID 5 KOLOM (WAJIB DI LUAR LOOP)
     # ===============================
@@ -468,6 +496,14 @@ elif st.session_state.page == "sekolah":
 
         idx += 1
 # =========================================================
+# 🔢 FUNGSI URUT CABDIN CABDIS 1 - 14
+# =========================================================
+def urutkan_cabdin(cabdin_list):
+    def ambil_angka(text):
+        angka = "".join(filter(str.isdigit, str(text)))
+        return int(angka) if angka else 999
+    return sorted(cabdin_list, key=ambil_angka)
+# =========================================================
 # 📊 REKAP & ANALISIS PIMPINAN (TAMBAHAN RESMI DINAS)
 # =========================================================
 st.divider()
@@ -500,6 +536,14 @@ rekap_cabdin = (
     .unstack(fill_value=0)
     .reset_index()
 )
+# =========================================================
+# 🔥 URUTKAN CABANG DINAS (CABDIS 1 - 14)
+# =========================================================
+rekap_cabdin["__urut__"] = rekap_cabdin["Cabang Dinas"].apply(
+    lambda x: int("".join(filter(str.isdigit, str(x)))) if "".join(filter(str.isdigit, str(x))) else 999
+)
+
+rekap_cabdin = rekap_cabdin.sort_values("__urut__").drop(columns="__urut__")
 
 st.dataframe(rekap_cabdin, use_container_width=True)
 
@@ -560,6 +604,7 @@ st.success("📌 Seluruh status dan rekomendasi pada dashboard ini telah diselar
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
