@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import os
 
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from io import BytesIO
+
 # =========================================================
 # 🔒 PAKSA LOGIN SETIAP APLIKASI DIBUKA ULANG
 # =========================================================
@@ -33,26 +37,17 @@ if "page" not in st.session_state:
 if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
 
+if "selected_sekolah" not in st.session_state:
+    st.session_state.selected_sekolah = None
+
 # =========================================================
 # 🔐 SISTEM LOGIN & ROLE USER
 # =========================================================
 USERS = {
-    "operator": {
-        "password": "operator123",
-        "role": "Operator"
-    },
-    "kabidptk": {
-        "password": "kabid123",
-        "role": "Kabid"
-    },
-    "kadis": {
-        "password": "kadis123",
-        "role": "Kadis"
-    },
-    "viewer": {
-        "password": "viewer123",
-        "role": "View"
-    }
+    "operator": {"password": "operator123", "role": "Operator"},
+    "kabidptk": {"password": "kabid123", "role": "Kabid"},
+    "kadis": {"password": "kadis123", "role": "Kadis"},
+    "viewer": {"password": "viewer123", "role": "View"},
 }
 
 if "role" not in st.session_state:
@@ -127,7 +122,6 @@ def urutkan_cabdin(cabdin_list):
 def load_data():
     xls = pd.ExcelFile(DATA_FILE)
 
-    # ambil semua sheet cabdis
     cabdis_sheets = [s for s in xls.sheet_names if "CABANG_DINAS_PENDIDIKAN_WIL" in s.upper()]
 
     if len(cabdis_sheets) == 0:
@@ -142,7 +136,6 @@ def load_data():
 
     df_ks = pd.concat(df_list, ignore_index=True)
 
-    # load simpeg
     if "GURU_SIMPEG" not in xls.sheet_names:
         st.error("❌ Sheet GURU_SIMPEG tidak ditemukan di Excel")
         st.stop()
@@ -161,12 +154,14 @@ df_guru.columns = df_guru.columns.astype(str).str.strip()
 
 rename_map_ks = {
     "NAMA SEKOLAH": "Nama Sekolah",
-    "Nama Kasek": "Nama Kepala Sekolah",
+    "Nama Sekolah ": "Nama Sekolah",
     "NAMA KASEK": "Nama Kepala Sekolah",
+    "Nama Kasek": "Nama Kepala Sekolah",
     "Nama Kepsek": "Nama Kepala Sekolah",
     "Keterangan": "Keterangan Akhir",
     "KETERANGAN": "Keterangan Akhir",
     "KETERANGAN AKHIR": "Keterangan Akhir",
+    "Cabang Dinas ": "Cabang Dinas",
 }
 
 df_ks.rename(columns=rename_map_ks, inplace=True)
@@ -192,12 +187,8 @@ for k in kolom_wajib:
         st.error(f"❌ Kolom wajib '{k}' tidak ditemukan di Excel. Kolom tersedia: {list(df_ks.columns)}")
         st.stop()
 
-# jika kolom nama kepsek tidak ada, fallback ke NAMA KASEK
 if "Nama Kepala Sekolah" not in df_ks.columns:
-    if "NAMA KASEK" in df_ks.columns:
-        df_ks["Nama Kepala Sekolah"] = df_ks["NAMA KASEK"]
-    else:
-        df_ks["Nama Kepala Sekolah"] = "-"
+    df_ks["Nama Kepala Sekolah"] = "-"
 
 # =========================================================
 # LIST GURU SIMPEG
@@ -207,6 +198,105 @@ if "NAMA GURU" not in df_guru.columns:
     st.stop()
 
 guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
+
+# =========================================================
+# NORMALISASI STATUS SESUAI REGULASI
+# =========================================================
+def map_status(status):
+    status = str(status).lower()
+
+    if "periode 1" in status:
+        return "Aktif Periode 1"
+    if "periode 2" in status:
+        return "Aktif Periode 2"
+    if "lebih dari 2" in status or ">2" in status:
+        return "Lebih dari 2 Periode"
+    if "plt" in status:
+        return "PLT"
+    if "diberhentikan" in status or "harus diberhentikan" in status:
+        return "Harus Diberhentikan"
+
+    return "Lainnya"
+
+# =========================================================
+# LOGIKA BOLEH DIGANTI (PERIODE 1 TIDAK BOLEH)
+# =========================================================
+def cek_boleh_diganti(row):
+    ket = str(row.get("Keterangan Akhir", "")).lower()
+    sertifikat = str(row.get("Sertifikat BCKS", row.get("Ket. Sertifikat BCKS", ""))).lower()
+
+    if "periode 1" in ket or "aktif periode 1" in ket:
+        return False
+
+    if "periode 2" in ket:
+        return True
+    if "lebih dari 2" in ket:
+        return True
+    if "plt" in ket:
+        return True
+    if "harus diberhentikan" in ket or "diberhentikan" in ket:
+        return True
+
+    if "belum" in sertifikat:
+        return True
+
+    return True
+
+# =========================================================
+# FUNGSI BUAT PDF SURAT KETERANGAN
+# =========================================================
+def buat_pdf_surat(row):
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    y = height - 50
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(50, y, "SURAT KETERANGAN DATA KEPALA SEKOLAH")
+    y -= 25
+
+    c.setFont("Helvetica", 11)
+    c.drawString(50, y, "DINAS PENDIDIKAN PROVINSI SUMATERA UTARA")
+    y -= 35
+
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(50, y, "DATA LENGKAP:")
+    y -= 20
+
+    c.setFont("Helvetica", 10)
+
+    for col in row.index:
+        nilai = str(row[col])
+        teks = f"{col}: {nilai}"
+
+        while len(teks) > 95:
+            c.drawString(50, y, teks[:95])
+            teks = teks[95:]
+            y -= 15
+
+        c.drawString(50, y, teks)
+        y -= 15
+
+        if y < 100:
+            c.showPage()
+            y = height - 50
+            c.setFont("Helvetica", 10)
+
+    y -= 30
+    c.setFont("Helvetica", 10)
+    c.drawString(50, y, "Dokumen ini dibuat otomatis melalui Dashboard Kepala Sekolah.")
+    y -= 40
+
+    c.setFont("Helvetica", 10)
+    c.drawString(50, y, "Medan, ____________________")
+    y -= 50
+    c.drawString(50, y, "Mengetahui,")
+    y -= 60
+    c.drawString(50, y, "(__________________________)")
+
+    c.save()
+    buffer.seek(0)
+    return buffer
 
 # =========================================================
 # CSS (TAMPILAN DINAS)
@@ -274,6 +364,7 @@ with col4:
         st.session_state.login = False
         st.session_state.page = "cabdin"
         st.session_state.selected_cabdin = None
+        st.session_state.selected_sekolah = None
         st.session_state.role = None
         st.rerun()
 
@@ -337,52 +428,6 @@ def apply_filter(df):
     return df
 
 # =========================================================
-# NORMALISASI STATUS SESUAI REGULASI
-# =========================================================
-def map_status(status):
-    status = str(status).lower()
-
-    if "periode 1" in status:
-        return "Aktif Periode 1"
-    if "periode 2" in status:
-        return "Aktif Periode 2"
-    if "lebih dari 2" in status or ">2" in status:
-        return "Lebih dari 2 Periode"
-    if "plt" in status:
-        return "PLT"
-    if "diberhentikan" in status or "harus diberhentikan" in status:
-        return "Harus Diberhentikan"
-
-    return "Lainnya"
-
-# =========================================================
-# LOGIKA BOLEH DIGANTI (PERIODE 1 TIDAK BOLEH)
-# =========================================================
-def cek_boleh_diganti(row):
-    ket = str(row.get("Keterangan Akhir", "")).lower()
-    sertifikat = str(row.get("Sertifikat BCKS", row.get("Ket. Sertifikat BCKS", ""))).lower()
-
-    # ❌ periode 1 tidak boleh
-    if "periode 1" in ket or "aktif periode 1" in ket:
-        return False
-
-    # selain periode 1 boleh
-    if "periode 2" in ket:
-        return True
-    if "lebih dari 2" in ket:
-        return True
-    if "plt" in ket:
-        return True
-    if "harus diberhentikan" in ket or "diberhentikan" in ket:
-        return True
-
-    # belum sertifikat bcks boleh diganti
-    if "belum" in sertifikat:
-        return True
-
-    return True
-
-# =========================================================
 # HALAMAN CABANG DINAS
 # =========================================================
 if st.session_state.page == "cabdin":
@@ -402,7 +447,7 @@ if st.session_state.page == "cabdin":
                 st.rerun()
 
 # =========================================================
-# HALAMAN SEKOLAH
+# HALAMAN SEKOLAH (LIST)
 # =========================================================
 elif st.session_state.page == "sekolah":
 
@@ -412,6 +457,7 @@ elif st.session_state.page == "sekolah":
         if st.button("⬅️ Kembali", use_container_width=True):
             st.session_state.page = "cabdin"
             st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
             st.rerun()
 
     with col_b:
@@ -456,7 +502,7 @@ elif st.session_state.page == "sekolah":
     st.divider()
 
     # =========================================================
-    # GRID SEKOLAH
+    # GRID SEKOLAH (KLIK SEKOLAH -> HALAMAN DETAIL)
     # =========================================================
     cols = st.columns(5)
     idx = 0
@@ -464,11 +510,9 @@ elif st.session_state.page == "sekolah":
     for _, row in df_cab.iterrows():
 
         nama_sekolah = row.get("Nama Sekolah", "-")
-        nama_kepsek = row.get("Nama Kepala Sekolah", row.get("NAMA KASEK", "-"))
         status = str(row.get("Keterangan Akhir", ""))
         status_lower = status.lower()
 
-        # warna card
         if "periode 1" in status_lower:
             card_class = "card-periode-1"
         elif "periode 2" in status_lower:
@@ -491,65 +535,98 @@ elif st.session_state.page == "sekolah":
                 unsafe_allow_html=True
             )
 
-            # =========================================================
-            # DETAIL SEKOLAH (1 SEKOLAH 1 LEMBAR DETAIL SEPERTI SURAT)
-            # =========================================================
-            with st.expander("📄 Detail Lengkap (Seperti Surat)"):
-
-                st.markdown("### 📌 Data Lengkap Kepala Sekolah")
-
-                for col in df_cab.columns:
-                    st.write(f"**{col}:** {row.get(col, '-')}")
-                
-                st.divider()
-
-                # =========================================================
-                # LOGIKA EDIT
-                # =========================================================
-                boleh_diganti_status = cek_boleh_diganti(row)
-                is_view_only = st.session_state.role in ["Kadis", "View"]
-
-                calon_tersimpan = perubahan_kepsek.get(nama_sekolah)
-
-                if is_view_only:
-                    st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
-                else:
-                    if not boleh_diganti_status:
-                        st.warning("⛔ Tidak dapat diganti karena status **Periode 1**.")
-                    else:
-                        calon = st.selectbox(
-                            "👤 Pilih Calon Pengganti (SIMPEG)",
-                            guru_list,
-                            key=f"calon_{nama_sekolah}"
-                        )
-
-                        if st.button(
-                            "💾 Simpan Pengganti",
-                            key=f"simpan_{nama_sekolah}",
-                            use_container_width=True
-                        ):
-                            perubahan_kepsek[nama_sekolah] = calon
-                            save_perubahan(perubahan_kepsek)
-                            st.success(f"✅ Diganti dengan: {calon}")
-                            st.rerun()
-
-                # tampilkan pengganti tersimpan
-                if calon_tersimpan:
-                    st.info(f"👤 Pengganti Saat Ini: **{calon_tersimpan}**")
-
-                    # undo hanya jika bukan view only
-                    if not is_view_only:
-                        if st.button(
-                            "✏️ Kembalikan ke Kepala Sekolah Lama",
-                            key=f"undo_{nama_sekolah}",
-                            use_container_width=True
-                        ):
-                            perubahan_kepsek.pop(nama_sekolah, None)
-                            save_perubahan(perubahan_kepsek)
-                            st.success("🔄 Berhasil dikembalikan")
-                            st.rerun()
+            if st.button("📄 Buka Detail", key=f"detail_{idx}", use_container_width=True):
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
 
         idx += 1
+
+# =========================================================
+# HALAMAN DETAIL SEKOLAH
+# =========================================================
+elif st.session_state.page == "detail":
+
+    if st.session_state.selected_sekolah is None:
+        st.warning("⚠️ Sekolah belum dipilih.")
+        st.session_state.page = "sekolah"
+        st.rerun()
+
+    col_a, col_b = st.columns([1, 6])
+    with col_a:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            st.session_state.page = "sekolah"
+            st.session_state.selected_sekolah = None
+            st.rerun()
+
+    with col_b:
+        st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
+
+    row_detail = df_ks[df_ks["Nama Sekolah"] == st.session_state.selected_sekolah]
+
+    if row_detail.empty:
+        st.error("❌ Data sekolah tidak ditemukan.")
+        st.stop()
+
+    row = row_detail.iloc[0]
+
+    # =========================================================
+    # TAMPILKAN DETAIL (1 SEKOLAH 1 LEMBAR)
+    # =========================================================
+    st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
+    for col in row.index:
+        st.write(f"**{col}:** {row[col]}")
+
+    st.divider()
+
+    # =========================================================
+    # DOWNLOAD PDF
+    # =========================================================
+    pdf_buffer = buat_pdf_surat(row)
+    st.download_button(
+        label="📄 Download Surat Keterangan (PDF)",
+        data=pdf_buffer,
+        file_name=f"Surat_Keterangan_{st.session_state.selected_sekolah}.pdf",
+        mime="application/pdf"
+    )
+
+    st.divider()
+
+    # =========================================================
+    # LOGIKA EDIT
+    # =========================================================
+    status_boleh = cek_boleh_diganti(row)
+    is_view_only = st.session_state.role in ["Kadis", "View"]
+
+    calon_tersimpan = perubahan_kepsek.get(st.session_state.selected_sekolah)
+
+    if is_view_only:
+        st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
+    else:
+        if not status_boleh:
+            st.warning("⛔ Tidak dapat diganti karena status **Periode 1**.")
+        else:
+            calon = st.selectbox(
+                "👤 Pilih Calon Pengganti (SIMPEG)",
+                guru_list,
+                key=f"calon_{st.session_state.selected_sekolah}"
+            )
+
+            if st.button("💾 Simpan Pengganti", use_container_width=True):
+                perubahan_kepsek[st.session_state.selected_sekolah] = calon
+                save_perubahan(perubahan_kepsek)
+                st.success(f"✅ Diganti dengan: {calon}")
+                st.rerun()
+
+    if calon_tersimpan:
+        st.info(f"👤 Pengganti Saat Ini: **{calon_tersimpan}**")
+
+        if not is_view_only:
+            if st.button("✏️ Kembalikan ke Kepala Sekolah Lama", use_container_width=True):
+                perubahan_kepsek.pop(st.session_state.selected_sekolah, None)
+                save_perubahan(perubahan_kepsek)
+                st.success("🔄 Berhasil dikembalikan")
+                st.rerun()
 
 # =========================================================
 # 📊 REKAP & ANALISIS PIMPINAN
@@ -568,7 +645,6 @@ rekap_cabdin = (
     .reset_index()
 )
 
-# urut cabdin 1-14
 rekap_cabdin["__urut__"] = rekap_cabdin["Cabang Dinas"].apply(
     lambda x: int("".join(filter(str.isdigit, str(x)))) if "".join(filter(str.isdigit, str(x))) else 999
 )
@@ -623,13 +699,13 @@ st.info("""
 **Pokok Ketentuan:**
 1. Kepala Sekolah diberikan tugas maksimal **2 (dua) periode**
 2. Satu periode = **4 (empat) tahun**
-3. Kepala Sekolah yang telah menjabat **2 periode wajib diberhentikan sesuai pada pasal 31**
-4. Kepala Sekolah yang telah menjabat **1 Periode bisa diperpanjang apabila memiliki Sertifikat BCKS sesuai pada Pasal 32**
+3. Kepala Sekolah yang telah menjabat **2 periode wajib diberhentikan sesuai pasal 31**
+4. Kepala Sekolah yang telah menjabat **1 periode bisa diperpanjang jika memiliki Sertifikat BCKS (Pasal 32)**
 5. Sekolah tanpa Kepala Sekolah definitif **wajib segera diisi (PLT/Definitif)**
 6. Penugasan Kepala Sekolah merupakan **tugas tambahan ASN**
 """)
 
-st.success("📌 Status dan rekomendasi pada dashboard ini telah diselaraskan dengan Permendikdasmen No. 7 Tahun 2025")
+st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Permendikdasmen No. 7 Tahun 2025")
 
 # =========================================================
 # FOOTER
