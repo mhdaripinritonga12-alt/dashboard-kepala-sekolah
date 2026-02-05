@@ -322,9 +322,9 @@ def map_status(row):
         return "PLT"
 
     # ✅ jika masa kosong, cek dari Keterangan Akhir
-    if "harus diberhentikan" in ket_akhir:
+    if "Harus diberhentikan" in ket_akhir:
         return "Harus Diberhentikan"
-    if "diberhentikan" in ket_akhir:
+    if "Diberhentikan" in ket_akhir:
         return "Harus Diberhentikan"
 
     if "periode 1" in ket_akhir:
@@ -846,6 +846,7 @@ st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Perm
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
