@@ -551,6 +551,42 @@ def apply_filter(df):
 # ROUTING HALAMAN UTAMA
 # =========================================================
 if st.session_state.page == "cabdin":
+        # =========================================================
+    # HEADER DASHBOARD + TOMBOL UTAMA
+    # =========================================================
+    col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
+
+    with col1:
+        st.markdown("## 📊 Dashboard Kepala Sekolah")
+
+    with col2:
+        if st.button("🔄 Refresh Data SIMPEG", use_container_width=True):
+            st.cache_data.clear()
+            st.success("✅ Data SIMPEG diperbarui")
+            st.rerun()
+
+    with col3:
+        if st.button("🔄 Refresh Data Kepsek", use_container_width=True):
+            st.cache_data.clear()
+            st.success("✅ Data Kepala Sekolah diperbarui")
+            st.rerun()
+
+    with col4:
+        if st.button("📌 Rekap", use_container_width=True):
+            st.session_state.page = "rekap"
+            st.rerun()
+
+    with col5:
+        if st.button("🚪 Logout", use_container_width=True):
+            st.session_state.login = False
+            st.session_state.role = None
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
+            st.rerun()
+
+    st.divider()
+
 
     st.subheader("🏢 Cabang Dinas Wilayah")
 
@@ -917,3 +953,4 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
