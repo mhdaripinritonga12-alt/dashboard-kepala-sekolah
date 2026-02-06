@@ -683,6 +683,78 @@ elif st.session_state.page == "sekolah":
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
 elif st.session_state.page == "detail":
+    elif st.session_state.page == "bisa_diberhentikan":
+
+    col_a, col_b = st.columns([1, 6])
+
+    with col_a:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            st.session_state.page = "cabdin"
+            st.rerun()
+
+    with col_b:
+        st.subheader("📌 Daftar Sekolah Bisa Diberhentikan (Periode 2 + Lebih dari 2 Periode)")
+
+    df_bisa = df_ks.copy()
+    df_bisa["Status Regulatif"] = df_bisa.apply(map_status, axis=1)
+
+    # FILTER: hanya periode 2 dan lebih dari 2 periode
+    df_bisa = df_bisa[df_bisa["Status Regulatif"].isin(["Aktif Periode 2", "Lebih dari 2 Periode"])]
+
+    # apply filter sidebar juga
+    df_bisa = apply_filter(df_bisa)
+
+    if df_bisa.empty:
+        st.warning("⚠️ Tidak ada sekolah yang termasuk kategori Bisa Diberhentikan.")
+        st.stop()
+
+    st.success(f"✅ Total Sekolah Bisa Diberhentikan: {len(df_bisa)}")
+
+    is_view_only = st.session_state.role in ["Kadis", "View"]
+
+    for idx, row in df_bisa.iterrows():
+        nama_sekolah = row.get("Nama Sekolah", "-")
+        cabdin = row.get("Cabang Dinas", "-")
+        status_reg = row.get("Status Regulatif", "-")
+        kepsek_lama = row.get("Nama Kepala Sekolah", "-")
+
+        st.markdown(f"### 🏫 {nama_sekolah}")
+        st.write(f"📍 **Cabang Dinas:** {cabdin}")
+        st.write(f"📌 **Status:** {status_reg}")
+        st.write(f"👤 **Kepala Sekolah Lama:** {kepsek_lama}")
+
+        calon_tersimpan = perubahan_kepsek.get(nama_sekolah)
+
+        if calon_tersimpan:
+            st.info(f"👤 Pengganti Saat Ini: **{calon_tersimpan}**")
+
+        if is_view_only:
+            st.warning("🔒 View Only — Tidak bisa mengganti pengganti.")
+        else:
+            calon = st.selectbox(
+                f"👤 Pilih Calon Pengganti SIMPEG ({nama_sekolah})",
+                guru_list,
+                key=f"calon_global_{nama_sekolah}"
+            )
+
+            col1, col2 = st.columns([2, 2])
+
+            with col1:
+                if st.button("💾 Simpan Pengganti", key=f"simpan_{nama_sekolah}", use_container_width=True):
+                    perubahan_kepsek[nama_sekolah] = calon
+                    save_perubahan(perubahan_kepsek)
+                    st.success(f"✅ {nama_sekolah} diganti dengan: {calon}")
+                    st.rerun()
+
+            with col2:
+                if calon_tersimpan:
+                    if st.button("✏️ Kembalikan Kepsek Lama", key=f"reset_{nama_sekolah}", use_container_width=True):
+                        perubahan_kepsek.pop(nama_sekolah, None)
+                        save_perubahan(perubahan_kepsek)
+                        st.success(f"🔄 {nama_sekolah} dikembalikan ke Kepsek Lama")
+                        st.rerun()
+
+        st.divider()
 
     if st.session_state.selected_sekolah is None:
         st.warning("⚠️ Sekolah belum dipilih.")
@@ -851,6 +923,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
