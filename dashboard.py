@@ -682,22 +682,21 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 elif st.session_state.page == "detail":
 
-if st.session_state.selected_sekolah is None:
+    if st.session_state.selected_sekolah is None:
         st.warning("⚠️ Sekolah belum dipilih.")
         st.session_state.page = "sekolah"
         st.rerun()
 
     col_a, col_b = st.columns([1, 6])
-with col_a:
-if st.button("⬅️ Kembali", use_container_width=True):
+
+    with col_a:
+        if st.button("⬅️ Kembali", use_container_width=True):
             st.session_state.page = "sekolah"
             st.session_state.selected_sekolah = None
             st.rerun()
 
-with col_b:
+    with col_b:
         st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
-
-    row_detail = df_ks[df_ks["Nama Sekolah"] == st.session_state.selected_sekolah]
 
 if row_detail.empty:
         st.error("❌ Data sekolah tidak ditemukan.")
@@ -868,6 +867,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
