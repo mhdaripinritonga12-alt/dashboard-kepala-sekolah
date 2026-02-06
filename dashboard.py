@@ -620,6 +620,58 @@ if st.session_state.page == "cabdin":
                 st.session_state.selected_cabdin = cabdin
                 st.session_state.page = "sekolah"
                 st.rerun()
+# =========================================================
+# HALAMAN REKAP BISA DI BERHENTIKAN
+# =========================================================
+elif st.session_state.page == "rekap":
+
+    col_back, col_title = st.columns([1, 10])
+
+    with col_back:
+        if st.button("⬅️", use_container_width=True):
+            st.session_state.page = "cabdin"
+            st.rerun()
+
+    with col_title:
+        st.markdown("## 📌 Rekap Kepala Sekolah Bisa di Berhentikan")
+
+    st.divider()
+
+    df_rekap = df_ks.copy()
+    df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
+
+    # FILTER BISA DI BERHENTIKAN = Periode 2 + Lebih dari 2 Periode
+    df_bisa = df_rekap[
+        df_rekap["Status Regulatif"].isin(["Aktif Periode 2", "Lebih dari 2 Periode"])
+    ].copy()
+
+    if df_bisa.empty:
+        st.warning("⚠️ Tidak ada data Kepala Sekolah Bisa di Berhentikan.")
+        st.stop()
+
+    # TAMBAHKAN CALON PENGGANTI
+    df_bisa["Calon Pengganti"] = df_bisa["Nama Sekolah"].map(perubahan_kepsek).fillna("-")
+
+    tampil = df_bisa[[
+        "Cabang Dinas",
+        "Nama Sekolah",
+        "Nama Kepala Sekolah",
+        "Status Regulatif",
+        "Ket Sertifikat BCKS",
+        "Calon Pengganti"
+    ]].copy()
+
+    st.dataframe(tampil, use_container_width=True, hide_index=True)
+
+    st.divider()
+
+    sekolah_opsi = df_bisa["Nama Sekolah"].unique().tolist()
+    pilih_sekolah = st.selectbox("📄 Pilih Sekolah untuk lihat detail", sekolah_opsi)
+
+    if st.button("📌 Lihat Detail Sekolah", use_container_width=True):
+        st.session_state.selected_sekolah = pilih_sekolah
+        st.session_state.page = "detail"
+        st.rerun()
 
 # =========================================================
 # HALAMAN SEKOLAH (LIST)
@@ -944,6 +996,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
