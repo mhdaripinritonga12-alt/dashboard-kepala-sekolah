@@ -629,7 +629,7 @@ elif st.session_state.page == "sekolah":
     colx4.metric("Kasek Plt", int(rekap_status_cab["Plt"]))
     total_bisa_diberhentikan = int(rekap_status_cab["Aktif Periode 2"]) + int(rekap_status_cab["Lebih dari 2 Periode"])
     colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
-    colx6.metric("Lainnya", int(rekap_status_cab["Lainnya"]))
+    colx6.metric("Bisa Dimutasi", int(rekap_status_cab["Lainnya"]))
 
     st.divider()
 
@@ -849,6 +849,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
