@@ -690,7 +690,6 @@ elif st.session_state.page == "sekolah":
                 st.rerun()
 
         idx += 1
-
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
@@ -946,6 +945,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
