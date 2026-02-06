@@ -763,89 +763,92 @@ elif st.session_state.page == "detail":
                 st.rerun()
 
 # =========================================================
-# 📊 REKAP & ANALISIS PIMPINAN
+# 📊 REKAP & ANALISIS PIMPINAN (HANYA DI HALAMAN DEPAN)
 # =========================================================
-st.divider()
-st.markdown("## 📑 Rekap & Analisis Kepala Sekolah (Pimpinan)")
+if st.session_state.page == "cabdin":
 
-df_rekap = df_ks.copy()
-df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
+    st.divider()
+    st.markdown("## 📑 Rekap & Analisis Kepala Sekolah (Pimpinan)")
 
-rekap_cabdin = (
-    df_rekap
-    .groupby(["Cabang Dinas", "Status Regulatif"])
-    .size()
-    .unstack(fill_value=0)
-    .reset_index()
-)
+    df_rekap = df_ks.copy()
+    df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
 
-rekap_cabdin["__urut__"] = rekap_cabdin["Cabang Dinas"].apply(
-    lambda x: int("".join(filter(str.isdigit, str(x)))) if "".join(filter(str.isdigit, str(x))) else 999
-)
-
-rekap_cabdin = rekap_cabdin.sort_values("__urut__").drop(columns="__urut__")
-
-st.dataframe(rekap_cabdin, use_container_width=True)
-
-# =========================================================
-# DOWNLOAD EXCEL REKAP
-# =========================================================
-excel_file = "rekap_kepala_sekolah_per_cabdin.xlsx"
-rekap_cabdin.to_excel(excel_file, index=False)
-
-with open(excel_file, "rb") as f:
-    st.download_button(
-        label="📥 Download Rekap Kepala Sekolah (Excel)",
-        data=f,
-        file_name=excel_file,
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    rekap_cabdin = (
+        df_rekap
+        .groupby(["Cabang Dinas", "Status Regulatif"])
+        .size()
+        .unstack(fill_value=0)
+        .reset_index()
     )
 
-# =========================================================
-# GRAFIK STATUS
-# =========================================================
-st.subheader("📊 Grafik Status Kepala Sekolah")
+    rekap_cabdin["__urut__"] = rekap_cabdin["Cabang Dinas"].apply(
+        lambda x: int("".join(filter(str.isdigit, str(x))))
+        if "".join(filter(str.isdigit, str(x))) else 999
+    )
 
-grafik_data = (
-    df_rekap["Status Regulatif"]
-    .value_counts()
-    .reindex([
-        "Aktif Periode 1",
-        "Aktif Periode 2",
-        "Lebih dari 2 Periode",
-        "Plt",
-        "Harus Diberhentikan",
-        "Lainnya"
-    ], fill_value=0)
-)
+    rekap_cabdin = rekap_cabdin.sort_values("__urut__").drop(columns="__urut__")
 
-st.bar_chart(grafik_data)
+    st.dataframe(rekap_cabdin, use_container_width=True)
 
-# =========================================================
-# DASAR HUKUM
-# =========================================================
-st.divider()
-st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
+    # =========================================================
+    # DOWNLOAD EXCEL REKAP
+    # =========================================================
+    excel_file = "rekap_kepala_sekolah_per_cabdin.xlsx"
+    rekap_cabdin.to_excel(excel_file, index=False)
 
-st.info("""
-**Permendikdasmen Nomor 7 Tahun 2025**
+    with open(excel_file, "rb") as f:
+        st.download_button(
+            label="📥 Download Rekap Kepala Sekolah (Excel)",
+            data=f,
+            file_name=excel_file,
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
 
-**Pokok Ketentuan:**
-1. Kepala Sekolah diberikan tugas maksimal **2 (dua) periode**
-2. Satu periode = **4 (empat) tahun**
-3. Kepala Sekolah yang telah menjabat **Lebih 2 periode wajib diberhentikan sesuai pasal 31**
-4. Kepala Sekolah yang telah menjabat **1 periode bisa diperpanjang jika memiliki Sertifikat BCKS (Pasal 32)**
-5. Sekolah tanpa Kepala Sekolah definitif **wajib segera diisi (Plt/Definitif)**
-6. Penugasan Kepala Sekolah merupakan **tugas tambahan ASN**
-""")
+    # =========================================================
+    # GRAFIK STATUS
+    # =========================================================
+    st.subheader("📊 Grafik Status Kepala Sekolah")
 
-st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Permendikdasmen No. 7 Tahun 2025")
+    grafik_data = (
+        df_rekap["Status Regulatif"]
+        .value_counts()
+        .reindex([
+            "Aktif Periode 1",
+            "Aktif Periode 2",
+            "Lebih dari 2 Periode",
+            "Plt",
+            "Harus Diberhentikan",
+            "Lainnya"
+        ], fill_value=0)
+    )
 
+    st.bar_chart(grafik_data)
+
+    # =========================================================
+    # DASAR HUKUM
+    # =========================================================
+    st.divider()
+    st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
+
+    st.info("""
+    **Permendikdasmen Nomor 7 Tahun 2025**
+
+    **Pokok Ketentuan:**
+    1. Kepala Sekolah diberikan tugas maksimal **2 (dua) periode**
+    2. Satu periode = **4 (empat) tahun**
+    3. Kepala Sekolah yang telah menjabat **Lebih 2 periode wajib diberhentikan sesuai pasal 31**
+    4. Kepala Sekolah yang telah menjabat **1 periode bisa diperpanjang jika memiliki Sertifikat BCKS (Pasal 32)**
+    5. Sekolah tanpa Kepala Sekolah definitif **wajib segera diisi (Plt/Definitif)**
+    6. Penugasan Kepala Sekolah merupakan **tugas tambahan ASN**
+    """)
+
+    st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Permendikdasmen No. 7 Tahun 2025")
 # =========================================================
 # FOOTER
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
