@@ -751,7 +751,7 @@ elif st.session_state.page == "detail":
     # ==========================
     st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
-   data_items = list(row.items())
+data_items = list(row.items())
 
 # HAPUS YANG DARI EXCEL (nan) BIAR TIDAK DOBEL
 data_items = [(c, v) for c, v in data_items if str(c).strip().lower() != "calon pengganti jika sudah harus di berhentikan"]
@@ -759,6 +759,7 @@ data_items = [(c, v) for c, v in data_items if str(c).strip().lower() != "calon 
 # TAMBAHKAN PENGGANTI YANG BENAR DARI FILE PERUBAHAN
 pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
 data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
+
 
     col_left, col_right = st.columns(2)
 
@@ -945,6 +946,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
