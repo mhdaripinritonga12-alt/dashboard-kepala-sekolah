@@ -714,9 +714,6 @@ elif st.session_state.page == "detail":
     with col_b:
         st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
 
-    # ==========================
-    # AMBIL DATA SEKOLAH
-    # ==========================
     row_detail = df_ks[df_ks["Nama Sekolah"] == st.session_state.selected_sekolah]
 
     if row_detail.empty:
@@ -725,9 +722,6 @@ elif st.session_state.page == "detail":
 
     row = row_detail.iloc[0]
 
-    # ==========================
-    # WARNA OTOMATIS
-    # ==========================
     ket_jabatan = str(row.get("Keterangan Jabatan", "")).lower()
     ket_bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
 
@@ -745,24 +739,20 @@ elif st.session_state.page == "detail":
     else:
         warna_bcks = "gray"
 
-
     st.divider()
 
-    # ==========================
-    # TAMPILKAN DETAIL 2 KOLOM
-    # ==========================
     st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
     data_items = list(row.items())
 
-    # HAPUS YANG DARI EXCEL (nan) BIAR TIDAK DOBEL
+    # HAPUS KOLOM CALON PENGGANTI DARI EXCEL (BIAR TIDAK DOBEL)
     data_items = [(c, v) for c, v in data_items if str(c).strip().lower() != "calon pengganti jika sudah harus di berhentikan"]
 
     # TAMBAHKAN PENGGANTI YANG BENAR
     pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
     data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
 
-    # PEMBAGIAN RAPI: GANJIL-GENAP
+    # BAGI KIRI-KANAN RAPI
     left_items = data_items[0::2]
     right_items = data_items[1::2]
 
@@ -773,7 +763,6 @@ elif st.session_state.page == "detail":
 
             if str(col).strip().lower() == "keterangan jabatan":
                 st.markdown(f"**{col}:** {badge(val, warna_jabatan)}", unsafe_allow_html=True)
-
             else:
                 st.markdown(f"**{col}:** {val}")
 
@@ -782,82 +771,8 @@ elif st.session_state.page == "detail":
 
             if str(col).strip().lower() == "ket sertifikat bcks":
                 st.markdown(f"**{col}:** {badge(val, warna_bcks)}", unsafe_allow_html=True)
-
             else:
                 st.markdown(f"**{col}:** {val}")
-
-
-
-# HAPUS YANG DARI EXCEL (nan) BIAR TIDAK DOBEL
-data_items = [(c, v) for c, v in data_items if str(c).strip().lower() != "calon pengganti jika sudah harus di berhentikan"]
-
-# TAMBAHKAN PENGGANTI YANG BENAR DARI FILE PERUBAHAN
-pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
-data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
-
-
-col_left, col_right = st.columns(2)
-
-half = (len(data_items) + 1) // 2
-left_items = data_items[:half]
-right_items = data_items[half:]
-
-with col_left:
-    for col, val in left_items:
-
-        if str(col).strip().lower() == "keterangan jabatan":
-            ket_jabatan = str(val).lower()
-            if "def" in ket_jabatan:
-                warna = "green"
-            elif "plt" in ket_jabatan:
-                warna = "red"
-            else:
-                warna = "gray"
-
-            st.markdown(f"**{col}:** {badge(val, warna)}", unsafe_allow_html=True)
-
-        elif str(col).strip().lower() == "ket sertifikat bcks":
-            ket_bcks = str(val).lower()
-            if "sudah" in ket_bcks:
-                warna = "green"
-            elif "belum" in ket_bcks:
-                warna = "red"
-            else:
-                warna = "gray"
-
-            st.markdown(f"**{col}:** {badge(val, warna)}", unsafe_allow_html=True)
-
-        else:
-            st.markdown(f"**{col}:** {val}")
-
-with col_right:
-    for col, val in right_items:
-
-        if str(col).strip().lower() == "keterangan jabatan":
-            ket_jabatan = str(val).lower()
-            if "def" in ket_jabatan:
-                warna = "green"
-            elif "plt" in ket_jabatan:
-                warna = "red"
-            else:
-                warna = "gray"
-
-            st.markdown(f"**{col}:** {badge(val, warna)}", unsafe_allow_html=True)
-
-        elif str(col).strip().lower() == "ket sertifikat bcks":
-            ket_bcks = str(val).lower()
-            if "sudah" in ket_bcks:
-                warna = "green"
-            elif "belum" in ket_bcks:
-                warna = "red"
-            else:
-                warna = "gray"
-
-            st.markdown(f"**{col}:** {badge(val, warna)}", unsafe_allow_html=True)
-
-        else:
-            st.markdown(f"**{col}:** {val}")
-
 
 
     # =========================================================
@@ -982,6 +897,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
