@@ -680,10 +680,9 @@ if colx5.button("📌 Lihat Detail Bisa Diberhentikan", use_container_width=True
         idx += 1
 
 # =========================================================
-# HALAMAN DETAIL SEKOLAH
+# HALAMAN BISA DIBERHENTIKAN (GLOBAL SEMUA CABDIN)
 # =========================================================
-elif st.session_state.page == "detail":
-    if st.session_state.page == "bisa_diberhentikan":
+if st.session_state.page == "bisa_diberhentikan":
 
     col_a, col_b = st.columns([1, 6])
 
@@ -698,10 +697,8 @@ elif st.session_state.page == "detail":
     df_bisa = df_ks.copy()
     df_bisa["Status Regulatif"] = df_bisa.apply(map_status, axis=1)
 
-    # FILTER: hanya periode 2 dan lebih dari 2 periode
     df_bisa = df_bisa[df_bisa["Status Regulatif"].isin(["Aktif Periode 2", "Lebih dari 2 Periode"])]
 
-    # apply filter sidebar juga
     df_bisa = apply_filter(df_bisa)
 
     if df_bisa.empty:
@@ -923,6 +920,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
