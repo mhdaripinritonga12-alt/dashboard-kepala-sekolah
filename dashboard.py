@@ -489,38 +489,61 @@ st.markdown("""
 # =========================================================
 # HEADER + REFRESH + LOGOUT (HANYA HALAMAN CABDIN)
 # =========================================================
-if st.session_state.page == "cabdin":
+elif st.session_state.page == "rekap":
 
-    col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
+    # ==========================
+    # HEADER + TOMBOL BACK (LOGO SAJA)
+    # ==========================
+    col_back, col_title = st.columns([1, 10])
 
-    with col1:
-        st.markdown("## 📊 Dashboard Kepala Sekolah")
-
-    with col2:
-        if st.button("🔄 Refresh Data SIMPEG", use_container_width=True):
-            st.cache_data.clear()
-            st.success("✅ Data SIMPEG dimuat ulang")
-            st.rerun()
-
-    with col3:
-        if st.button("🔄 Refresh Data Kepsek", use_container_width=True):
-            st.cache_data.clear()
-            st.success("✅ Data Kepala Sekolah dimuat ulang")
-            st.rerun()
-
-    with col4:
-        if st.button("🚪 Logout", use_container_width=True):
-            st.session_state.login = False
+    with col_back:
+        if st.button("⬅️", use_container_width=True):
             st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
-            st.session_state.selected_sekolah = None
-            st.session_state.role = None
             st.rerun()
 
-    with col5:
-        if st.button("📌 Rekap Bisa Berhenti", use_container_width=True):
-            st.session_state.page = "rekap"
-            st.rerun()
+    with col_title:
+        st.markdown("## 📌 Rekap Kepala Sekolah Bisa di Berhentikan")
+
+    st.divider()
+
+    # ==========================
+    # FILTER DATA YANG BISA DI BERHENTIKAN
+    # ==========================
+    df_rekap = df_ks.copy()
+    df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
+
+    df_bisa = df_rekap[df_rekap["Status Regulatif"].str.lower().str.contains("bisa")]
+
+    if df_bisa.empty:
+        st.warning("Tidak ada data Kepala Sekolah yang Bisa di Berhentikan.")
+        st.stop()
+
+    # ==========================
+    # TAMBAHKAN PENGGANTI DARI FILE PERUBAHAN
+    # ==========================
+    def ambil_pengganti(nama_sekolah):
+        return perubahan_kepsek.get(nama_sekolah, "-")
+
+    df_bisa["Calon Pengganti"] = df_bisa["Nama Sekolah"].apply(ambil_pengganti)
+
+    # ==========================
+    # TAMPILKAN TABEL REKAP
+    # ==========================
+    tampil = df_bisa[[
+        "Cabang Dinas",
+        "Nama Sekolah",
+        "Nama Kepala Sekolah",
+        "Keterangan Jabatan",
+        "Ket Sertifikat BCKS",
+        "Calon Pengganti"
+    ]].copy()
+
+    st.dataframe(tampil, use_container_width=True, hide_index=True)
+
+    st.divider()
+
+    st.info("Klik nama sekolah di menu Detail untuk mengubah calon pengganti.")
+
 
 # =========================================================
 # 🔍 PENCARIAN GURU SIMPEG
@@ -921,6 +944,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
