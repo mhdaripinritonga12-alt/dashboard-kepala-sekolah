@@ -761,11 +761,11 @@ pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
 data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
 
 
-    col_left, col_right = st.columns(2)
+col_left, col_right = st.columns(2)
 
-    half = (len(data_items) + 1) // 2
-    left_items = data_items[:half]
-    right_items = data_items[half:]
+half = (len(data_items) + 1) // 2
+left_items = data_items[:half]
+right_items = data_items[half:]
 
 with col_left:
     for col, val in left_items:
@@ -946,6 +946,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
