@@ -601,28 +601,28 @@ elif st.session_state.page == "sekolah":
         st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
         st.stop()
 
-    # =========================================================
-    # 📌 REKAP STATUS CABANG DINAS INI (TERKONEKSI MASA PERIODE)
-    # =========================================================
-    st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
+  # =========================================================
+# 📌 REKAP STATUS CABANG DINAS INI
+# =========================================================
+st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
 
-    df_cab_rekap = df_cab.copy()
-    df_cab_rekap["Status Regulatif"] = df_cab_rekap.apply(map_status, axis=1)
+df_cab_rekap = df_cab.copy()
+df_cab_rekap["Status Regulatif"] = df_cab_rekap.apply(map_status, axis=1)
 
-    rekap_status_cab = (
-        df_cab_rekap["Status Regulatif"]
-        .value_counts()
-        .reindex([
-            "Aktif Periode 1",
-            "Aktif Periode 2",
-            "Lebih dari 2 Periode",
-            "Plt",
-            "Harus Diberhentikan",
-            "Lainnya"
-        ], fill_value=0)
-    )
+rekap_status_cab = (
+    df_cab_rekap["Status Regulatif"]
+    .value_counts()
+    .reindex([
+        "Aktif Periode 1",
+        "Aktif Periode 2",
+        "Lebih dari 2 Periode",
+        "Plt",
+        "Harus Diberhentikan",
+        "Lainnya"
+    ], fill_value=0)
+)
 
-    colx1, colx2, colx3, colx4, colx5, colx6 = st.columns(6)
+colx1, colx2, colx3, colx4, colx5, colx6 = st.columns(6)
 
 colx1.metric("dalam Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
 colx2.metric("dalam Periode 2", int(rekap_status_cab["Aktif Periode 2"]))
@@ -634,7 +634,6 @@ colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
 
 colx6.metric("Lainnya", int(rekap_status_cab["Lainnya"]))
 
-# tombol harus masih dalam halaman sekolah
 if colx5.button("📌 Lihat Detail Bisa Diberhentikan", use_container_width=True):
     st.session_state.page = "bisa_diberhentikan"
     st.rerun()
@@ -923,6 +922,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
