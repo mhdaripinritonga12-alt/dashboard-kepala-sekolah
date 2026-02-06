@@ -486,64 +486,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# =========================================================
-# HEADER + REFRESH + LOGOUT (HANYA HALAMAN CABDIN)
-# =========================================================
-elif st.session_state.page == "rekap":
-
-    # ==========================
-    # HEADER + TOMBOL BACK (LOGO SAJA)
-    # ==========================
-    col_back, col_title = st.columns([1, 10])
-
-    with col_back:
-        if st.button("⬅️", use_container_width=True):
-            st.session_state.page = "cabdin"
-            st.rerun()
-
-    with col_title:
-        st.markdown("## 📌 Rekap Kepala Sekolah Bisa di Berhentikan")
-
-    st.divider()
-
-    # ==========================
-    # FILTER DATA YANG BISA DI BERHENTIKAN
-    # ==========================
-    df_rekap = df_ks.copy()
-    df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
-
-    df_bisa = df_rekap[df_rekap["Status Regulatif"].str.lower().str.contains("bisa")]
-
-    if df_bisa.empty:
-        st.warning("Tidak ada data Kepala Sekolah yang Bisa di Berhentikan.")
-        st.stop()
-
-    # ==========================
-    # TAMBAHKAN PENGGANTI DARI FILE PERUBAHAN
-    # ==========================
-    def ambil_pengganti(nama_sekolah):
-        return perubahan_kepsek.get(nama_sekolah, "-")
-
-    df_bisa["Calon Pengganti"] = df_bisa["Nama Sekolah"].apply(ambil_pengganti)
-
-    # ==========================
-    # TAMPILKAN TABEL REKAP
-    # ==========================
-    tampil = df_bisa[[
-        "Cabang Dinas",
-        "Nama Sekolah",
-        "Nama Kepala Sekolah",
-        "Keterangan Jabatan",
-        "Ket Sertifikat BCKS",
-        "Calon Pengganti"
-    ]].copy()
-
-    st.dataframe(tampil, use_container_width=True, hide_index=True)
-
-    st.divider()
-
-    st.info("Klik nama sekolah di menu Detail untuk mengubah calon pengganti.")
-
 
 # =========================================================
 # 🔍 PENCARIAN GURU SIMPEG
@@ -569,6 +511,7 @@ with st.expander("🔍 Pencarian Guru (SIMPEG)", expanded=False):
 
 st.divider()
 
+
 # =========================================================
 # SIDEBAR FILTER
 # =========================================================
@@ -587,6 +530,7 @@ ket_filter = st.sidebar.selectbox(
 
 search_sekolah = st.sidebar.text_input("Cari Nama Sekolah")
 
+
 def apply_filter(df):
     if jenjang_filter != "Semua":
         df = df[df["Jenjang"] == jenjang_filter]
@@ -602,13 +546,29 @@ def apply_filter(df):
 
     return df
 
+
 # =========================================================
-Kembalikan ke Kepala Sekolah Lama
-# =========================================================
-# 📊 REKAP & ANALISIS PIMPINAN (HANYA DI HALAMAN DEPAN)
+# ROUTING HALAMAN UTAMA
 # =========================================================
 if st.session_state.page == "cabdin":
 
+    st.subheader("🏢 Cabang Dinas Wilayah")
+
+    df_view = apply_filter(df_ks)
+
+    cabdin_list = urutkan_cabdin(df_view["Cabang Dinas"].dropna().unique())
+    cols = st.columns(4)
+
+    for i, cabdin in enumerate(cabdin_list):
+        with cols[i % 4]:
+            if st.button(f"📍 {cabdin}", key=f"cabdin_{i}", use_container_width=True):
+                st.session_state.selected_cabdin = cabdin
+                st.session_state.page = "sekolah"
+                st.rerun()
+
+    # =========================================================
+    # 📊 REKAP & ANALISIS PIMPINAN (HANYA DI HALAMAN DEPAN)
+    # =========================================================
     st.divider()
     st.markdown("## 📑 Rekap & Analisis Kepala Sekolah (Pimpinan)")
 
@@ -632,9 +592,6 @@ if st.session_state.page == "cabdin":
 
     st.dataframe(rekap_cabdin, use_container_width=True)
 
-    # =========================================================
-    # DOWNLOAD EXCEL REKAP
-    # =========================================================
     excel_file = "rekap_kepala_sekolah_per_cabdin.xlsx"
     rekap_cabdin.to_excel(excel_file, index=False)
 
@@ -646,9 +603,6 @@ if st.session_state.page == "cabdin":
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-    # =========================================================
-    # GRAFIK STATUS
-    # =========================================================
     st.subheader("📊 Grafik Status Kepala Sekolah")
 
     grafik_data = (
@@ -666,9 +620,6 @@ if st.session_state.page == "cabdin":
 
     st.bar_chart(grafik_data)
 
-    # =========================================================
-    # DASAR HUKUM
-    # =========================================================
     st.divider()
     st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
 
@@ -685,72 +636,284 @@ if st.session_state.page == "cabdin":
     """)
 
     st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Permendikdasmen No. 7 Tahun 2025")
+
+
+# =========================================================
+# HALAMAN REKAP BISA DI BERHENTIKAN
+# =========================================================
+elif st.session_state.page == "rekap":
+
+    col_back, col_title = st.columns([1, 10])
+
+    with col_back:
+        if st.button("⬅️", use_container_width=True):
+            st.session_state.page = "cabdin"
+            st.rerun()
+
+    with col_title:
+        st.markdown("## 📌 Rekap Kepala Sekolah Bisa di Berhentikan")
+
+    st.divider()
+
+    df_rekap = df_ks.copy()
+    df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
+
+    df_bisa = df_rekap[
+        df_rekap["Status Regulatif"].isin(["Aktif Periode 2", "Lebih dari 2 Periode"])
+    ].copy()
+
+    if df_bisa.empty:
+        st.warning("⚠️ Tidak ada data Kepala Sekolah Bisa di Berhentikan.")
+        st.stop()
+
+    df_bisa["Calon Pengganti"] = df_bisa["Nama Sekolah"].map(perubahan_kepsek).fillna("-")
+
+    tampil = df_bisa[[
+        "Cabang Dinas",
+        "Nama Sekolah",
+        "Nama Kepala Sekolah",
+        "Status Regulatif",
+        "Ket Sertifikat BCKS",
+        "Calon Pengganti"
+    ]].copy()
+
+    st.dataframe(tampil, use_container_width=True, hide_index=True)
+
+    st.divider()
+
+    sekolah_opsi = df_bisa["Nama Sekolah"].unique().tolist()
+    pilih_sekolah = st.selectbox("📄 Pilih Sekolah untuk lihat detail", sekolah_opsi)
+
+    if st.button("📌 Lihat Detail Sekolah", use_container_width=True):
+        st.session_state.selected_sekolah = pilih_sekolah
+        st.session_state.page = "detail"
+        st.rerun()
+
+
+# =========================================================
+# HALAMAN SEKOLAH (LIST)
+# =========================================================
+elif st.session_state.page == "sekolah":
+
+    col_a, col_b = st.columns([1, 5])
+
+    with col_a:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
+            st.rerun()
+
+    with col_b:
+        st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
+
+    df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
+    df_cab = apply_filter(df_cab)
+
+    if df_cab.empty:
+        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
+        st.stop()
+
+    st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
+
+    df_cab_rekap = df_cab.copy()
+    df_cab_rekap["Status Regulatif"] = df_cab_rekap.apply(map_status, axis=1)
+
+    rekap_status_cab = (
+        df_cab_rekap["Status Regulatif"]
+        .value_counts()
+        .reindex([
+            "Aktif Periode 1",
+            "Aktif Periode 2",
+            "Lebih dari 2 Periode",
+            "Plt",
+            "Harus Diberhentikan",
+            "Lainnya"
+        ], fill_value=0)
+    )
+
+    colx1, colx2, colx3, colx4, colx5, colx6 = st.columns(6)
+    colx1.metric("dalam Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
+    colx2.metric("dalam Periode 2", int(rekap_status_cab["Aktif Periode 2"]))
+    colx3.metric("Lebih 2 Periode", int(rekap_status_cab["Lebih dari 2 Periode"]))
+    colx4.metric("Kasek Plt", int(rekap_status_cab["Plt"]))
+
+    total_bisa_diberhentikan = int(rekap_status_cab["Aktif Periode 2"]) + int(rekap_status_cab["Lebih dari 2 Periode"])
+    colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
+
+    colx6.metric("Bisa Dimutasi", int(rekap_status_cab["Lainnya"]))
+
+    st.divider()
+
+    cols = st.columns(5)
+    idx = 0
+
+    for _, row in df_cab.iterrows():
+
+        nama_sekolah = row.get("Nama Sekolah", "-")
+
+        masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+        ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+
+        if "periode 1" in masa:
+            card_class = "card-periode-1"
+        elif "periode 2" in masa:
+            card_class = "card-periode-2"
+        elif "lebih dari 2" in masa or ">2" in masa:
+            card_class = "card-berhenti"
+        elif "plt" in masa:
+            card_class = "card-plt"
+        elif "diberhentikan" in ket_akhir:
+            card_class = "card-berhenti"
+        else:
+            card_class = "card-plt"
+
+        with cols[idx % 5]:
+
+            st.markdown(
+                f"""
+                <div class="school-card {card_class}">
+                    🏫 {nama_sekolah}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            if st.button("📄 Buka Detail", key=f"detail_{idx}", use_container_width=True):
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
+
+        idx += 1
+
+
+# =========================================================
+# HALAMAN DETAIL SEKOLAH
+# =========================================================
+elif st.session_state.page == "detail":
+
+    if st.session_state.selected_sekolah is None:
+        st.warning("⚠️ Sekolah belum dipilih.")
+        st.session_state.page = "sekolah"
+        st.rerun()
+
+    col_a, col_b = st.columns([1, 6])
+
+    with col_a:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            st.session_state.page = "sekolah"
+            st.session_state.selected_sekolah = None
+            st.rerun()
+
+    with col_b:
+        st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
+
+    row_detail = df_ks[df_ks["Nama Sekolah"] == st.session_state.selected_sekolah]
+
+    if row_detail.empty:
+        st.error("❌ Data sekolah tidak ditemukan.")
+        st.stop()
+
+    row = row_detail.iloc[0]
+
+    ket_jabatan = str(row.get("Keterangan Jabatan", "")).lower()
+    ket_bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
+
+    if "def" in ket_jabatan:
+        warna_jabatan = "green"
+    elif "plt" in ket_jabatan:
+        warna_jabatan = "red"
+    else:
+        warna_jabatan = "gray"
+
+    if "sudah" in ket_bcks:
+        warna_bcks = "green"
+    elif "belum" in ket_bcks:
+        warna_bcks = "red"
+    else:
+        warna_bcks = "gray"
+
+    st.divider()
+
+    st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
+
+    data_items = list(row.items())
+
+    data_items = [
+        (c, v) for c, v in data_items
+        if str(c).strip().lower() != "calon pengganti jika sudah harus di berhentikan"
+    ]
+
+    pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
+    data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
+
+    left_items = data_items[0::2]
+    right_items = data_items[1::2]
+
+    col_left, col_right = st.columns(2)
+
+    def tampilkan_item(col, val):
+        nama = str(col).strip().lower()
+
+        if nama == "keterangan jabatan":
+            st.markdown(f"**{col}:** {badge(val, warna_jabatan)}", unsafe_allow_html=True)
+
+        elif nama == "ket sertifikat bcks":
+            st.markdown(f"**{col}:** {badge(val, warna_bcks)}", unsafe_allow_html=True)
+
+        elif "permendikdasmen" in nama:
+            st.markdown(f"**{col}:** {badge(val, '#d9f0ff', 'black')}", unsafe_allow_html=True)
+
+        else:
+            st.markdown(f"**{col}:** {val}")
+
+    with col_left:
+        for col, val in left_items:
+            tampilkan_item(col, val)
+
+    with col_right:
+        for col, val in right_items:
+            tampilkan_item(col, val)
+
+    # =========================================================
+    # LOGIKA EDIT (PERIODE 1 TIDAK BOLEH)
+    # =========================================================
+    status_boleh = cek_boleh_diganti(row)
+    is_view_only = st.session_state.role in ["Kadis", "View"]
+
+    calon_tersimpan = perubahan_kepsek.get(st.session_state.selected_sekolah)
+
+    if is_view_only:
+        st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
+    else:
+        if not status_boleh:
+            st.warning("⛔ Tidak dapat diganti karena status **Periode 1**.")
+        else:
+            calon = st.selectbox(
+                "👤 Pilih Calon Pengganti (SIMPEG)",
+                guru_list,
+                key=f"calon_{st.session_state.selected_sekolah}"
+            )
+
+            if st.button("💾 Simpan Pengganti", use_container_width=True):
+                perubahan_kepsek[st.session_state.selected_sekolah] = calon
+                save_perubahan(perubahan_kepsek)
+                st.success(f"✅ Diganti dengan: {calon}")
+                st.rerun()
+
+    if calon_tersimpan:
+        st.info(f"👤 Pengganti Saat Ini: **{calon_tersimpan}**")
+
+        if not is_view_only:
+            if st.button("✏️ Kembalikan ke Kepala Sekolah Lama", use_container_width=True):
+                perubahan_kepsek.pop(st.session_state.selected_sekolah, None)
+                save_perubahan(perubahan_kepsek)
+                st.success("🔄 Berhasil dikembalikan")
+                st.rerun()
+
+
 # =========================================================
 # FOOTER
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
