@@ -683,7 +683,7 @@ if colx5.button("📌 Lihat Detail Bisa Diberhentikan", use_container_width=True
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
 elif st.session_state.page == "detail":
-    elif st.session_state.page == "bisa_diberhentikan":
+    if st.session_state.page == "bisa_diberhentikan":
 
     col_a, col_b = st.columns([1, 6])
 
@@ -923,6 +923,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
