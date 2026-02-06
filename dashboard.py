@@ -680,7 +680,7 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
-def badge(text, warna):
+    def badge(text, warna):
     return f"""
     <span style="
         padding:6px 12px;
@@ -696,14 +696,14 @@ def badge(text, warna):
 
 elif st.session_state.page == "detail":
 
-if st.session_state.selected_sekolah is None:
+    if st.session_state.selected_sekolah is None:
         st.warning("⚠️ Sekolah belum dipilih.")
         st.session_state.page = "sekolah"
         st.rerun()
 
     col_a, col_b = st.columns([1, 6])
     with col_a:
-if st.button("⬅️ Kembali", use_container_width=True):
+    if st.button("⬅️ Kembali", use_container_width=True):
             st.session_state.page = "sekolah"
             st.session_state.selected_sekolah = None
             st.rerun()
@@ -862,6 +862,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
