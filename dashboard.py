@@ -754,6 +754,37 @@ elif st.session_state.page == "detail":
     st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
 data_items = list(row.items())
+    # HAPUS YANG DARI EXCEL (nan) BIAR TIDAK DOBEL
+    data_items = [(c, v) for c, v in data_items if str(c).strip().lower() != "calon pengganti jika sudah harus di berhentikan"]
+
+    # TAMBAHKAN PENGGANTI YANG BENAR
+    pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
+    data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
+
+    # PEMBAGIAN RAPI: GANJIL-GENAP
+    left_items = data_items[0::2]
+    right_items = data_items[1::2]
+
+    col_left, col_right = st.columns(2)
+
+    with col_left:
+        for col, val in left_items:
+
+            if str(col).strip().lower() == "keterangan jabatan":
+                st.markdown(f"**{col}:** {badge(val, warna_jabatan)}", unsafe_allow_html=True)
+
+            else:
+                st.markdown(f"**{col}:** {val}")
+
+    with col_right:
+        for col, val in right_items:
+
+            if str(col).strip().lower() == "ket sertifikat bcks":
+                st.markdown(f"**{col}:** {badge(val, warna_bcks)}", unsafe_allow_html=True)
+
+            else:
+                st.markdown(f"**{col}:** {val}")
+
 
 # HAPUS YANG DARI EXCEL (nan) BIAR TIDAK DOBEL
 data_items = [(c, v) for c, v in data_items if str(c).strip().lower() != "calon pengganti jika sudah harus di berhentikan"]
@@ -949,6 +980,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
