@@ -758,27 +758,30 @@ elif st.session_state.page == "detail":
     left_items = data_items[0::2]
     right_items = data_items[1::2]
 
-    col_left, col_right = st.columns(2)
+      col_left, col_right = st.columns(2)
 
-def tampilkan_item(col, val):
-    nama = str(col).strip().lower()
+    def tampilkan_item(col, val):
+        nama = str(col).strip().lower()
 
-    if nama == "keterangan jabatan":
-        st.markdown(f"**{col}:** {badge(val, warna_jabatan)}", unsafe_allow_html=True)
+        if nama == "keterangan jabatan":
+            st.markdown(f"**{col}:** {badge(val, warna_jabatan)}", unsafe_allow_html=True)
 
-    elif nama == "ket sertifikat bcks":
-        st.markdown(f"**{col}:** {badge(val, warna_bcks)}", unsafe_allow_html=True)
+        elif nama == "ket sertifikat bcks":
+            st.markdown(f"**{col}:** {badge(val, warna_bcks)}", unsafe_allow_html=True)
 
-    else:
-        st.markdown(f"**{col}:** {val}")
+        elif "permendikdasmen" in nama:
+            st.markdown(f"**{col}:** {badge(val, '#d9f0ff', 'black')}", unsafe_allow_html=True)
 
-with col_left:
-    for col, val in left_items:
-        tampilkan_item(col, val)
+        else:
+            st.markdown(f"**{col}:** {val}")
 
-with col_right:
-    for col, val in right_items:
-        tampilkan_item(col, val)
+    with col_left:
+        for col, val in left_items:
+            tampilkan_item(col, val)
+
+    with col_right:
+        for col, val in right_items:
+            tampilkan_item(col, val)
 
 
 
@@ -904,6 +907,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
