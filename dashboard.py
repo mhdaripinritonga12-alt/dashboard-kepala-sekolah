@@ -704,31 +704,27 @@ elif st.session_state.page == "detail":
         st.stop()
 
     row = row_detail.iloc[0]
+    st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
+
+    data_items = list(row.items())
+
+    # TAMBAHKAN PENGGANTI DARI SIMPEG KE DATA TAMPILAN
     pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
+    data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
 
-    # =========================================================
-    # TAMPILKAN DETAIL (1 SEKOLAH 1 LEMBAR)
-    # =========================================================
-   st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
+    col_left, col_right = st.columns(2)
 
-data_items = list(row.items())
+    half = (len(data_items) + 1) // 2
+    left_items = data_items[:half]
+    right_items = data_items[half:]
 
-pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
-data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
+    with col_left:
+        for col, val in left_items:
+            st.markdown(f"**{col}:** {val}")
 
-col_left, col_right = st.columns(2)
-
-half = (len(data_items) + 1) // 2
-left_items = data_items[:half]
-right_items = data_items[half:]
-
-with col_left:
-    for col, val in left_items:
-        st.markdown(f"**{col}:** {val}")
-
-with col_right:
-    for col, val in right_items:
-        st.markdown(f"**{col}:** {val}")
+    with col_right:
+        for col, val in right_items:
+            st.markdown(f"**{col}:** {val}")
 
     # =========================================================
     # LOGIKA EDIT (PERIODE 1 TIDAK BOLEH)
@@ -852,6 +848,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
