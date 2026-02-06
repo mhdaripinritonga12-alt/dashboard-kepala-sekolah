@@ -709,23 +709,26 @@ elif st.session_state.page == "detail":
     # =========================================================
     # TAMPILKAN DETAIL (1 SEKOLAH 1 LEMBAR)
     # =========================================================
-    st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
+   st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
-    data_items = list(row.items())
+data_items = list(row.items())
 
-    col_left, col_right = st.columns(2)
+pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
+data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
 
-    half = (len(data_items) + 1) // 2
-    left_items = data_items[:half]
-    right_items = data_items[half:]
+col_left, col_right = st.columns(2)
 
-    with col_left:
-        for col, val in left_items:
-            st.markdown(f"**{col}:** {val}")
+half = (len(data_items) + 1) // 2
+left_items = data_items[:half]
+right_items = data_items[half:]
 
-    with col_right:
-        for col, val in right_items:
-            st.markdown(f"**{col}:** {val}")
+with col_left:
+    for col, val in left_items:
+        st.markdown(f"**{col}:** {val}")
+
+with col_right:
+    for col, val in right_items:
+        st.markdown(f"**{col}:** {val}")
 
     # =========================================================
     # LOGIKA EDIT (PERIODE 1 TIDAK BOLEH)
@@ -849,6 +852,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
