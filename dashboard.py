@@ -623,7 +623,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 # HALAMAN REKAP BISA DI BERHENTIKAN
 # =========================================================
-elif st.session_state.page == "rekap":
+if st.session_state.page == "rekap":
 
     col_back, col_title = st.columns([1, 10])
 
@@ -640,7 +640,6 @@ elif st.session_state.page == "rekap":
     df_rekap = df_ks.copy()
     df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
 
-    # FILTER BISA DI BERHENTIKAN = Periode 2 + Lebih dari 2 Periode
     df_bisa = df_rekap[
         df_rekap["Status Regulatif"].isin(["Aktif Periode 2", "Lebih dari 2 Periode"])
     ].copy()
@@ -649,7 +648,6 @@ elif st.session_state.page == "rekap":
         st.warning("⚠️ Tidak ada data Kepala Sekolah Bisa di Berhentikan.")
         st.stop()
 
-    # TAMBAHKAN CALON PENGGANTI
     df_bisa["Calon Pengganti"] = df_bisa["Nama Sekolah"].map(perubahan_kepsek).fillna("-")
 
     tampil = df_bisa[[
@@ -672,6 +670,9 @@ elif st.session_state.page == "rekap":
         st.session_state.selected_sekolah = pilih_sekolah
         st.session_state.page = "detail"
         st.rerun()
+
+    st.stop()
+
 
 # =========================================================
 # HALAMAN SEKOLAH (LIST)
@@ -996,6 +997,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
