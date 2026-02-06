@@ -704,6 +704,7 @@ elif st.session_state.page == "detail":
         st.stop()
 
     row = row_detail.iloc[0]
+    pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
 
     # =========================================================
     # TAMPILKAN DETAIL (1 SEKOLAH 1 LEMBAR)
@@ -848,6 +849,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
