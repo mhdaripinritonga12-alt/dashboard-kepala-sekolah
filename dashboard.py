@@ -714,7 +714,7 @@ elif st.session_state.page == "rekap":
     ]].copy()
 
     st.dataframe(tampil, use_container_width=True, hide_index=True)
-        st.divider()
+
     st.markdown("### 📄 Lihat Keterangan Lengkap")
 
     sekolah_opsi = df_bisa["Nama Sekolah"].unique().tolist()
@@ -963,5 +963,6 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
