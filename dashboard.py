@@ -705,27 +705,39 @@ elif st.session_state.page == "detail":
 
     row = row_detail.iloc[0]
 
-    # =========================================================
-    # TAMPILKAN DETAIL (1 SEKOLAH 1 LEMBAR)
-    # =========================================================
-    st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
-    for col in row.index:
-        st.write(f"**{col}:** {row[col]}")
+   st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
-    st.divider()
+data_items = list(row.items())
 
-    # =========================================================
-    # DOWNLOAD PDF
-    # =========================================================
-    pdf_buffer = buat_pdf_surat(row)
-    st.download_button(
-        label="📄 Download Surat Keterangan (PDF)",
-        data=pdf_buffer,
-        file_name=f"Surat_Keterangan_{st.session_state.selected_sekolah}.pdf",
-        mime="application/pdf"
-    )
+col_left, col_right = st.columns(2)
 
-    st.divider()
+half = (len(data_items) + 1) // 2
+left_items = data_items[:half]
+right_items = data_items[half:]
+
+def tampilkan(items):
+    for col, val in items:
+        st.markdown(
+            f"""
+            <div style="
+                padding:8px;
+                margin-bottom:6px;
+                border-radius:8px;
+                background:#f9f9f9;
+                border:1px solid #ddd;
+                font-size:14px;
+            ">
+                <b>{col}</b>: {val}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+with col_left:
+    tampilkan(left_items)
+
+with col_right:
+    tampilkan(right_items)
 
     # =========================================================
     # LOGIKA EDIT (PERIODE 1 TIDAK BOLEH)
@@ -849,6 +861,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
