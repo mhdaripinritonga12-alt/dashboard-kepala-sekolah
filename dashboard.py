@@ -716,6 +716,9 @@ elif st.session_state.page == "detail":
     with col_b:
         st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
 
+    # ==========================
+    # AMBIL DATA SEKOLAH
+    # ==========================
     row_detail = df_ks[df_ks["Nama Sekolah"] == st.session_state.selected_sekolah]
 
     if row_detail.empty:
@@ -724,6 +727,9 @@ elif st.session_state.page == "detail":
 
     row = row_detail.iloc[0]
 
+    # ==========================
+    # WARNA OTOMATIS
+    # ==========================
     ket_jabatan = str(row.get("Keterangan Jabatan", "")).lower()
     ket_bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
 
@@ -743,12 +749,18 @@ elif st.session_state.page == "detail":
 
     st.divider()
 
+    # ==========================
+    # TAMPILKAN DETAIL 2 KOLOM
+    # ==========================
     st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
     data_items = list(row.items())
 
-    # HAPUS KOLOM CALON PENGGANTI DARI EXCEL (BIAR TIDAK DOBEL)
-    data_items = [(c, v) for c, v in data_items if str(c).strip().lower() != "calon pengganti jika sudah harus di berhentikan"]
+    # HAPUS KOLOM PENGGANTI DARI EXCEL (BIAR TIDAK DOBEL)
+    data_items = [
+        (c, v) for c, v in data_items
+        if str(c).strip().lower() != "calon pengganti jika sudah harus di berhentikan"
+    ]
 
     # TAMBAHKAN PENGGANTI YANG BENAR
     pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
@@ -758,7 +770,7 @@ elif st.session_state.page == "detail":
     left_items = data_items[0::2]
     right_items = data_items[1::2]
 
-      col_left, col_right = st.columns(2)
+    col_left, col_right = st.columns(2)
 
     def tampilkan_item(col, val):
         nama = str(col).strip().lower()
@@ -907,6 +919,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
