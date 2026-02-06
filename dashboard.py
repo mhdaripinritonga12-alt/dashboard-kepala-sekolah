@@ -714,6 +714,16 @@ elif st.session_state.page == "rekap":
     ]].copy()
 
     st.dataframe(tampil, use_container_width=True, hide_index=True)
+        st.divider()
+    st.markdown("### 📄 Lihat Keterangan Lengkap")
+
+    sekolah_opsi = df_bisa["Nama Sekolah"].unique().tolist()
+    pilih_sekolah = st.selectbox("Pilih Sekolah", sekolah_opsi)
+
+    if st.button("📌 Keterangan Lengkap (1 Halaman)", use_container_width=True):
+        st.session_state.selected_sekolah = pilih_sekolah
+        st.session_state.page = "detail"
+        st.rerun()
 
     st.divider()
 
@@ -953,4 +963,5 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
