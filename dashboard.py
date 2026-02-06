@@ -516,8 +516,8 @@ if st.session_state.page == "cabdin":
             st.session_state.selected_sekolah = None
             st.session_state.role = None
             st.rerun()
-    with col5:
-        if st.button("📌 Rekap Bisa Berhenti", use_container_width=True):
+with col5:
+    if st.button("📌 Rekap Bisa Berhenti", use_container_width=True):
         st.session_state.page = "rekap"
         st.rerun()
 
@@ -924,6 +924,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
