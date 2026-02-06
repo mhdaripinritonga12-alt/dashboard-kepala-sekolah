@@ -594,9 +594,6 @@ elif st.session_state.page == "sekolah":
     with col_b:
         st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
-    # ================================
-    # WAJIB: df_cab dibuat disini
-    # ================================
     df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
     df_cab = apply_filter(df_cab)
 
@@ -604,9 +601,9 @@ elif st.session_state.page == "sekolah":
         st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
         st.stop()
 
-    # ================================
-    # REKAP STATUS CABDIN INI
-    # ================================
+    # =========================================================
+    # 📌 REKAP STATUS CABANG DINAS INI (TERKONEKSI MASA PERIODE)
+    # =========================================================
     st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
 
     df_cab_rekap = df_cab.copy()
@@ -626,26 +623,21 @@ elif st.session_state.page == "sekolah":
     )
 
     colx1, colx2, colx3, colx4, colx5, colx6 = st.columns(6)
-
     colx1.metric("dalam Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
     colx2.metric("dalam Periode 2", int(rekap_status_cab["Aktif Periode 2"]))
     colx3.metric("Lebih 2 Periode", int(rekap_status_cab["Lebih dari 2 Periode"]))
     colx4.metric("Kasek Plt", int(rekap_status_cab["Plt"]))
-
     total_bisa_diberhentikan = int(rekap_status_cab["Aktif Periode 2"]) + int(rekap_status_cab["Lebih dari 2 Periode"])
-    colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
-
+if colx5.button("📌 Lihat Detail Bisa Diberhentikan", use_container_width=True):
+    st.session_state.page = "bisa_diberhentikan"
+    st.rerun()
     colx6.metric("Lainnya", int(rekap_status_cab["Lainnya"]))
-
-    if st.button("📌 Lihat Detail Bisa Diberhentikan", use_container_width=True):
-        st.session_state.page = "bisa_diberhentikan"
-        st.rerun()
 
     st.divider()
 
-    # ================================
-    # GRID SEKOLAH
-    # ================================
+    # =========================================================
+    # GRID SEKOLAH (KLIK SEKOLAH -> HALAMAN DETAIL)
+    # =========================================================
     cols = st.columns(5)
     idx = 0
 
@@ -653,10 +645,27 @@ elif st.session_state.page == "sekolah":
 
         nama_sekolah = row.get("Nama Sekolah", "-")
 
+        masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+        ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+
+        if "periode 1" in masa:
+            card_class = "card-periode-1"
+        elif "periode 2" in masa:
+            card_class = "card-periode-2"
+        elif "lebih dari 2" in masa or ">2" in masa:
+            card_class = "card-berhenti"
+        elif "plt" in masa:
+            card_class = "card-plt"
+        elif "Diberhentikan" in ket_akhir:
+            card_class = "card-berhenti"
+        else:
+            card_class = "card-plt"
+
         with cols[idx % 5]:
+
             st.markdown(
                 f"""
-                <div class="school-card card-plt">
+                <div class="school-card {card_class}">
                     🏫 {nama_sekolah}
                 </div>
                 """,
@@ -669,10 +678,12 @@ elif st.session_state.page == "sekolah":
                 st.rerun()
 
         idx += 1
+
 # =========================================================
-# HALAMAN BISA DIBERHENTIKAN (GLOBAL SEMUA CABDIN)
+# HALAMAN DETAIL SEKOLAH
 # =========================================================
-if st.session_state.page == "bisa_diberhentikan":
+elif st.session_state.page == "detail":
+    elif st.session_state.page == "bisa_diberhentikan":
 
     col_a, col_b = st.columns([1, 6])
 
@@ -687,8 +698,10 @@ if st.session_state.page == "bisa_diberhentikan":
     df_bisa = df_ks.copy()
     df_bisa["Status Regulatif"] = df_bisa.apply(map_status, axis=1)
 
+    # FILTER: hanya periode 2 dan lebih dari 2 periode
     df_bisa = df_bisa[df_bisa["Status Regulatif"].isin(["Aktif Periode 2", "Lebih dari 2 Periode"])]
 
+    # apply filter sidebar juga
     df_bisa = apply_filter(df_bisa)
 
     if df_bisa.empty:
@@ -742,6 +755,7 @@ if st.session_state.page == "bisa_diberhentikan":
                         st.rerun()
 
         st.divider()
+
     if st.session_state.selected_sekolah is None:
         st.warning("⚠️ Sekolah belum dipilih.")
         st.session_state.page = "sekolah"
@@ -909,15 +923,6 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
-
-
-
-
-
-
-
 
 
 
