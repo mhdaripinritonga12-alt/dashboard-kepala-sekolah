@@ -771,12 +771,60 @@ elif st.session_state.page == "detail":
     left_items = data_items[:half]
     right_items = data_items[half:]
 
-    with col_left:
-        for col, val in left_items:
+with col_left:
+    for col, val in left_items:
+
+        if str(col).strip().lower() == "keterangan jabatan":
+            ket_jabatan = str(val).lower()
+            if "def" in ket_jabatan:
+                warna = "green"
+            elif "plt" in ket_jabatan:
+                warna = "red"
+            else:
+                warna = "gray"
+
+            st.markdown(f"**{col}:** {badge(val, warna)}", unsafe_allow_html=True)
+
+        elif str(col).strip().lower() == "ket sertifikat bcks":
+            ket_bcks = str(val).lower()
+            if "sudah" in ket_bcks:
+                warna = "green"
+            elif "belum" in ket_bcks:
+                warna = "red"
+            else:
+                warna = "gray"
+
+            st.markdown(f"**{col}:** {badge(val, warna)}", unsafe_allow_html=True)
+
+        else:
             st.markdown(f"**{col}:** {val}")
 
-    with col_right:
-        for col, val in right_items:
+with col_right:
+    for col, val in right_items:
+
+        if str(col).strip().lower() == "keterangan jabatan":
+            ket_jabatan = str(val).lower()
+            if "def" in ket_jabatan:
+                warna = "green"
+            elif "plt" in ket_jabatan:
+                warna = "red"
+            else:
+                warna = "gray"
+
+            st.markdown(f"**{col}:** {badge(val, warna)}", unsafe_allow_html=True)
+
+        elif str(col).strip().lower() == "ket sertifikat bcks":
+            ket_bcks = str(val).lower()
+            if "sudah" in ket_bcks:
+                warna = "green"
+            elif "belum" in ket_bcks:
+                warna = "red"
+            else:
+                warna = "gray"
+
+            st.markdown(f"**{col}:** {badge(val, warna)}", unsafe_allow_html=True)
+
+        else:
             st.markdown(f"**{col}:** {val}")
 
 
@@ -902,6 +950,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
