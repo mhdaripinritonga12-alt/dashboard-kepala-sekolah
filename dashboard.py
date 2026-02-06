@@ -698,36 +698,56 @@ elif st.session_state.page == "detail":
     with col_b:
         st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
 
-if row_detail.empty:
+    # ==========================
+    # AMBIL DATA SEKOLAH
+    # ==========================
+    row_detail = df_ks[df_ks["Nama Sekolah"] == st.session_state.selected_sekolah]
+
+    if row_detail.empty:
         st.error("❌ Data sekolah tidak ditemukan.")
         st.stop()
 
     row = row_detail.iloc[0]
-ket_jabatan = str(row.get("Keterangan Jabatan", "")).lower()
-ket_bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
 
-if "def" in ket_jabatan:
-    warna_jabatan = "green"
-elif "plt" in ket_jabatan:
-    warna_jabatan = "red"
-else:
-    warna_jabatan = "gray"
+    # ==========================
+    # WARNA OTOMATIS
+    # ==========================
+    ket_jabatan = str(row.get("Keterangan Jabatan", "")).lower()
+    ket_bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
 
-if "sudah" in ket_bcks:
-    warna_bcks = "green"
-elif "belum" in ket_bcks:
-    warna_bcks = "red"
-else:
-    warna_bcks = "gray"
+    if "def" in ket_jabatan:
+        warna_jabatan = "green"
+    elif "plt" in ket_jabatan:
+        warna_jabatan = "red"
+    else:
+        warna_jabatan = "gray"
 
-st.markdown(f"**Keterangan Jabatan:** {badge(row.get('Keterangan Jabatan','-'), warna_jabatan)}", unsafe_allow_html=True)
-st.markdown(f"**Ket Sertifikat BCKS:** {badge(row.get('Ket Sertifikat BCKS','-'), warna_bcks)}", unsafe_allow_html=True)
+    if "sudah" in ket_bcks:
+        warna_bcks = "green"
+    elif "belum" in ket_bcks:
+        warna_bcks = "red"
+    else:
+        warna_bcks = "gray"
 
+    st.markdown(
+        f"**Keterangan Jabatan:** {badge(row.get('Keterangan Jabatan','-'), warna_jabatan)}",
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f"**Ket Sertifikat BCKS:** {badge(row.get('Ket Sertifikat BCKS','-'), warna_bcks)}",
+        unsafe_allow_html=True
+    )
+
+    st.divider()
+
+    # ==========================
+    # TAMPILKAN DETAIL 2 KOLOM
+    # ==========================
     st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
     data_items = list(row.items())
 
-    # TAMBAHKAN PENGGANTI DARI SIMPEG KE DATA TAMPILAN
     pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
     data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
 
@@ -744,6 +764,7 @@ st.markdown(f"**Ket Sertifikat BCKS:** {badge(row.get('Ket Sertifikat BCKS','-')
     with col_right:
         for col, val in right_items:
             st.markdown(f"**{col}:** {val}")
+
 
     # =========================================================
     # LOGIKA EDIT (PERIODE 1 TIDAK BOLEH)
@@ -867,6 +888,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
