@@ -743,15 +743,6 @@ elif st.session_state.page == "detail":
     else:
         warna_bcks = "gray"
 
-    st.markdown(
-        f"**Keterangan Jabatan:** {badge(row.get('Keterangan Jabatan','-'), warna_jabatan)}",
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        f"**Ket Sertifikat BCKS:** {badge(row.get('Ket Sertifikat BCKS','-'), warna_bcks)}",
-        unsafe_allow_html=True
-    )
 
     st.divider()
 
@@ -950,6 +941,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
