@@ -105,19 +105,21 @@ def save_perubahan(data_dict):
     df.to_excel(DATA_SAVE, index=False)
 
 perubahan_kepsek = load_perubahan()
-def badge(text, warna):
+def badge(text, warna_bg, warna_text="white"):
     return f"""
     <span style="
         padding:6px 12px;
         border-radius:10px;
         font-weight:600;
-        color:white;
-        background:{warna};
+        color:{warna_text};
+        background:{warna_bg};
         font-size:13px;
+        display:inline-block;
     ">
         {text}
     </span>
     """
+
 
 
 # =========================================================
@@ -902,6 +904,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
