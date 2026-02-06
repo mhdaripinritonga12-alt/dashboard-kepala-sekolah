@@ -623,17 +623,21 @@ elif st.session_state.page == "sekolah":
     )
 
     colx1, colx2, colx3, colx4, colx5, colx6 = st.columns(6)
-    colx1.metric("dalam Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
-    colx2.metric("dalam Periode 2", int(rekap_status_cab["Aktif Periode 2"]))
-    colx3.metric("Lebih 2 Periode", int(rekap_status_cab["Lebih dari 2 Periode"]))
-    colx4.metric("Kasek Plt", int(rekap_status_cab["Plt"]))
-    total_bisa_diberhentikan = int(rekap_status_cab["Aktif Periode 2"]) + int(rekap_status_cab["Lebih dari 2 Periode"])
+
+colx1.metric("dalam Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
+colx2.metric("dalam Periode 2", int(rekap_status_cab["Aktif Periode 2"]))
+colx3.metric("Lebih 2 Periode", int(rekap_status_cab["Lebih dari 2 Periode"]))
+colx4.metric("Kasek Plt", int(rekap_status_cab["Plt"]))
+
+total_bisa_diberhentikan = int(rekap_status_cab["Aktif Periode 2"]) + int(rekap_status_cab["Lebih dari 2 Periode"])
+colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
+
+colx6.metric("Lainnya", int(rekap_status_cab["Lainnya"]))
+
+# tombol harus masih dalam halaman sekolah
 if colx5.button("📌 Lihat Detail Bisa Diberhentikan", use_container_width=True):
     st.session_state.page = "bisa_diberhentikan"
     st.rerun()
-    colx6.metric("Lainnya", int(rekap_status_cab["Lainnya"]))
-
-    st.divider()
 
     # =========================================================
     # GRID SEKOLAH (KLIK SEKOLAH -> HALAMAN DETAIL)
@@ -919,6 +923,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
