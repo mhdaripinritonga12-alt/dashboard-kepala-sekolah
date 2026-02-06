@@ -680,19 +680,6 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
-    def badge(text, warna):
-    return f"""
-    <span style="
-        padding:6px 12px;
-        border-radius:10px;
-        font-weight:600;
-        color:white;
-        background:{warna};
-        font-size:13px;
-    ">
-        {text}
-    </span>
-    """
 
     elif st.session_state.page == "detail":
 
@@ -718,6 +705,26 @@ elif st.session_state.page == "sekolah":
         st.stop()
 
     row = row_detail.iloc[0]
+ket_jabatan = str(row.get("Keterangan Jabatan", "")).lower()
+ket_bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
+
+if "def" in ket_jabatan:
+    warna_jabatan = "green"
+elif "plt" in ket_jabatan:
+    warna_jabatan = "red"
+else:
+    warna_jabatan = "gray"
+
+if "sudah" in ket_bcks:
+    warna_bcks = "green"
+elif "belum" in ket_bcks:
+    warna_bcks = "red"
+else:
+    warna_bcks = "gray"
+
+st.markdown(f"**Keterangan Jabatan:** {badge(row.get('Keterangan Jabatan','-'), warna_jabatan)}", unsafe_allow_html=True)
+st.markdown(f"**Ket Sertifikat BCKS:** {badge(row.get('Ket Sertifikat BCKS','-'), warna_bcks)}", unsafe_allow_html=True)
+
     st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
     data_items = list(row.items())
@@ -862,6 +869,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
