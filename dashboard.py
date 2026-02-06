@@ -485,35 +485,38 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================================================
-# HEADER + REFRESH + LOGOUT
+# HEADER + REFRESH + LOGOUT (HANYA HALAMAN CABDIN)
 # =========================================================
-col1, col2, col3, col4 = st.columns([5, 2, 2, 2])
+if st.session_state.page == "cabdin":
 
-with col1:
-    st.markdown("## 📊 Dashboard Kepala Sekolah")
+    col1, col2, col3, col4 = st.columns([5, 2, 2, 2])
 
-with col2:
-    if st.button("🔄 Refresh Data SIMPEG", use_container_width=True):
-        st.cache_data.clear()
-        st.success("✅ Data SIMPEG dimuat ulang")
-        st.rerun()
+    with col1:
+        st.markdown("## 📊 Dashboard Kepala Sekolah")
 
-with col3:
-    if st.button("🔄 Refresh Data Kepsek", use_container_width=True):
-        st.cache_data.clear()
-        st.success("✅ Data Kepala Sekolah dimuat ulang")
-        st.rerun()
+    with col2:
+        if st.button("🔄 Refresh Data SIMPEG", use_container_width=True):
+            st.cache_data.clear()
+            st.success("✅ Data SIMPEG dimuat ulang")
+            st.rerun()
 
-with col4:
-    if st.button("🚪 Logout", use_container_width=True):
-        st.session_state.login = False
-        st.session_state.page = "cabdin"
-        st.session_state.selected_cabdin = None
-        st.session_state.selected_sekolah = None
-        st.session_state.role = None
-        st.rerun()
+    with col3:
+        if st.button("🔄 Refresh Data Kepsek", use_container_width=True):
+            st.cache_data.clear()
+            st.success("✅ Data Kepala Sekolah dimuat ulang")
+            st.rerun()
 
-st.divider()
+    with col4:
+        if st.button("🚪 Logout", use_container_width=True):
+            st.session_state.login = False
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
+            st.session_state.role = None
+            st.rerun()
+
+    st.divider()
+
 
 # =========================================================
 # 🔍 PENCARIAN GURU SIMPEG
@@ -946,6 +949,7 @@ if st.session_state.page == "cabdin":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
