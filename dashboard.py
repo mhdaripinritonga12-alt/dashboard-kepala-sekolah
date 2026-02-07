@@ -982,17 +982,17 @@ def page_sekolah():
         st.session_state.page = "cabdin"
         st.rerun()
 
-    col_a, col_b = st.columns([1, 5])
+col_a, col_b = st.columns([1, 6])
 
-    with col_a:
+with col_a:
     if st.button("⬅️ Kembali", key="btn_back_sekolah", use_container_width=True):
         st.session_state.page = "cabdin"
         st.session_state.selected_cabdin = None
         st.session_state.selected_sekolah = None
         st.rerun()
 
-    with col_b:
-        st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
+with col_b:
+    st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
     # ===============================
     # DATA CABDIN (WAJIB ADA)
@@ -1071,6 +1071,7 @@ def page_sekolah():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
