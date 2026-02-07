@@ -854,49 +854,26 @@ elif st.session_state.page == "sekolah":
         else:
             card_class = "card-plt"
 
-        with cols[idx % 5]:
+with cols[idx % 5]:
 
-            # Tentukan warna card sesuai status
-            if card_class == "card-periode-1":
-                bg = "#e3f2fd"
-                border = "#2196f3"
-            elif card_class == "card-periode-2":
-                bg = "#fff8e1"
-                border = "#fbc02d"
-            elif card_class == "card-berhenti":
-                bg = "#fdecea"
-                border = "#d32f2f"
-            else:
-                bg = "#e8f5e9"
-                border = "#2e7d32"
+    if card_class == "card-periode-1":
+        wrapper_class = "card-btn card-periode-1-btn"
+    elif card_class == "card-periode-2":
+        wrapper_class = "card-btn card-periode-2-btn"
+    elif card_class == "card-berhenti":
+        wrapper_class = "card-btn card-berhenti-btn"
+    else:
+        wrapper_class = "card-btn card-plt-btn"
 
-            # Tombol Card Sekolah (klik langsung buka detail)
-            if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
-                st.session_state.selected_sekolah = nama_sekolah
-                st.session_state.page = "detail"
-                st.rerun()
+    st.markdown(f'<div class="{wrapper_class}">', unsafe_allow_html=True)
 
-            # CSS tombol jadi card
-            st.markdown(
-                f"""
-                <style>
-                div[data-testid="stButton"] > button {{
-                    background: {bg} !important;
-                    border-left: 6px solid {border} !important;
-                    border-radius: 12px !important;
-                    padding: 14px !important;
-                    margin-bottom: 16px !important;
-                    height: 120px !important;
-                    font-weight: 600 !important;
-                    font-size: 14px !important;
-                    box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
-                    text-align: center !important;
-                    color: black !important;
-                }}
-                </style>
-                """,
-                unsafe_allow_html=True
-            )
+    if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
+        st.session_state.selected_sekolah = nama_sekolah
+        st.session_state.page = "detail"
+        st.rerun()
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
         idx += 1
 
@@ -1031,6 +1008,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
