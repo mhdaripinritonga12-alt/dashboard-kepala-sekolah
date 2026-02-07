@@ -864,7 +864,7 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
-        elif st.session_state.page == "detail":
+elif st.session_state.page == "detail":
 
     if st.session_state.selected_sekolah is None:
         st.warning("⚠️ Sekolah belum dipilih.")
@@ -991,6 +991,7 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
