@@ -828,28 +828,41 @@ for _, row in df_cab.iterrows():
     ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
 
     if "periode 1" in masa:
-        warna_class = "periode1"
+        bg = "#e3f2fd"
+        border = "#2196f3"
     elif "periode 2" in masa:
-        warna_class = "periode2"
+        bg = "#fff8e1"
+        border = "#fbc02d"
     elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
-        warna_class = "berhenti"
+        bg = "#fdecea"
+        border = "#d32f2f"
     elif "plt" in masa:
-        warna_class = "plt"
+        bg = "#e8f5e9"
+        border = "#2e7d32"
     else:
-        warna_class = "plt"
+        bg = "#e8f5e9"
+        border = "#2e7d32"
 
     with cols[idx % 4]:
 
-        st.markdown(
-            f"""
-            <div class="school-card {warna_class}">
-                <span>🏫 {nama_sekolah}</span>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        st.markdown(f"""
+        <style>
+        div[data-testid="stButton"] > button[key="sekolah_{idx}"] {{
+            border-radius: 14px !important;
+            height: 110px !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            text-align: center !important;
+            border: 1px solid #ddd !important;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
+            background: {bg} !important;
+            border-left: 8px solid {border} !important;
+            width: 100% !important;
+        }}
+        </style>
+        """, unsafe_allow_html=True)
 
-        if st.button(" ", key=f"klik_{idx}", use_container_width=True):
+        if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
             st.session_state.selected_sekolah = nama_sekolah
             st.session_state.page = "detail"
             st.rerun()
@@ -952,6 +965,7 @@ def page_detail():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
