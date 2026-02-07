@@ -864,11 +864,12 @@ elif st.session_state.page == "sekolah":
 
         with cols[idx % 4]:
 
-            # CSS tombol khusus untuk card sekolah
+            safe_label = f"🏫 {nama_sekolah}".replace('"', '\\"')
+
             st.markdown(
                 f"""
                 <style>
-                div[data-testid="stButton"] > button {{
+                button[aria-label="{safe_label}"] {{
                     background: {bg} !important;
                     border-left: 6px solid {border} !important;
                     border-radius: 14px !important;
@@ -886,15 +887,6 @@ elif st.session_state.page == "sekolah":
                 """,
                 unsafe_allow_html=True
             )
-
-            if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
-                st.session_state.selected_sekolah = nama_sekolah
-                st.session_state.page = "detail"
-                st.rerun()
-
-        idx += 1
-
-
 
 
 
@@ -1028,6 +1020,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
