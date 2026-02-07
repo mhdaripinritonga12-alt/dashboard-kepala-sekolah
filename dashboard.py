@@ -814,61 +814,62 @@ elif st.session_state.page == "sekolah":
 
     st.divider()
 
+def page_sekolah():
+
     # =========================================================
     # GRID SEKOLAH 4 KOLOM (CARD BISA DIKLIK TANPA LINK)
     # =========================================================
-cols = st.columns(4)
-idx = 0
+    cols = st.columns(4)
+    idx = 0
 
-for _, row in df_cab.iterrows():
+    for _, row in df_cab.iterrows():
 
-    nama_sekolah = row.get("Nama Sekolah", "-")
+        nama_sekolah = row.get("Nama Sekolah", "-")
 
-    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
-    ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+        masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+        ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
 
-    if "periode 1" in masa:
-        bg = "#e3f2fd"
-        border = "#2196f3"
-    elif "periode 2" in masa:
-        bg = "#fff8e1"
-        border = "#fbc02d"
-    elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
-        bg = "#fdecea"
-        border = "#d32f2f"
-    elif "plt" in masa:
-        bg = "#e8f5e9"
-        border = "#2e7d32"
-    else:
-        bg = "#e8f5e9"
-        border = "#2e7d32"
+        if "periode 1" in masa:
+            bg = "#e3f2fd"
+            border = "#2196f3"
+        elif "periode 2" in masa:
+            bg = "#fff8e1"
+            border = "#fbc02d"
+        elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
+            bg = "#fdecea"
+            border = "#d32f2f"
+        elif "plt" in masa:
+            bg = "#e8f5e9"
+            border = "#2e7d32"
+        else:
+            bg = "#e8f5e9"
+            border = "#2e7d32"
 
-    with cols[idx % 4]:
+        with cols[idx % 4]:
 
-        st.markdown(f"""
-        <style>
-        div[data-testid="stButton"] > button[key="sekolah_{idx}"] {{
-            border-radius: 14px !important;
-            height: 110px !important;
-            font-weight: 700 !important;
-            font-size: 14px !important;
-            text-align: center !important;
-            border: 1px solid #ddd !important;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
-            background: {bg} !important;
-            border-left: 8px solid {border} !important;
-            width: 100% !important;
-        }}
-        </style>
-        """, unsafe_allow_html=True)
+            st.markdown(f"""
+            <style>
+            div[data-testid="stButton"] > button[key="sekolah_{idx}"] {{
+                border-radius: 14px !important;
+                height: 110px !important;
+                font-weight: 700 !important;
+                font-size: 14px !important;
+                text-align: center !important;
+                border: 1px solid #ddd !important;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
+                background: {bg} !important;
+                border-left: 8px solid {border} !important;
+                width: 100% !important;
+            }}
+            </style>
+            """, unsafe_allow_html=True)
 
-        if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
-            st.session_state.selected_sekolah = nama_sekolah
-            st.session_state.page = "detail"
-            st.rerun()
+            if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
 
-    idx += 1
-
+        idx += 1
 
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
@@ -965,6 +966,7 @@ def page_detail():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
