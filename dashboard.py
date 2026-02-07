@@ -715,12 +715,26 @@ def page_detail():
                 save_perubahan(perubahan_kepsek)
                 st.success("🔄 Berhasil dikembalikan")
                 st.rerun()
+def apply_filter(df):
+    if jenjang_filter != "Semua":
+        df = df[df["Jenjang"] == jenjang_filter]
+
+    if ket_filter != "Semua":
+        df = df[df["Keterangan Akhir"] == ket_filter]
+
+    if search_nama:
+        df = df[df["Nama Kepala Sekolah"].astype(str).str.contains(search_nama, case=False, na=False)]
+
+    if search_sekolah:
+        df = df[df["Nama Sekolah"].astype(str).str.contains(search_sekolah, case=False, na=False)]
+
+    return df
 
 # =========================================================
 # ROUTING HALAMAN UTAMA
 # =========================================================
 if st.session_state.page == "cabdin":
-        # =========================================================
+    # =========================================================
     # HEADER DASHBOARD + TOMBOL UTAMA
     # =========================================================
     col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
@@ -1156,6 +1170,7 @@ def page_detail():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
