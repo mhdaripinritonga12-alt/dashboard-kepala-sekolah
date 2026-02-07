@@ -551,19 +551,7 @@ def page_sekolah():
     if st.session_state.selected_cabdin is None:
         st.warning("⚠️ Cabang Dinas belum dipilih.")
         st.session_state.page = "cabdin"
-        st.rerun()
-
-    col_a, col_b = st.columns([1, 6])
-
-    with col_a:
-        if st.button("⬅️ Kembali", key="btn_back_sekolah", use_container_width=True):
-            st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
-            st.session_state.selected_sekolah = None
-            st.rerun()
-
-    with col_b:
-        st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
+        st.rerun()   
 
     df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
     df_cab = apply_filter(df_cab)
@@ -922,18 +910,6 @@ elif st.session_state.page == "rekap":
 elif st.session_state.page == "sekolah":
     page_sekolah()
 
-    col_a, col_b = st.columns([1, 5])
-
-    with col_a:
-        if st.button("⬅️ Kembali", use_container_width=True):
-            st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
-            st.session_state.selected_sekolah = None
-            st.rerun()
-
-    with col_b:
-        st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
-
     df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
     df_cab = apply_filter(df_cab)
 
@@ -978,18 +954,6 @@ def page_sekolah():
         st.warning("⚠️ Cabang Dinas belum dipilih.")
         st.session_state.page = "cabdin"
         st.rerun()
-
-col_a, col_b = st.columns([1, 6])
-
-with col_a:
-    if st.button("⬅️ Kembali", key="btn_back_sekolah", use_container_width=True):
-        st.session_state.page = "cabdin"
-        st.session_state.selected_cabdin = None
-        st.session_state.selected_sekolah = None
-        st.rerun()
-
-with col_b:
-    st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
     # ===============================
     # DATA CABDIN (WAJIB ADA)
@@ -1068,6 +1032,7 @@ with col_b:
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
