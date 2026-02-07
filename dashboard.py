@@ -556,7 +556,7 @@ def page_sekolah():
 
     col_a, col_b = st.columns([1, 6])
 
-with col_a:
+    with col_a:
     if st.button("⬅️ Kembali", key="btn_back_sekolah", use_container_width=True):
         st.session_state.page = "cabdin"
         st.session_state.selected_cabdin = None
@@ -1072,6 +1072,7 @@ def page_sekolah():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
