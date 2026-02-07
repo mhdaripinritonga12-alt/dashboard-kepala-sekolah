@@ -574,7 +574,7 @@ if "sekolah" in params:
 # ROUTING HALAMAN UTAMA
 # =========================================================
 if st.session_state.page == "cabdin":
-        # =========================================================
+    # =========================================================
     # HEADER DASHBOARD + TOMBOL UTAMA
     # =========================================================
     col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
@@ -986,6 +986,7 @@ for _, row in df_cab.iterrows():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
