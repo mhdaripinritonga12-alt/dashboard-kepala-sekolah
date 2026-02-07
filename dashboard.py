@@ -633,17 +633,15 @@ def page_detail():
         st.session_state.page = "sekolah"
         st.rerun()
 
-    col_a, col_b = st.columns([1, 6])
+col_a, col_b = st.columns([1, 6])
 
-    with col_a:
-        if st.button("⬅️ Kembali", use_container_width=True):
-            st.session_state.page = "sekolah"
-            st.session_state.selected_sekolah = None
-            st.rerun()
+with col_a:
+    if st.button("⬅️ Kembali", key="btn_back_detail", use_container_width=True):
+        st.session_state.page = "sekolah"
+        st.session_state.selected_sekolah = None
+        st.rerun()
 
-    with col_b:
-        st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
-    with col_b:
+with col_b:
     st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
 
 nama = (
@@ -660,13 +658,13 @@ row_detail = df_ks[
     == nama
 ]
 
-    if row_detail.empty:
-        st.error("❌ Data sekolah tidak ditemukan.")
-        st.stop()
+if row_detail.empty:
+    st.error("❌ Data sekolah tidak ditemukan.")
+    st.stop()
 
-    row = row_detail.iloc[0]
+row = row_detail.iloc[0]
+st.divider()
 
-    st.divider()
     st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
     data_items = list(row.items())
@@ -1056,6 +1054,7 @@ def page_sekolah():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
