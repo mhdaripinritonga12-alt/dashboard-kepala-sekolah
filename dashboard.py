@@ -864,6 +864,8 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 elif st.session_state.page == "detail":
 
+def page_detail():
+
     if st.session_state.selected_sekolah is None:
         st.warning("⚠️ Sekolah belum dipilih.")
         st.session_state.page = "sekolah"
@@ -906,7 +908,6 @@ elif st.session_state.page == "detail":
         warna_bcks = "gray"
 
     st.divider()
-
     st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
     data_items = list(row.items())
@@ -948,12 +949,14 @@ elif st.session_state.page == "detail":
             tampilkan_item(col, val)
 
     # =========================================================
-    # LOGIKA EDIT (PERIODE 1 TIDAK BOLEH)
+    # LOGIKA EDIT + KEMBALIKAN KEPSEK LAMA
     # =========================================================
     status_boleh = cek_boleh_diganti(row)
     is_view_only = st.session_state.role in ["Kadis", "View"]
 
     calon_tersimpan = perubahan_kepsek.get(st.session_state.selected_sekolah)
+
+    st.divider()
 
     if is_view_only:
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
@@ -973,6 +976,7 @@ elif st.session_state.page == "detail":
                 st.success(f"✅ Diganti dengan: {calon}")
                 st.rerun()
 
+    # tampilkan pengganti + tombol kembalikan
     if calon_tersimpan:
         st.info(f"👤 Pengganti Saat Ini: **{calon_tersimpan}**")
 
@@ -989,6 +993,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
