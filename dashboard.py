@@ -851,10 +851,11 @@ elif st.session_state.page == "sekolah":
             )
 
             # tombol klik card (tidak ada tulisan detail)
-            if st.button("Lihat", key=f"open_{idx}", use_container_width=True):
-                st.session_state.selected_sekolah = nama_sekolah
-                st.session_state.page = "detail"
-                st.rerun()
+            if st.button(f"🏫 {nama_sekolah}", key=f"card_{idx}", use_container_width=True):
+    st.session_state.selected_sekolah = nama_sekolah
+    st.session_state.page = "detail"
+    st.rerun()
+
 
         idx += 1
 
@@ -862,7 +863,6 @@ elif st.session_state.page == "sekolah":
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
-
 def page_detail():
 
     if st.session_state.selected_sekolah is None:
@@ -889,32 +889,11 @@ def page_detail():
 
     row = row_detail.iloc[0]
 
-    ket_jabatan = str(row.get("Keterangan Jabatan", "")).lower()
-    ket_bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
-
-    if "def" in ket_jabatan:
-        warna_jabatan = "green"
-    elif "plt" in ket_jabatan:
-        warna_jabatan = "red"
-    else:
-        warna_jabatan = "gray"
-
-    if "sudah" in ket_bcks:
-        warna_bcks = "green"
-    elif "belum" in ket_bcks:
-        warna_bcks = "red"
-    else:
-        warna_bcks = "gray"
-
     st.divider()
     st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
+    # tampilkan data 2 kolom
     data_items = list(row.items())
-
-    data_items = [
-        (c, v) for c, v in data_items
-        if str(c).strip().lower() != "calon pengganti jika sudah harus di berhentikan"
-    ]
 
     pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
     data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
@@ -924,58 +903,41 @@ def page_detail():
 
     col_left, col_right = st.columns(2)
 
-    def tampilkan_item(col, val):
-        nama = str(col).strip().lower()
-
-        if nama == "keterangan jabatan":
-            st.markdown(f"**{col}:** {badge(val, warna_jabatan)}", unsafe_allow_html=True)
-
-        elif nama == "ket sertifikat bcks":
-            st.markdown(f"**{col}:** {badge(val, warna_bcks)}", unsafe_allow_html=True)
-
-        elif "permendikdasmen" in nama:
-            st.markdown(f"**{col}:** {badge(val, '#d9f0ff', 'black')}", unsafe_allow_html=True)
-
-        else:
-            st.markdown(f"**{col}:** {val}")
-
     with col_left:
         for col, val in left_items:
-            tampilkan_item(col, val)
+            st.markdown(f"**{col}:** {val}")
 
     with col_right:
         for col, val in right_items:
-            tampilkan_item(col, val)
+            st.markdown(f"**{col}:** {val}")
 
-    # =========================================================
-    # LOGIKA EDIT + KEMBALIKAN KEPSEK LAMA
-    # =========================================================
-    status_boleh = cek_boleh_diganti(row)
+    st.divider()
+
+    # ===============================
+    # SIMPAN PENGGANTI
+    # ===============================
     is_view_only = st.session_state.role in ["Kadis", "View"]
 
     calon_tersimpan = perubahan_kepsek.get(st.session_state.selected_sekolah)
 
-    st.divider()
-
     if is_view_only:
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
     else:
-        if not status_boleh:
-            st.warning("⛔ Tidak dapat diganti karena status **Periode 1**.")
-        else:
-            calon = st.selectbox(
-                "👤 Pilih Calon Pengganti (SIMPEG)",
-                guru_list,
-                key=f"calon_{st.session_state.selected_sekolah}"
-            )
+        calon = st.selectbox(
+            "👤 Pilih Calon Pengganti (SIMPEG)",
+            guru_list,
+            key=f"calon_{st.session_state.selected_sekolah}"
+        )
 
-            if st.button("💾 Simpan Pengganti", use_container_width=True):
-                perubahan_kepsek[st.session_state.selected_sekolah] = calon
-                save_perubahan(perubahan_kepsek)
-                st.success(f"✅ Diganti dengan: {calon}")
-                st.rerun()
+        if st.button("💾 Simpan Pengganti", use_container_width=True):
+            perubahan_kepsek[st.session_state.selected_sekolah] = calon
+            save_perubahan(perubahan_kepsek)
+            st.success(f"✅ Diganti dengan: {calon}")
+            st.rerun()
 
-    # tampilkan pengganti + tombol kembalikan
+    # ===============================
+    # KEMBALIKAN KEPSEK LAMA
+    # ===============================
     if calon_tersimpan:
         st.info(f"👤 Pengganti Saat Ini: **{calon_tersimpan}**")
 
@@ -987,11 +949,13 @@ def page_detail():
                 st.rerun()
 
 
+
 # =========================================================
 # FOOTER
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
