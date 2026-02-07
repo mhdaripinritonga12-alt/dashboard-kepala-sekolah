@@ -985,11 +985,11 @@ def page_sekolah():
     col_a, col_b = st.columns([1, 5])
 
     with col_a:
-        if st.button("⬅️ Kembali", use_container_width=True):
-            st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
-            st.session_state.selected_sekolah = None
-            st.rerun()
+    if st.button("⬅️ Kembali", key="btn_back_sekolah", use_container_width=True):
+        st.session_state.page = "cabdin"
+        st.session_state.selected_cabdin = None
+        st.session_state.selected_sekolah = None
+        st.rerun()
 
     with col_b:
         st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
@@ -1028,105 +1028,6 @@ def page_sekolah():
     </style>
     """, unsafe_allow_html=True)
 
-    # ===============================
-    # GRID SEKOLAH
-    # ===============================
-    cols = st.columns(4)
-    idx = 0
-
-    for _, row in df_cab.iterrows():
-
-        nama_sekolah = row.get("Nama Sekolah", "-")
-
-        masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
-        ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
-
-        if "periode 1" in masa:
-            bg = "#e3f2fd"
-            border = "#2196f3"
-        elif "periode 2" in masa:
-            bg = "#fff8e1"
-            border = "#fbc02d"
-        elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
-            bg = "#fdecea"
-            border = "#d32f2f"
-        elif "plt" in masa:
-            bg = "#e8f5e9"
-            border = "#2e7d32"
-        else:
-            bg = "#f3f3f3"
-            border = "#9e9e9e"
-
-        with cols[idx % 4]:
-
-            st.markdown(f"""
-            <style>
-            div[data-testid="stButton"] > button#sekolah_{idx} {{
-                background: {bg} !important;
-                border-left: 8px solid {border} !important;
-            }}
-            </style>
-            """, unsafe_allow_html=True)
-
-            if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
-                st.session_state.selected_sekolah = nama_sekolah
-                st.session_state.page = "detail"
-                st.rerun()
-
-        idx += 1
-
-# =========================================================
-# HALAMAN DETAIL SEKOLAH
-# =========================================================
-def page_detail():
-
-    if st.session_state.selected_sekolah is None:
-        st.warning("⚠️ Sekolah belum dipilih.")
-        st.session_state.page = "sekolah"
-        st.rerun()
-
-    col_a, col_b = st.columns([1, 6])
-
-    with col_a:
-        if st.button("⬅️ Kembali", use_container_width=True):
-            st.session_state.page = "sekolah"
-            st.session_state.selected_sekolah = None
-            st.rerun()
-
-    with col_b:
-        st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
-
-    row_detail = df_ks[df_ks["Nama Sekolah"] == st.session_state.selected_sekolah]
-
-    if row_detail.empty:
-        st.error("❌ Data sekolah tidak ditemukan.")
-        st.stop()
-
-    row = row_detail.iloc[0]
-
-    st.divider()
-    st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
-
-    # tampilkan data 2 kolom
-    data_items = list(row.items())
-
-    pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
-    data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
-
-    left_items = data_items[0::2]
-    right_items = data_items[1::2]
-
-    col_left, col_right = st.columns(2)
-
-    with col_left:
-        for col, val in left_items:
-            st.markdown(f"**{col}:** {val}")
-
-    with col_right:
-        for col, val in right_items:
-            st.markdown(f"**{col}:** {val}")
-
-    st.divider()
 
     # ===============================
     # SIMPAN PENGGANTI
@@ -1170,6 +1071,7 @@ def page_detail():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
