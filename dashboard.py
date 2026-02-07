@@ -865,7 +865,7 @@ elif st.session_state.page == "rekap":
     col_back, col_title = st.columns([1, 10])
 
     with col_back:
-        if st.button("⬅️", use_container_width=True):
+        if st.button("⬅️", key="btn_back_rekap", use_container_width=True):
             st.session_state.page = "cabdin"
             st.rerun()
 
@@ -901,20 +901,20 @@ elif st.session_state.page == "rekap":
     st.markdown("### 📄 Lihat Keterangan Lengkap")
 
     sekolah_opsi = df_bisa["Nama Sekolah"].unique().tolist()
-    pilih_sekolah = st.selectbox("Pilih Sekolah", sekolah_opsi)
 
-    if st.button("📌 Keterangan Lengkap (1 Halaman)", use_container_width=True):
-        st.session_state.selected_sekolah = pilih_sekolah
+    pilih_sekolah1 = st.selectbox("Pilih Sekolah", sekolah_opsi, key="rekap_pilih1")
+
+    if st.button("📌 Keterangan Lengkap (1 Halaman)", key="btn_detail1", use_container_width=True):
+        st.session_state.selected_sekolah = pilih_sekolah1
         st.session_state.page = "detail"
         st.rerun()
 
     st.divider()
 
-    sekolah_opsi = df_bisa["Nama Sekolah"].unique().tolist()
-    pilih_sekolah = st.selectbox("📄 Pilih Sekolah untuk lihat detail", sekolah_opsi)
+    pilih_sekolah2 = st.selectbox("📄 Pilih Sekolah untuk lihat detail", sekolah_opsi, key="rekap_pilih2")
 
-    if st.button("📌 Lihat Detail Sekolah", use_container_width=True):
-        st.session_state.selected_sekolah = pilih_sekolah
+    if st.button("📌 Lihat Detail Sekolah", key="btn_detail2", use_container_width=True):
+        st.session_state.selected_sekolah = pilih_sekolah2
         st.session_state.page = "detail"
         st.rerun()
 
@@ -1170,6 +1170,7 @@ def page_detail():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
