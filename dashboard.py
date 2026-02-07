@@ -451,9 +451,6 @@ def buat_pdf_surat(row):
 st.markdown("""
 <style>
 
-st.markdown("""
-<style>
-
 /* CARD SEKOLAH FIX FINAL */
 .school-card {
     border-radius: 14px;
@@ -972,6 +969,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
