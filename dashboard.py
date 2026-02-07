@@ -559,6 +559,16 @@ def apply_filter(df):
 
     return df
 
+# =========================================================
+# ROUTING DARI URL (?page=detail&sekolah=xxxx)
+# =========================================================
+params = st.query_params
+
+if "page" in params:
+    st.session_state.page = params["page"]
+
+if "sekolah" in params:
+    st.session_state.selected_sekolah = params["sekolah"]
 
 # =========================================================
 # ROUTING HALAMAN UTAMA
@@ -977,6 +987,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
