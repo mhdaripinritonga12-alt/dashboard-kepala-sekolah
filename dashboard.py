@@ -242,6 +242,16 @@ df_ks.rename(columns=rename_map_ks, inplace=True)
 df_guru.rename(columns=rename_map_guru, inplace=True)
 
 # =========================================================
+# NORMALISASI NAMA SEKOLAH (BIAR DETAIL TIDAK KOSONG)
+# =========================================================
+df_ks["Nama Sekolah"] = (
+    df_ks["Nama Sekolah"]
+    .astype(str)
+    .str.replace("\xa0", " ", regex=False)
+    .str.strip()
+)
+
+# =========================================================
 # ✅ FIX GABUNG KOLOM MASA PERIODE (BIAR WIL 1-14 TERBACA)
 # =========================================================
 if "Masa Periode Sesuai KSPSTK" not in df_ks.columns:
@@ -633,8 +643,22 @@ def page_detail():
 
     with col_b:
         st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
+    with col_b:
+    st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
 
-    row_detail = df_ks[df_ks["Nama Sekolah"] == st.session_state.selected_sekolah]
+nama = (
+    str(st.session_state.selected_sekolah)
+    .replace("\xa0", " ")
+    .strip()
+)
+
+row_detail = df_ks[
+    df_ks["Nama Sekolah"]
+    .astype(str)
+    .str.replace("\xa0", " ", regex=False)
+    .str.strip()
+    == nama
+]
 
     if row_detail.empty:
         st.error("❌ Data sekolah tidak ditemukan.")
@@ -1032,6 +1056,7 @@ def page_sekolah():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
