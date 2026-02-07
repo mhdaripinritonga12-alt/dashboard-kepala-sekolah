@@ -500,7 +500,7 @@ st.markdown("""
 }
 
 /* Periode 1 */
-.card-periode-1-btn button {
+.card-periode-1-btn > div > button {
     background: #e3f2fd !important;
     border-left: 6px solid #2196f3 !important;
     color: black !important;
@@ -1028,6 +1028,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
