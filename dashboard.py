@@ -851,7 +851,7 @@ elif st.session_state.page == "sekolah":
             )
 
             # tombol klik card (tidak ada tulisan detail)
-            if st.button(f"🏫 {nama_sekolah}", key=f"card_{idx}", use_container_width=True):
+if st.button(f"🏫 {nama_sekolah}", key=f"card_{idx}", use_container_width=True):
     st.session_state.selected_sekolah = nama_sekolah
     st.session_state.page = "detail"
     st.rerun()
@@ -955,6 +955,7 @@ def page_detail():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
