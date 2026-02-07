@@ -456,7 +456,7 @@ st.markdown("""
     border-radius: 14px;
     padding: 12px;
     margin-bottom: 18px;
-    height: 110px; /* tinggi seragam */
+    height: 110px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -466,15 +466,6 @@ st.markdown("""
     box-shadow: 0 3px 8px rgba(0,0,0,0.12);
     border: 1px solid #ddd;
     width: 100%;
-}
-
-/* supaya teks maksimal 3 baris */
-.school-card span {
-    display: -webkit-box;
-    -webkit-line-clamp: 3; /* max 3 baris */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.3;
 }
 
 /* WARNA */
@@ -498,8 +489,22 @@ st.markdown("""
     border-left: 8px solid #2e7d32;
 }
 
+/* tombol card sekolah */
+.school-btn button {
+    border: none !important;
+    padding: 0px !important;
+    background: none !important;
+    width: 100% !important;
+}
+
+.school-btn button:hover {
+    transform: scale(1.02);
+    transition: 0.2s;
+}
+
 </style>
 """, unsafe_allow_html=True)
+
 # =========================================================
 # 🔍 PENCARIAN GURU SIMPEG
 # =========================================================
@@ -1002,6 +1007,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
