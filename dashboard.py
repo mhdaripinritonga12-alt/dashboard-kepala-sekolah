@@ -818,24 +818,33 @@ elif st.session_state.page == "sekolah":
         ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
 
         if "periode 1" in masa:
-            wrapper_class = "card-btn card-periode-1-btn"
+            warna_class = "periode1"
         elif "periode 2" in masa:
-            wrapper_class = "card-btn card-periode-2-btn"
+            warna_class = "periode2"
         elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
-            wrapper_class = "card-btn card-berhenti-btn"
+            warna_class = "berhenti"
+        elif "plt" in masa:
+            warna_class = "plt"
         else:
-            wrapper_class = "card-btn card-plt-btn"
+            warna_class = "plt"
 
         with cols[idx % 4]:
 
-            st.markdown(f'<div class="{wrapper_class}">', unsafe_allow_html=True)
+            # CARD HTML (warna pasti masuk)
+            st.markdown(
+                f"""
+                <div class="school-card {warna_class}">
+                    <span>🏫 {nama_sekolah}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-            if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
+            # tombol klik detail
+            if st.button("📄 Detail", key=f"detail_{idx}", use_container_width=True):
                 st.session_state.selected_sekolah = nama_sekolah
                 st.session_state.page = "detail"
                 st.rerun()
-
-            st.markdown("</div>", unsafe_allow_html=True)
 
         idx += 1
 
@@ -969,6 +978,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
