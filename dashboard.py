@@ -633,44 +633,44 @@ def page_detail():
         st.session_state.page = "sekolah"
         st.rerun()
 
-col_a, col_b = st.columns([1, 6])
+    col_a, col_b = st.columns([1, 6])
 
-with col_a:
-    if st.button("⬅️ Kembali", key="btn_back_detail", use_container_width=True):
-        st.session_state.page = "sekolah"
-        st.session_state.selected_sekolah = None
-        st.rerun()
+    with col_a:
+        if st.button("⬅️ Kembali", key="btn_back_detail", use_container_width=True):
+            st.session_state.page = "sekolah"
+            st.session_state.selected_sekolah = None
+            st.rerun()
 
-with col_b:
-    st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
+    with col_b:
+        st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
 
-nama = (
-    str(st.session_state.selected_sekolah)
-    .replace("\xa0", " ")
-    .strip()
-)
+    # ===== NORMALISASI NAMA SEKOLAH AGAR TIDAK KOSONG =====
+    nama = (
+        str(st.session_state.selected_sekolah)
+        .replace("\xa0", " ")
+        .strip()
+    )
 
-row_detail = df_ks[
-    df_ks["Nama Sekolah"]
-    .astype(str)
-    .str.replace("\xa0", " ", regex=False)
-    .str.strip()
-    == nama
-]
+    row_detail = df_ks[
+        df_ks["Nama Sekolah"]
+        .astype(str)
+        .str.replace("\xa0", " ", regex=False)
+        .str.strip()
+        == nama
+    ]
 
-if row_detail.empty:
-    st.error("❌ Data sekolah tidak ditemukan.")
-    st.stop()
+    if row_detail.empty:
+        st.error("❌ Data sekolah tidak ditemukan.")
+        st.stop()
 
-row = row_detail.iloc[0]
-st.divider()
+    row = row_detail.iloc[0]
 
+    st.divider()
     st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
 
     data_items = list(row.items())
 
-    # tambah data pengganti dari file perubahan
-    pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
+    pengganti = perubahan_kepsek.get(nama, "-")
     data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
 
     left_items = data_items[0::2]
@@ -1054,6 +1054,7 @@ def page_sekolah():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
