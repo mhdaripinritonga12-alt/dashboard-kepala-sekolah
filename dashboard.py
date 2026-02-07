@@ -813,8 +813,9 @@ elif st.session_state.page == "sekolah":
     colx6.metric("Bisa Dimutasi", int(rekap_status_cab["Lainnya"]))
 
     st.divider()
+
     # =========================================================
-    # GRID SEKOLAH 4 KOLOM (RAPI)
+    # GRID SEKOLAH 4 KOLOM (CARD BISA DIKLIK TANPA LINK)
     # =========================================================
     cols = st.columns(4)
     idx = 0
@@ -837,46 +838,25 @@ elif st.session_state.page == "sekolah":
         else:
             warna_class = "plt"
 
-        cols = st.columns(4)
-idx = 0
+        with cols[idx % 4]:
 
-for _, row in df_cab.iterrows():
+            # Card tampil
+            st.markdown(
+                f"""
+                <div class="school-card {warna_class}">
+                    <span>🏫 {nama_sekolah}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-    nama_sekolah = row.get("Nama Sekolah", "-")
+            # tombol klik card (tidak ada tulisan detail)
+            if st.button("Lihat", key=f"open_{idx}", use_container_width=True):
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
 
-    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
-    ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
-
-    if "periode 1" in masa:
-        warna_class = "periode1"
-    elif "periode 2" in masa:
-        warna_class = "periode2"
-    elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
-        warna_class = "berhenti"
-    elif "plt" in masa:
-        warna_class = "plt"
-    else:
-        warna_class = "plt"
-
-    with cols[idx % 4]:
-
-        # tampilkan card sekolah
-        st.markdown(
-            f"""
-            <div class="school-card {warna_class}">
-                <span>🏫 {nama_sekolah}</span>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        # tombol transparan (tidak kelihatan) untuk menangkap klik
-        if st.button(" ", key=f"open_{idx}", use_container_width=True):
-            st.session_state.selected_sekolah = nama_sekolah
-            st.session_state.page = "detail"
-            st.rerun()
-
-    idx += 1
+        idx += 1
 
 
 # =========================================================
@@ -1009,6 +989,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
