@@ -857,28 +857,29 @@ elif st.session_state.page == "sekolah":
             card_class = "card-berhenti"
         else:
             card_class = "card-plt"
-            
-with cols[idx % 5]:
 
-    if card_class == "card-periode-1":
-        wrapper_class = "card-btn card-periode-1-btn"
-    elif card_class == "card-periode-2":
-        wrapper_class = "card-btn card-periode-2-btn"
-    elif card_class == "card-berhenti":
-        wrapper_class = "card-btn card-berhenti-btn"
-    else:
-        wrapper_class = "card-btn card-plt-btn"
+        with cols[idx % 5]:
 
-    st.markdown(f'<div class="{wrapper_class}">', unsafe_allow_html=True)
+            if card_class == "card-periode-1":
+                wrapper_class = "card-btn card-periode-1-btn"
+            elif card_class == "card-periode-2":
+                wrapper_class = "card-btn card-periode-2-btn"
+            elif card_class == "card-berhenti":
+                wrapper_class = "card-btn card-berhenti-btn"
+            else:
+                wrapper_class = "card-btn card-plt-btn"
 
-    if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
-        st.session_state.selected_sekolah = nama_sekolah
-        st.session_state.page = "detail"
-        st.rerun()
+            st.markdown(f'<div class="{wrapper_class}">', unsafe_allow_html=True)
 
-    st.markdown("</div>", unsafe_allow_html=True)
+            if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
 
-idx += 1
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        idx += 1
+
 
 
 
@@ -1012,6 +1013,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
