@@ -849,18 +849,19 @@ def page_sekolah():
 
             st.markdown(f"""
             <style>
-            div[data-testid="stButton"] > button[key="sekolah_{idx}"] {{
-                border-radius: 14px !important;
-                height: 110px !important;
-                font-weight: 700 !important;
-                font-size: 14px !important;
-                text-align: center !important;
-                border: 1px solid #ddd !important;
-                box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
-                background: {bg} !important;
-                border-left: 8px solid {border} !important;
-                width: 100% !important;
-            }}
+/* TOMBOL SEKOLAH JADI CARD */
+div[data-testid="stButton"] > button {
+    border-radius: 14px !important;
+    height: 110px !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    border: 1px solid #ddd !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
+    width: 100% !important;
+    white-space: normal !important;
+}
+
             </style>
             """, unsafe_allow_html=True)
 
@@ -966,6 +967,7 @@ def page_detail():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
