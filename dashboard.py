@@ -814,29 +814,21 @@ elif st.session_state.page == "sekolah":
         else:
             card_class = "card-plt"
 
-if st.button(f"🏫 {nama_sekolah}", key=f"detail_{idx}", use_container_width=True):
-    st.session_state.selected_sekolah = nama_sekolah
-    st.session_state.page = "detail"
-    st.rerun()
+        with cols[idx % 5]:
 
-st.markdown(
-    f"""
-    <style>
-    div[data-testid="stButton"] > button {{
-        border-radius: 12px !important;
-        padding: 14px !important;
-        margin-bottom: 16px !important;
-        height: 120px !important;
-        font-weight: 600 !important;
-        font-size: 14px !important;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
-        text-align: center !important;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+            st.markdown(
+                f"""
+                <div class="school-card {card_class}">
+                    🏫 {nama_sekolah}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
+            if st.button("📄 Buka Detail", key=f"detail_{idx}", use_container_width=True):
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
 
         idx += 1
 
@@ -971,7 +963,3 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
-
-
