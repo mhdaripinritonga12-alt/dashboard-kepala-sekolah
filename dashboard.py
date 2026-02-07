@@ -816,9 +816,53 @@ elif st.session_state.page == "sekolah":
 
 def page_sekolah():
 
-    # =========================================================
-    # GRID SEKOLAH 4 KOLOM (CARD BISA DIKLIK TANPA LINK)
-    # =========================================================
+    col_a, col_b = st.columns([1, 5])
+
+    with col_a:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
+            st.rerun()
+
+    with col_b:
+        st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
+
+    # ===============================
+    # AMBIL DATA CABDIN
+    # ===============================
+    df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
+    df_cab = apply_filter(df_cab)
+
+    if df_cab.empty:
+        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
+        st.stop()
+
+    st.divider()
+
+    # ===============================
+    # CSS TOMBOL CARD (SEKALI SAJA)
+    # ===============================
+    st.markdown("""
+    <style>
+    /* TOMBOL SEKOLAH JADI CARD */
+    div[data-testid="stButton"] > button {
+        border-radius: 14px !important;
+        height: 110px !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+        text-align: center !important;
+        border: 1px solid #ddd !important;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
+        width: 100% !important;
+        white-space: normal !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # ===============================
+    # GRID SEKOLAH 4 KOLOM
+    # ===============================
     cols = st.columns(4)
     idx = 0
 
@@ -829,6 +873,7 @@ def page_sekolah():
         masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
         ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
 
+        # warna status
         if "periode 1" in masa:
             bg = "#e3f2fd"
             border = "#2196f3"
@@ -847,21 +892,13 @@ def page_sekolah():
 
         with cols[idx % 4]:
 
+            # CSS per tombol (biar beda warna tiap sekolah)
             st.markdown(f"""
             <style>
-/* TOMBOL SEKOLAH JADI CARD */
-div[data-testid="stButton"] > button {
-    border-radius: 14px !important;
-    height: 110px !important;
-    font-weight: 700 !important;
-    font-size: 14px !important;
-    text-align: center !important;
-    border: 1px solid #ddd !important;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
-    width: 100% !important;
-    white-space: normal !important;
-}
-
+            div[data-testid="stButton"] > button#sekolah_{idx} {{
+                background: {bg} !important;
+                border-left: 8px solid {border} !important;
+            }}
             </style>
             """, unsafe_allow_html=True)
 
@@ -967,6 +1004,7 @@ def page_detail():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
