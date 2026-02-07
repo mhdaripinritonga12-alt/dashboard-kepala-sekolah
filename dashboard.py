@@ -544,31 +544,177 @@ ket_filter = st.sidebar.selectbox(
 search_sekolah = st.sidebar.text_input("Cari Nama Sekolah")
 
 
-def apply_filter(df):
-    if jenjang_filter != "Semua":
-        df = df[df["Jenjang"] == jenjang_filter]
+# =========================================================
+# ✅ HALAMAN SEKOLAH (FINAL - KLIK NAMA SEKOLAH LANGSUNG DETAIL)
+# =========================================================
+def page_sekolah():
 
-    if ket_filter != "Semua":
-        df = df[df["Keterangan Akhir"] == ket_filter]
+    if st.session_state.selected_cabdin is None:
+        st.warning("⚠️ Cabang Dinas belum dipilih.")
+        st.session_state.page = "cabdin"
+        st.rerun()
 
-    if search_nama:
-        df = df[df["Nama Kepala Sekolah"].astype(str).str.contains(search_nama, case=False, na=False)]
+    col_a, col_b = st.columns([1, 6])
 
-    if search_sekolah:
-        df = df[df["Nama Sekolah"].astype(str).str.contains(search_sekolah, case=False, na=False)]
+    with col_a:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
+            st.rerun()
 
-    return df
+    with col_b:
+        st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
+
+    df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
+    df_cab = apply_filter(df_cab)
+
+    if df_cab.empty:
+        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
+        st.stop()
+
+    st.divider()
+
+    # ===============================
+    # CSS TOMBOL SEKOLAH JADI CARD
+    # ===============================
+    st.markdown("""
+    <style>
+    div[data-testid="stButton"] > button {
+        border-radius: 14px !important;
+        height: 110px !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+        text-align: center !important;
+        border: 1px solid #ddd !important;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
+        width: 100% !important;
+        white-space: normal !important;
+        padding: 10px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # ===============================
+    # GRID SEKOLAH 4 KOLOM
+    # ===============================
+    cols = st.columns(4)
+    idx = 0
+
+    for _, row in df_cab.iterrows():
+
+        nama_sekolah = str(row.get("Nama Sekolah", "-"))
+
+        masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+        ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+
+        if "periode 1" in masa:
+            warna = "🟦"
+        elif "periode 2" in masa:
+            warna = "🟨"
+        elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
+            warna = "🟥"
+        elif "plt" in masa:
+            warna = "🟩"
+        else:
+            warna = "⬜"
+
+        with cols[idx % 4]:
+            if st.button(f"{warna} {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
+
+        idx += 1
+
 
 # =========================================================
-# ROUTING DARI URL (?page=detail&sekolah=xxxx)
+# ✅ HALAMAN DETAIL SEKOLAH (FINAL)
 # =========================================================
-params = st.query_params
+def page_detail():
 
-if "page" in params:
-    st.session_state.page = params["page"]
+    if st.session_state.selected_sekolah is None:
+        st.warning("⚠️ Sekolah belum dipilih.")
+        st.session_state.page = "sekolah"
+        st.rerun()
 
-if "sekolah" in params:
-    st.session_state.selected_sekolah = params["sekolah"]
+    col_a, col_b = st.columns([1, 6])
+
+    with col_a:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            st.session_state.page = "sekolah"
+            st.session_state.selected_sekolah = None
+            st.rerun()
+
+    with col_b:
+        st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
+
+    row_detail = df_ks[df_ks["Nama Sekolah"] == st.session_state.selected_sekolah]
+
+    if row_detail.empty:
+        st.error("❌ Data sekolah tidak ditemukan.")
+        st.stop()
+
+    row = row_detail.iloc[0]
+
+    st.divider()
+    st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
+
+    data_items = list(row.items())
+
+    # tambah data pengganti dari file perubahan
+    pengganti = perubahan_kepsek.get(st.session_state.selected_sekolah, "-")
+    data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
+
+    left_items = data_items[0::2]
+    right_items = data_items[1::2]
+
+    col_left, col_right = st.columns(2)
+
+    with col_left:
+        for col, val in left_items:
+            st.markdown(f"**{col}:** {val}")
+
+    with col_right:
+        for col, val in right_items:
+            st.markdown(f"**{col}:** {val}")
+
+    st.divider()
+
+    # ===============================
+    # SIMPAN PENGGANTI
+    # ===============================
+    is_view_only = st.session_state.role in ["Kadis", "View"]
+
+    calon_tersimpan = perubahan_kepsek.get(st.session_state.selected_sekolah)
+
+    if is_view_only:
+        st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
+    else:
+        calon = st.selectbox(
+            "👤 Pilih Calon Pengganti (SIMPEG)",
+            guru_list,
+            key=f"calon_{st.session_state.selected_sekolah}"
+        )
+
+        if st.button("💾 Simpan Pengganti", use_container_width=True):
+            perubahan_kepsek[st.session_state.selected_sekolah] = calon
+            save_perubahan(perubahan_kepsek)
+            st.success(f"✅ Diganti dengan: {calon}")
+            st.rerun()
+
+    # ===============================
+    # KEMBALIKAN KE KEPSEK LAMA
+    # ===============================
+    if calon_tersimpan:
+        st.info(f"👤 Pengganti Saat Ini: **{calon_tersimpan}**")
+
+        if not is_view_only:
+            if st.button("✏️ Kembalikan ke Kepala Sekolah Lama", use_container_width=True):
+                perubahan_kepsek.pop(st.session_state.selected_sekolah, None)
+                save_perubahan(perubahan_kepsek)
+                st.success("🔄 Berhasil dikembalikan")
+                st.rerun()
 
 # =========================================================
 # ROUTING HALAMAN UTAMA
@@ -1010,6 +1156,7 @@ def page_detail():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
