@@ -976,6 +976,8 @@ def page_sekolah():
         st.warning("⚠️ Cabang Dinas belum dipilih.")
         st.session_state.page = "cabdin"
         st.rerun()
+elif st.session_state.page == "detail":
+    page_detail()
 
     # ===============================
     # DATA CABDIN (WAJIB ADA)
@@ -1054,6 +1056,7 @@ def page_sekolah():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
