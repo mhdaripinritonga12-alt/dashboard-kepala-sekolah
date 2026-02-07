@@ -813,7 +813,6 @@ elif st.session_state.page == "sekolah":
     colx6.metric("Bisa Dimutasi", int(rekap_status_cab["Lainnya"]))
 
     st.divider()
-
     # =========================================================
     # GRID SEKOLAH 4 KOLOM (RAPI)
     # =========================================================
@@ -840,22 +839,19 @@ elif st.session_state.page == "sekolah":
 
         with cols[idx % 4]:
 
-            # CARD HTML (warna pasti masuk)
-        with cols[idx % 4]:
-
-    st.markdown(
-        f"""
-        <a href="?page=detail&sekolah={nama_sekolah}" style="text-decoration:none;">
-            <div class="school-card {warna_class}">
-                <span>🏫 {nama_sekolah}</span>
-            </div>
-        </a>
-        """,
-        unsafe_allow_html=True
-    )
-
+            st.markdown(
+                f"""
+                <a href="?page=detail&sekolah={nama_sekolah}" style="text-decoration:none;">
+                    <div class="school-card {warna_class}">
+                        <span>🏫 {nama_sekolah}</span>
+                    </div>
+                </a>
+                """,
+                unsafe_allow_html=True
+            )
 
         idx += 1
+
 
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
@@ -987,6 +983,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
