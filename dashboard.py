@@ -838,57 +838,50 @@ elif st.session_state.page == "sekolah":
     # =========================================================
     # GRID SEKOLAH 4 KOLOM (RAPI)
     # =========================================================
-    cols = st.columns(4)
-    idx = 0
+st.markdown("""
+<style>
 
-    for _, row in df_cab.iterrows():
+/* Semua tombol card sekolah seragam */
+.card-btn > div > button {
+    border-radius: 14px !important;
+    padding: 14px !important;
+    margin-bottom: 18px !important;
+    height: 110px !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
+    text-align: center !important;
+    width: 100% !important;
+    color: black !important;
+    white-space: normal !important;
+}
 
-        nama_sekolah = row.get("Nama Sekolah", "-")
+/* Periode 1 */
+.card-periode-1-btn > div > button {
+    background: #e3f2fd !important;
+    border-left: 6px solid #2196f3 !important;
+}
 
-        masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
-        ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+/* Periode 2 */
+.card-periode-2-btn > div > button {
+    background: #fff8e1 !important;
+    border-left: 6px solid #fbc02d !important;
+}
 
-        # Tentukan warna berdasarkan status
-        if "periode 1" in masa:
-            bg = "#e3f2fd"
-            border = "#2196f3"
-        elif "periode 2" in masa:
-            bg = "#fff8e1"
-            border = "#fbc02d"
-        elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
-            bg = "#fdecea"
-            border = "#d32f2f"
-        else:
-            bg = "#e8f5e9"
-            border = "#2e7d32"
+/* Berhenti / Lebih dari 2 */
+.card-berhenti-btn > div > button {
+    background: #fdecea !important;
+    border-left: 6px solid #d32f2f !important;
+}
 
-        with cols[idx % 4]:
+/* PLT */
+.card-plt-btn > div > button {
+    background: #e8f5e9 !important;
+    border-left: 6px solid #2e7d32 !important;
+}
 
-            safe_label = f"🏫 {nama_sekolah}".replace('"', '\\"')
-
-            st.markdown(
-                f"""
-                <style>
-                button[aria-label="{safe_label}"] {{
-                    background: {bg} !important;
-                    border-left: 6px solid {border} !important;
-                    border-radius: 14px !important;
-                    padding: 14px !important;
-                    height: 110px !important;
-                    font-weight: 700 !important;
-                    font-size: 14px !important;
-                    box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
-                    text-align: center !important;
-                    width: 100% !important;
-                    color: black !important;
-                    white-space: normal !important;
-                }}
-                </style>
-                """,
-                unsafe_allow_html=True
-            )
-
-
+</style>
+""", unsafe_allow_html=True)
 
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
@@ -1020,6 +1013,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
