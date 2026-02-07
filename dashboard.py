@@ -571,9 +571,10 @@ if "sekolah" in params:
     st.session_state.selected_sekolah = params["sekolah"]
 
 # =========================================================
-# ROUTING HALAMAN UTAMA
+# ROUTING HALAMAN UTAMA (FINAL BENAR)
 # =========================================================
 if st.session_state.page == "cabdin":
+
     # =========================================================
     # HEADER DASHBOARD + TOMBOL UTAMA
     # =========================================================
@@ -610,7 +611,6 @@ if st.session_state.page == "cabdin":
 
     st.divider()
 
-
     st.subheader("🏢 Cabang Dinas Wilayah")
 
     df_view = apply_filter(df_ks)
@@ -625,81 +625,9 @@ if st.session_state.page == "cabdin":
                 st.session_state.page = "sekolah"
                 st.rerun()
 
-    # =========================================================
-    # 📊 REKAP & ANALISIS PIMPINAN (HANYA DI HALAMAN DEPAN)
-    # =========================================================
     st.divider()
-    st.markdown("## 📑 Rekap & Analisis Kepala Sekolah (Pimpinan)")
-
-    df_rekap = df_ks.copy()
-    df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
-
-    rekap_cabdin = (
-        df_rekap
-        .groupby(["Cabang Dinas", "Status Regulatif"])
-        .size()
-        .unstack(fill_value=0)
-        .reset_index()
-    )
-
-    rekap_cabdin["__urut__"] = rekap_cabdin["Cabang Dinas"].apply(
-        lambda x: int("".join(filter(str.isdigit, str(x))))
-        if "".join(filter(str.isdigit, str(x))) else 999
-    )
-
-    rekap_cabdin = rekap_cabdin.sort_values("__urut__").drop(columns="__urut__")
-
-    st.dataframe(rekap_cabdin, use_container_width=True)
-
-    excel_file = "rekap_kepala_sekolah_per_cabdin.xlsx"
-    rekap_cabdin.to_excel(excel_file, index=False)
-
-    with open(excel_file, "rb") as f:
-        st.download_button(
-            label="📥 Download Rekap Kepala Sekolah (Excel)",
-            data=f,
-            file_name=excel_file,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
-    st.subheader("📊 Grafik Status Kepala Sekolah")
-
-    grafik_data = (
-        df_rekap["Status Regulatif"]
-        .value_counts()
-        .reindex([
-            "Aktif Periode 1",
-            "Aktif Periode 2",
-            "Lebih dari 2 Periode",
-            "Plt",
-            "Harus Diberhentikan",
-            "Lainnya"
-        ], fill_value=0)
-    )
-
-    st.bar_chart(grafik_data)
-
-    st.divider()
-    st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
-
-    st.info("""
-    **Permendikdasmen Nomor 7 Tahun 2025**
-
-    **Pokok Ketentuan:**
-    1. Kepala Sekolah diberikan tugas maksimal **2 (dua) periode**
-    2. Satu periode = **4 (empat) tahun**
-    3. Kepala Sekolah yang telah menjabat **Lebih 2 periode wajib diberhentikan sesuai pasal 31**
-    4. Kepala Sekolah yang telah menjabat **1 periode bisa diperpanjang jika memiliki Sertifikat BCKS (Pasal 32)**
-    5. Sekolah tanpa Kepala Sekolah definitif **wajib segera diisi (Plt/Definitif)**
-    6. Penugasan Kepala Sekolah merupakan **tugas tambahan ASN**
-    """)
-
-    st.success("📌 Status dan rekomendasi dashboard telah diselaraskan dengan Permendikdasmen No. 7 Tahun 2025")
 
 
-# =========================================================
-# HALAMAN REKAP BISA DI BERHENTIKAN
-# =========================================================
 elif st.session_state.page == "rekap":
 
     col_back, col_title = st.columns([1, 10])
@@ -738,30 +666,9 @@ elif st.session_state.page == "rekap":
 
     st.dataframe(tampil, use_container_width=True, hide_index=True)
 
-    st.markdown("### 📄 Lihat Keterangan Lengkap")
-
-    sekolah_opsi = df_bisa["Nama Sekolah"].unique().tolist()
-    pilih_sekolah = st.selectbox("Pilih Sekolah", sekolah_opsi)
-
-    if st.button("📌 Keterangan Lengkap (1 Halaman)", use_container_width=True):
-        st.session_state.selected_sekolah = pilih_sekolah
-        st.session_state.page = "detail"
-        st.rerun()
-
     st.divider()
 
-    sekolah_opsi = df_bisa["Nama Sekolah"].unique().tolist()
-    pilih_sekolah = st.selectbox("📄 Pilih Sekolah untuk lihat detail", sekolah_opsi)
 
-    if st.button("📌 Lihat Detail Sekolah", use_container_width=True):
-        st.session_state.selected_sekolah = pilih_sekolah
-        st.session_state.page = "detail"
-        st.rerun()
-
-
-# =========================================================
-# HALAMAN SEKOLAH (LIST)
-# =========================================================
 elif st.session_state.page == "sekolah":
 
     col_a, col_b = st.columns([1, 5])
@@ -785,81 +692,52 @@ elif st.session_state.page == "sekolah":
 
     st.divider()
 
+    # =========================================================
+    # GRID SEKOLAH (CARD KLIK TANPA DETAIL BUTTON)
+    # =========================================================
     cols = st.columns(4)
     idx = 0
 
     for _, row in df_cab.iterrows():
         nama_sekolah = row.get("Nama Sekolah", "-")
 
-        if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
-            st.session_state.selected_sekolah = nama_sekolah
-            st.session_state.page = "detail"
-            st.rerun()
+        masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+        ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+
+        if "periode 1" in masa:
+            warna_class = "periode1"
+        elif "periode 2" in masa:
+            warna_class = "periode2"
+        elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
+            warna_class = "berhenti"
+        elif "plt" in masa:
+            warna_class = "plt"
+        else:
+            warna_class = "plt"
+
+        with cols[idx % 4]:
+
+            # tombol dibuat transparan tapi area tetap klik
+            klik = st.button(" ", key=f"klik_{idx}", use_container_width=True)
+
+            st.markdown(
+                f"""
+                <div class="school-card {warna_class}" style="margin-top:-60px;">
+                    <span>🏫 {nama_sekolah}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            if klik:
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
 
         idx += 1
 
-    # =========================================================
-    # GRID SEKOLAH 4 KOLOM (CARD BISA DIKLIK TANPA LINK)
-    # =========================================================
-cols = st.columns(4)
-idx = 0
 
-for _, row in df_cab.iterrows():
-
-    nama_sekolah = row.get("Nama Sekolah", "-")
-
-    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
-    ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
-
-    if "periode 1" in masa:
-        warna_class = "periode1"
-    elif "periode 2" in masa:
-        warna_class = "periode2"
-    elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
-        warna_class = "berhenti"
-    elif "plt" in masa:
-        warna_class = "plt"
-    else:
-        warna_class = "plt"
-
-    with cols[idx % 4]:
-
-        # tombol tapi tampilannya dibuat seperti card
-        if st.button(f"🏫 {nama_sekolah}", key=f"card_{idx}", use_container_width=True):
-            st.session_state.selected_sekolah = nama_sekolah
-            st.session_state.page = "detail"
-            st.rerun()
-
-        # styling tombol agar seperti card warna
-        st.markdown(
-            f"""
-            <style>
-            div[data-testid="stButton"] > button[kind="secondary"] {{
-                border-radius: 14px !important;
-                padding: 12px !important;
-                height: 110px !important;
-                font-weight: 700 !important;
-                font-size: 14px !important;
-                text-align: center !important;
-                box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
-                border: 1px solid #ddd !important;
-                width: 100% !important;
-            }}
-
-            /* warna sesuai class */
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-
-    idx += 1
-
-
-
-# =========================================================
-# HALAMAN DETAIL SEKOLAH
-# =========================================================
-    elif st.session_state.page == "detail":
+elif st.session_state.page == "detail":
 
     if st.session_state.selected_sekolah is None:
         st.warning("⚠️ Sekolah belum dipilih.")
@@ -884,6 +762,13 @@ for _, row in df_cab.iterrows():
         st.stop()
 
     row = row_detail.iloc[0]
+
+    st.divider()
+    st.markdown("### 📝 Data Lengkap (Sesuai Excel)")
+
+    for col in row.index:
+        st.write(f"**{col}:** {row[col]}")
+
 
     ket_jabatan = str(row.get("Keterangan Jabatan", "")).lower()
     ket_bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
@@ -986,6 +871,7 @@ for _, row in df_cab.iterrows():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
