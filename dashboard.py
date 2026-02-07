@@ -483,8 +483,52 @@ st.markdown("""
     background: #e8f5e9 !important;
     border-left: 6px solid #2e7d32;
 }
+
+/* ==============================
+   BUTTON CARD SEKOLAH (KLIK)
+   ============================== */
+.card-btn button {
+    border-radius: 12px !important;
+    padding: 14px !important;
+    margin-bottom: 16px !important;
+    height: 120px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
+    text-align: center !important;
+    width: 100% !important;
+}
+
+/* Periode 1 */
+.card-periode-1-btn button {
+    background: #e3f2fd !important;
+    border-left: 6px solid #2196f3 !important;
+    color: black !important;
+}
+
+/* Periode 2 */
+.card-periode-2-btn button {
+    background: #fff8e1 !important;
+    border-left: 6px solid #fbc02d !important;
+    color: black !important;
+}
+
+/* Berhenti / Lebih dari 2 */
+.card-berhenti-btn button {
+    background: #fdecea !important;
+    border-left: 6px solid #d32f2f !important;
+    color: black !important;
+}
+
+/* PLT */
+.card-plt-btn button {
+    background: #e8f5e9 !important;
+    border-left: 6px solid #2e7d32 !important;
+    color: black !important;
+}
 </style>
 """, unsafe_allow_html=True)
+
 
 /* Tombol Card Sekolah */
 .card-btn button {
@@ -1008,6 +1052,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
