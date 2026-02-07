@@ -450,87 +450,53 @@ def buat_pdf_surat(row):
 # =========================================================
 st.markdown("""
 <style>
-.school-card {
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 16px;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-weight: 600;
-    font-size: 14px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-}
-
-.card-periode-1 {
-    background: #e3f2fd !important;
-    border-left: 6px solid #2196f3;
-}
-
-.card-periode-2 {
-    background: #fff8e1 !important;
-    border-left: 6px solid #fbc02d;
-}
-
-.card-berhenti {
-    background: #fdecea !important;
-    border-left: 6px solid #d32f2f;
-}
-
-.card-plt {
-    background: #e8f5e9 !important;
-    border-left: 6px solid #2e7d32;
-}
 
 /* ==============================
-   BUTTON CARD SEKOLAH (KLIK)
+   CARD SEKOLAH BUTTON FINAL
    ============================== */
-.card-btn > div > button {
-    border-radius: 12px !important;
+.card-btn button {
+    border-radius: 14px !important;
     padding: 14px !important;
-    margin-bottom: 16px !important;
-    height: 120px !important;
-    font-weight: 600 !important;
+    margin-bottom: 18px !important;
+
+    height: 150px !important;  
+    min-height: 150px !important;
+
+    font-weight: 700 !important;
     font-size: 14px !important;
     box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
     text-align: center !important;
     width: 100% !important;
+    color: black !important;
+    white-space: normal !important;
 }
 
 /* Periode 1 */
-.card-periode-1-btn > div > button {
+.card-periode-1-btn button {
     background: #e3f2fd !important;
-    border-left: 6px solid #2196f3 !important;
-    color: black !important;
+    border-left: 7px solid #2196f3 !important;
 }
 
 /* Periode 2 */
-.card-periode-2-btn > div > button {
+.card-periode-2-btn button {
     background: #fff8e1 !important;
-    border-left: 6px solid #fbc02d !important;
-    color: black !important;
+    border-left: 7px solid #fbc02d !important;
 }
 
 /* Berhenti / Lebih dari 2 */
-.card-berhenti-btn > div > button {
+.card-berhenti-btn button {
     background: #fdecea !important;
-    border-left: 6px solid #d32f2f !important;
-    color: black !important;
+    border-left: 7px solid #d32f2f !important;
 }
 
 /* PLT */
-.card-plt-btn > div > button {
+.card-plt-btn button {
     background: #e8f5e9 !important;
-    border-left: 6px solid #2e7d32 !important;
-    color: black !important;
+    border-left: 7px solid #2e7d32 !important;
 }
+
 </style>
 """, unsafe_allow_html=True)
-
-
-
 # =========================================================
 # 🔍 PENCARIAN GURU SIMPEG
 # =========================================================
@@ -1000,6 +966,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
