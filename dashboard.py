@@ -451,52 +451,59 @@ def buat_pdf_surat(row):
 st.markdown("""
 <style>
 
-/* ==============================
-   CARD SEKOLAH BUTTON FINAL
-   ============================== */
-.card-btn button {
+/* ==========================================
+   CARD SEKOLAH (BUTTON STREAMLIT FIX)
+   ========================================== */
+
+/* paksa semua tombol di dalam wrapper card-btn */
+.card-btn div button {
     border-radius: 14px !important;
     padding: 14px !important;
     margin-bottom: 18px !important;
 
-    height: 150px !important;  
-    min-height: 150px !important;
+    height: 140px !important;
+    min-height: 140px !important;
 
     font-weight: 700 !important;
     font-size: 14px !important;
+
     box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
     text-align: center !important;
+
     width: 100% !important;
     color: black !important;
+
     white-space: normal !important;
+    line-height: 1.2 !important;
 }
 
 /* Periode 1 */
-.card-periode-1-btn button {
-    background: #e3f2fd !important;
-    border-left: 7px solid #2196f3 !important;
+.card-periode-1-btn div button {
+    background-color: #e3f2fd !important;
+    border-left: 8px solid #2196f3 !important;
 }
 
 /* Periode 2 */
-.card-periode-2-btn button {
-    background: #fff8e1 !important;
-    border-left: 7px solid #fbc02d !important;
+.card-periode-2-btn div button {
+    background-color: #fff8e1 !important;
+    border-left: 8px solid #fbc02d !important;
 }
 
-/* Berhenti / Lebih dari 2 */
-.card-berhenti-btn button {
-    background: #fdecea !important;
-    border-left: 7px solid #d32f2f !important;
+/* Lebih dari 2 / berhenti */
+.card-berhenti-btn div button {
+    background-color: #fdecea !important;
+    border-left: 8px solid #d32f2f !important;
 }
 
 /* PLT */
-.card-plt-btn button {
-    background: #e8f5e9 !important;
-    border-left: 7px solid #2e7d32 !important;
+.card-plt-btn div button {
+    background-color: #e8f5e9 !important;
+    border-left: 8px solid #2e7d32 !important;
 }
 
 </style>
 """, unsafe_allow_html=True)
+
 # =========================================================
 # 🔍 PENCARIAN GURU SIMPEG
 # =========================================================
@@ -966,6 +973,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
