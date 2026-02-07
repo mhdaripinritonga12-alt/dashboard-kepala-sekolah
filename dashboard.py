@@ -931,6 +931,8 @@ elif st.session_state.page == "rekap":
 # =========================================================
 elif st.session_state.page == "sekolah":
     page_sekolah()
+elif st.session_state.page == "detail":
+    page_detail()
 
     df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
     df_cab = apply_filter(df_cab)
@@ -976,8 +978,7 @@ def page_sekolah():
         st.warning("⚠️ Cabang Dinas belum dipilih.")
         st.session_state.page = "cabdin"
         st.rerun()
-elif st.session_state.page == "detail":
-    page_detail()
+
 
     # ===============================
     # DATA CABDIN (WAJIB ADA)
@@ -1056,6 +1057,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
