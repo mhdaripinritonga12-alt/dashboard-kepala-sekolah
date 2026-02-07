@@ -841,7 +841,7 @@ elif st.session_state.page == "sekolah":
         with cols[idx % 4]:
 
             # CARD HTML (warna pasti masuk)
-   with cols[idx % 4]:
+        with cols[idx % 4]:
 
     st.markdown(
         f"""
@@ -987,6 +987,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
