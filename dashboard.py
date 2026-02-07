@@ -838,50 +838,37 @@ elif st.session_state.page == "sekolah":
     # =========================================================
     # GRID SEKOLAH 4 KOLOM (RAPI)
     # =========================================================
-st.markdown("""
-<style>
+    cols = st.columns(4)
+    idx = 0
 
-/* Semua tombol card sekolah seragam */
-.card-btn > div > button {
-    border-radius: 14px !important;
-    padding: 14px !important;
-    margin-bottom: 18px !important;
-    height: 110px !important;
-    font-weight: 700 !important;
-    font-size: 14px !important;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
-    text-align: center !important;
-    width: 100% !important;
-    color: black !important;
-    white-space: normal !important;
-}
+    for _, row in df_cab.iterrows():
 
-/* Periode 1 */
-.card-periode-1-btn > div > button {
-    background: #e3f2fd !important;
-    border-left: 6px solid #2196f3 !important;
-}
+        nama_sekolah = row.get("Nama Sekolah", "-")
 
-/* Periode 2 */
-.card-periode-2-btn > div > button {
-    background: #fff8e1 !important;
-    border-left: 6px solid #fbc02d !important;
-}
+        masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+        ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
 
-/* Berhenti / Lebih dari 2 */
-.card-berhenti-btn > div > button {
-    background: #fdecea !important;
-    border-left: 6px solid #d32f2f !important;
-}
+        if "periode 1" in masa:
+            wrapper_class = "card-btn card-periode-1-btn"
+        elif "periode 2" in masa:
+            wrapper_class = "card-btn card-periode-2-btn"
+        elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
+            wrapper_class = "card-btn card-berhenti-btn"
+        else:
+            wrapper_class = "card-btn card-plt-btn"
 
-/* PLT */
-.card-plt-btn > div > button {
-    background: #e8f5e9 !important;
-    border-left: 6px solid #2e7d32 !important;
-}
+        with cols[idx % 4]:
 
-</style>
-""", unsafe_allow_html=True)
+            st.markdown(f'<div class="{wrapper_class}">', unsafe_allow_html=True)
+
+            if st.button(f"🏫 {nama_sekolah}", key=f"sekolah_{idx}", use_container_width=True):
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        idx += 1
 
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
@@ -1013,6 +1000,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
