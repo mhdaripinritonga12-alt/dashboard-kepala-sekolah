@@ -543,7 +543,6 @@ ket_filter = st.sidebar.selectbox(
 
 search_sekolah = st.sidebar.text_input("Cari Nama Sekolah")
 
-
 # =========================================================
 # ✅ HALAMAN SEKOLAH (FINAL - KLIK NAMA SEKOLAH LANGSUNG DETAIL)
 # =========================================================
@@ -553,18 +552,18 @@ def page_sekolah():
         st.warning("⚠️ Cabang Dinas belum dipilih.")
         st.session_state.page = "cabdin"
         st.rerun()
+
     col_a, col_b = st.columns([1, 6])
 
-with col_a:
-    if st.button("⬅️ Kembali", key="btn_back_sekolah", use_container_width=True):
-        st.session_state.page = "cabdin"
-        st.session_state.selected_cabdin = None
-        st.session_state.selected_sekolah = None
-        st.rerun()
+    with col_a:
+        if st.button("⬅️ Kembali", key="btn_back_sekolah", use_container_width=True):
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
+            st.rerun()
 
-with col_b:
-    st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
-
+    with col_b:
+        st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
 
     df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
     df_cab = apply_filter(df_cab)
@@ -602,7 +601,6 @@ with col_b:
     idx = 0
 
     for _, row in df_cab.iterrows():
-
         nama_sekolah = str(row.get("Nama Sekolah", "-"))
 
         masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
@@ -626,7 +624,6 @@ with col_b:
                 st.rerun()
 
         idx += 1
-
 
 # =========================================================
 # ✅ HALAMAN DETAIL SEKOLAH (FINAL)
@@ -1071,6 +1068,7 @@ with col_b:
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
