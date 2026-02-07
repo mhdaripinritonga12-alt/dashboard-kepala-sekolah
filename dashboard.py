@@ -817,46 +817,59 @@ elif st.session_state.page == "sekolah":
     # =========================================================
     # GRID SEKOLAH 4 KOLOM (CARD BISA DIKLIK TANPA LINK)
     # =========================================================
-    cols = st.columns(4)
-    idx = 0
+cols = st.columns(4)
+idx = 0
 
-    for _, row in df_cab.iterrows():
+for _, row in df_cab.iterrows():
 
-        nama_sekolah = row.get("Nama Sekolah", "-")
+    nama_sekolah = row.get("Nama Sekolah", "-")
 
-        masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
-        ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+    ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
 
-        if "periode 1" in masa:
-            warna_class = "periode1"
-        elif "periode 2" in masa:
-            warna_class = "periode2"
-        elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
-            warna_class = "berhenti"
-        elif "plt" in masa:
-            warna_class = "plt"
-        else:
-            warna_class = "plt"
+    if "periode 1" in masa:
+        warna_class = "periode1"
+    elif "periode 2" in masa:
+        warna_class = "periode2"
+    elif "lebih dari 2" in masa or ">2" in masa or "diberhentikan" in ket_akhir:
+        warna_class = "berhenti"
+    elif "plt" in masa:
+        warna_class = "plt"
+    else:
+        warna_class = "plt"
 
-        with cols[idx % 4]:
+    with cols[idx % 4]:
 
-            # Card tampil
-            st.markdown(
-                f"""
-                <div class="school-card {warna_class}">
-                    <span>🏫 {nama_sekolah}</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+        # tombol tapi tampilannya dibuat seperti card
+        if st.button(f"🏫 {nama_sekolah}", key=f"card_{idx}", use_container_width=True):
+            st.session_state.selected_sekolah = nama_sekolah
+            st.session_state.page = "detail"
+            st.rerun()
 
-            # tombol klik card (tidak ada tulisan detail)
-            if st.button("Lihat", key=f"open_{idx}", use_container_width=True):
-                st.session_state.selected_sekolah = nama_sekolah
-                st.session_state.page = "detail"
-                st.rerun()
+        # styling tombol agar seperti card warna
+        st.markdown(
+            f"""
+            <style>
+            div[data-testid="stButton"] > button[kind="secondary"] {{
+                border-radius: 14px !important;
+                padding: 12px !important;
+                height: 110px !important;
+                font-weight: 700 !important;
+                font-size: 14px !important;
+                text-align: center !important;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
+                border: 1px solid #ddd !important;
+                width: 100% !important;
+            }}
 
-        idx += 1
+            /* warna sesuai class */
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+    idx += 1
+
 
 
 # =========================================================
@@ -989,6 +1002,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
