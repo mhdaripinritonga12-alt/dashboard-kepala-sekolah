@@ -456,7 +456,7 @@ st.markdown("""
     border-radius: 14px;
     padding: 12px;
     margin-bottom: 18px;
-    height: 130px; /* tinggi seragam */
+    height: 110px; /* tinggi seragam */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -831,20 +831,19 @@ elif st.session_state.page == "sekolah":
         with cols[idx % 4]:
 
             # CARD HTML (warna pasti masuk)
-            st.markdown(
-                f"""
-                <div class="school-card {warna_class}">
-                    <span>🏫 {nama_sekolah}</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+            with cols[idx % 4]:
 
-            # tombol klik detail
-            if st.button("📄 Detail", key=f"detail_{idx}", use_container_width=True):
-                st.session_state.selected_sekolah = nama_sekolah
-                st.session_state.page = "detail"
-                st.rerun()
+    st.markdown(
+        f"""
+        <a href="?page=detail&sekolah={nama_sekolah}" style="text-decoration:none;">
+            <div class="school-card {warna_class}">
+                <span>🏫 {nama_sekolah}</span>
+            </div>
+        </a>
+        """,
+        unsafe_allow_html=True
+    )
+
 
         idx += 1
 
@@ -978,6 +977,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
