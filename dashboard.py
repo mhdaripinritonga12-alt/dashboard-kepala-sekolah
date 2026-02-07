@@ -763,6 +763,7 @@ elif st.session_state.page == "rekap":
 # HALAMAN SEKOLAH (LIST)
 # =========================================================
 elif st.session_state.page == "sekolah":
+    page_sekolah()
 
     col_a, col_b = st.columns([1, 5])
 
@@ -1009,6 +1010,7 @@ def page_detail():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
