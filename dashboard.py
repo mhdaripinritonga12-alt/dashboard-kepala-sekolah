@@ -447,13 +447,11 @@ def buat_pdf_surat(row):
 
 # =========================================================
 # CSS (TAMPILAN DINAS)
-# =========================================================# =========================================================
-# CSS (TAMPILAN DINAS)
 # =========================================================
 st.markdown("""
 <style>
 
-/* CARD SEKOLAH FIX FINAL */
+/* CARD SEKOLAH */
 .school-card {
     border-radius: 14px;
     padding: 12px;
@@ -496,9 +494,12 @@ st.markdown("""
 }
 
 .plt {
-    background: #e8
+    background: #e8f5e9;
+    border-left: 8px solid #2e7d32;
+}
 
-
+</style>
+""", unsafe_allow_html=True)
 # =========================================================
 # 🔍 PENCARIAN GURU SIMPEG
 # =========================================================
@@ -1001,6 +1002,7 @@ for _, row in df_cab.iterrows():
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
