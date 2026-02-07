@@ -487,7 +487,7 @@ st.markdown("""
 /* ==============================
    BUTTON CARD SEKOLAH (KLIK)
    ============================== */
-.card-btn button {
+.card-btn > div > button {
     border-radius: 12px !important;
     padding: 14px !important;
     margin-bottom: 16px !important;
@@ -507,21 +507,21 @@ st.markdown("""
 }
 
 /* Periode 2 */
-.card-periode-2-btn button {
+.card-periode-2-btn > div > button {
     background: #fff8e1 !important;
     border-left: 6px solid #fbc02d !important;
     color: black !important;
 }
 
 /* Berhenti / Lebih dari 2 */
-.card-berhenti-btn button {
+.card-berhenti-btn > div > button {
     background: #fdecea !important;
     border-left: 6px solid #d32f2f !important;
     color: black !important;
 }
 
 /* PLT */
-.card-plt-btn button {
+.card-plt-btn > div > button {
     background: #e8f5e9 !important;
     border-left: 6px solid #2e7d32 !important;
     color: black !important;
@@ -1028,6 +1028,7 @@ elif st.session_state.page == "detail":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
