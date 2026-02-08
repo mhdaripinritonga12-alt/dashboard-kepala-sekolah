@@ -481,7 +481,7 @@ def page_detail():
     row = row_detail.iloc[0]
 
     st.divider()
-    st.markdown("## 📝 Data Lengkap (Sesuai Excel)")
+    st.markdown("## 📝 Data Lengkap (Sumber Dapodikdasmen dan SIM KSPSTK)")
 
     # =========================================================
     # WARNA FIELD SESUAI PERMINTAAN
@@ -640,3 +640,4 @@ elif st.session_state.page == "rekap":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
