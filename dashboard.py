@@ -156,7 +156,7 @@ if "Keterangan Jabatan" not in df_ks.columns:
     df_ks["Keterangan Jabatan"] = ""
 
 # =========================================================
-# NORMALISASI NAMA SEKOLAH (PENTING BIAR DETAIL TIDAK KOSONG)
+# NORMALISASI NAMA SEKOLAH
 # =========================================================
 df_ks["Nama Sekolah"] = (
     df_ks["Nama Sekolah"]
@@ -184,7 +184,7 @@ def urutkan_cabdin(cabdin_list):
     return sorted(cabdin_list, key=ambil_angka)
 
 # =========================================================
-# LOGIKA STATUS PERIODE
+# LOGIKA STATUS
 # =========================================================
 def map_status(row):
     masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).strip().lower()
@@ -246,9 +246,6 @@ if not st.session_state.login:
 
     st.stop()
 
-# =========================================================
-# HEADER LOGIN INFO
-# =========================================================
 st.caption(f"👤 Login sebagai: **{st.session_state.role}**")
 
 # =========================================================
@@ -351,61 +348,11 @@ def page_cabdin():
                 st.rerun()
 
     st.divider()
-    st.markdown("## 📑 Rekap & Analisis Kepala Sekolah (Pimpinan)")
+    st.markdown("## ⚖️ Permendikdasmen No 7 Tahun 2025")
 
-    df_rekap = df_ks.copy()
-    df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
-
-    rekap_cabdin = (
-        df_rekap.groupby(["Cabang Dinas", "Status Regulatif"])
-        .size()
-        .unstack(fill_value=0)
-        .reset_index()
-    )
-
-    rekap_cabdin["__urut__"] = rekap_cabdin["Cabang Dinas"].apply(
-        lambda x: int("".join(filter(str.isdigit, str(x))))
-        if "".join(filter(str.isdigit, str(x))) else 999
-    )
-
-    rekap_cabdin = rekap_cabdin.sort_values("__urut__").drop(columns="__urut__")
-    st.dataframe(rekap_cabdin, use_container_width=True)
-
-    excel_file = "rekap_kepala_sekolah_per_cabdin.xlsx"
-    rekap_cabdin.to_excel(excel_file, index=False)
-
-    with open(excel_file, "rb") as f:
-        st.download_button(
-            label="📥 Download Rekap (Excel)",
-            data=f,
-            file_name=excel_file,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
-    st.subheader("📊 Grafik Status Kepala Sekolah")
-
-    grafik_data = (
-        df_rekap["Status Regulatif"]
-        .value_counts()
-        .reindex([
-            "Aktif Periode 1",
-            "Aktif Periode 2",
-            "Lebih dari 2 Periode",
-            "Plt",
-            "Harus Diberhentikan",
-            "Lainnya"
-        ], fill_value=0)
-    )
-
-    st.bar_chart(grafik_data)
-
-    # =========================================================
-    # PERMENDIKDASMEN NO 7 TAHUN 2025 (SEBELUM FOOTER)
-    # =========================================================
-    st.divider()
     st.markdown("""
-    <div style="background:#0d6efd; padding:14px; border-radius:14px; color:white; font-size:16px; font-weight:700;">
-        ⚖️ Permendikdasmen Nomor 7 Tahun 2025
+    <div style="background:#0d6efd; padding:14px; border-radius:14px; color:white; font-size:16px; font-weight:800;">
+        Permendikdasmen Nomor 7 Tahun 2025 (Maksimal 2 Periode / 1 Periode 4 Tahun)
     </div>
     """, unsafe_allow_html=True)
 
@@ -481,6 +428,17 @@ def page_sekolah():
         idx += 1
 
 # =========================================================
+# FUNGSI WARNA TEXT FIELD DI DETAIL
+# =========================================================
+def tampil_colored_field(label, value, bg="#f1f1f1", text_color="black"):
+    st.markdown(f"""
+    <div style="padding:10px; border-radius:10px; background:{bg}; margin-bottom:8px;">
+        <b>{label}:</b>
+        <span style="color:{text_color}; font-weight:700;"> {value}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+# =========================================================
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
 def page_detail():
@@ -522,61 +480,62 @@ def page_detail():
 
     row = row_detail.iloc[0]
 
-    # =========================================================
-    # WARNA STATUS (TANPA KOLOM BARU)
-    # =========================================================
-    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
-    jabatan = str(row.get("Keterangan Jabatan", "")).lower()
-    bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
-
-    status_color = "#0d6efd"
-    if "periode 2" in masa:
-        status_color = "#ffc107"
-    if "lebih dari 2" in masa or ">2" in masa:
-        status_color = "#dc3545"
-
-    jabatan_color = "#0d6efd"
-    if "plt" in jabatan:
-        jabatan_color = "#198754"
-
-    bcks_color = "#fd7e14"
-    if "sudah" in bcks:
-        bcks_color = "#198754"
-
-    st.markdown(f"""
-    <div style="display:flex; gap:15px; flex-wrap:wrap; margin-top:10px;">
-        <div style="background:{status_color}; padding:14px 22px; border-radius:18px; color:white; font-weight:800; font-size:18px;">
-            {map_status(row)}
-        </div>
-        <div style="background:{jabatan_color}; padding:14px 22px; border-radius:18px; color:white; font-weight:800; font-size:18px;">
-            {row.get("Keterangan Jabatan","-")}
-        </div>
-        <div style="background:{bcks_color}; padding:14px 22px; border-radius:18px; color:black; font-weight:900; font-size:18px;">
-            {"Sudah BCKS" if "sudah" in bcks else "Belum BCKS"}
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
     st.divider()
     st.markdown("## 📝 Data Lengkap (Sesuai Excel)")
 
-    data_items = list(row.items())
+    # =========================================================
+    # WARNA FIELD SESUAI PERMINTAAN
+    # =========================================================
+    ket_akhir = str(row.get("Keterangan Akhir", "-")).lower()
+    jabatan = str(row.get("Keterangan Jabatan", "-")).lower()
+    bcks = str(row.get("Ket Sertifikat BCKS", "-")).lower()
 
-    pengganti = perubahan_kepsek.get(nama, "-")
-    data_items.append(("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti))
+    # 1) Keterangan Akhir
+    bg_ket = "#dbeeff"  # biru muda
+    if "periode 2" in ket_akhir:
+        bg_ket = "#fff3cd"  # kuning
+    if "lebih dari 2" in ket_akhir or ">2" in ket_akhir:
+        bg_ket = "#f8d7da"  # merah muda
 
-    left_items = data_items[0::2]
-    right_items = data_items[1::2]
+    # 2) Keterangan Jabatan
+    bg_jabatan = "#dbeeff"  # definitif biru muda
+    if "plt" in jabatan:
+        bg_jabatan = "#d1e7dd"  # hijau
 
+    # 3) Ket Sertifikat BCKS
+    bg_bcks = "#dbeeff"  # sudah biru muda
+    if "belum" in bcks or "tidak" in bcks:
+        bg_bcks = "#d1e7dd"  # hijau muda
+
+    # =========================================================
+    # DATA DUA KOLOM
+    # =========================================================
     col_left, col_right = st.columns(2)
 
     with col_left:
-        for col, val in left_items:
-            st.markdown(f"**{col}:** {val}")
+        tampil_colored_field("NO", row.get("NO", "-"))
+        tampil_colored_field("Nama Kepala Sekolah", row.get("Nama Kepala Sekolah", "-"))
+        tampil_colored_field("Status", row.get("Status", "-"))
+        tampil_colored_field("Cabang Dinas", row.get("Cabang Dinas", "-"))
+        tampil_colored_field("Ket Sertifikat BCKS", row.get("Ket Sertifikat BCKS", "-"), bg=bg_bcks)
+        tampil_colored_field("Tahun Berjalan", row.get("Tahun Berjalan", "-"))
+
+        tampil_colored_field("Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode (1 Periode 4 Tahun)",
+                             row.get("Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode (1 Periode 4 Tahun)", "-"))
+
+        tampil_colored_field("Keterangan Akhir", row.get("Keterangan Akhir", "-"), bg=bg_ket)
 
     with col_right:
-        for col, val in right_items:
-            st.markdown(f"**{col}:** {val}")
+        tampil_colored_field("Nama Sekolah", row.get("Nama Sekolah", "-"))
+        tampil_colored_field("Jenjang", row.get("Jenjang", "-"))
+        tampil_colored_field("Kabupaten", row.get("Kabupaten", "-"))
+        tampil_colored_field("Keterangan Jabatan", row.get("Keterangan Jabatan", "-"), bg=bg_jabatan)
+        tampil_colored_field("Tahun Pengangkatan", row.get("Tahun Pengangkatan", "-"))
+        tampil_colored_field("Masa Periode Sesuai KSPSTK", row.get("Masa Periode Sesuai KSPSTK", "-"))
+        tampil_colored_field("Riwayat Dapodik", row.get("Riwayat Dapodik", "-"))
+
+        pengganti = perubahan_kepsek.get(nama, "-")
+        tampil_colored_field("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti)
 
     st.divider()
 
@@ -584,7 +543,6 @@ def page_detail():
     # SIMPAN PENGGANTI
     # =========================================================
     is_view_only = st.session_state.role in ["Kadis", "View"]
-
     calon_tersimpan = perubahan_kepsek.get(nama)
 
     if is_view_only:
