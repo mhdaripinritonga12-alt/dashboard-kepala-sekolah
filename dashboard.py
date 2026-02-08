@@ -7,7 +7,7 @@ from reportlab.pdfgen import canvas
 from io import BytesIO
 
 # =========================================================
-# KONFIGURASI APLIKASI
+# KONFIGURASI APP
 # =========================================================
 st.set_page_config(page_title="Dashboard Kepala Sekolah", layout="wide")
 
@@ -17,12 +17,19 @@ DATA_FILE = "data_kepala_sekolah.xlsx"
 # =========================================================
 # SESSION STATE DEFAULT
 # =========================================================
-if "initialized" not in st.session_state:
-    st.session_state.initialized = True
+if "login" not in st.session_state:
     st.session_state.login = False
+
+if "role" not in st.session_state:
     st.session_state.role = None
+
+if "page" not in st.session_state:
     st.session_state.page = "cabdin"
+
+if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
+
+if "selected_sekolah" not in st.session_state:
     st.session_state.selected_sekolah = None
 
 # =========================================================
@@ -36,36 +43,7 @@ USERS = {
 }
 
 # =========================================================
-# LOGIN SCREEN
-# =========================================================
-if not st.session_state.login:
-    st.markdown("## 🔐 Login Dashboard Kepala Sekolah")
-
-    col1, col2, col3 = st.columns([2, 3, 2])
-    with col2:
-        username = st.text_input("👤 Username")
-        password = st.text_input("🔑 Password", type="password")
-
-        if st.button("🔓 Login", use_container_width=True):
-            if username in USERS and USERS[username]["password"] == password:
-                st.session_state.login = True
-                st.session_state.role = USERS[username]["role"]
-                st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
-                st.rerun()
-            else:
-                st.error("❌ Username atau Password salah")
-
-    st.stop()
-
-# =========================================================
-# INFO USER
-# =========================================================
-st.caption(f"👤 Login sebagai: **{st.session_state.role}**")
-
-boleh_edit_role = st.session_state.role in ["Operator", "Kabid"]
-
-# =========================================================
-# LOAD & SAVE PERUBAHAN
+# FUNGSI SIMPAN & LOAD PENGGANTI
 # =========================================================
 def load_perubahan():
     if os.path.exists(DATA_SAVE):
@@ -74,7 +52,7 @@ def load_perubahan():
             if {"Nama Sekolah", "Calon Pengganti"}.issubset(df.columns):
                 return dict(zip(df["Nama Sekolah"], df["Calon Pengganti"]))
         except:
-            pass
+            return {}
     return {}
 
 def save_perubahan(data_dict):
@@ -82,15 +60,6 @@ def save_perubahan(data_dict):
     df.to_excel(DATA_SAVE, index=False)
 
 perubahan_kepsek = load_perubahan()
-
-# =========================================================
-# URUT CABDIN
-# =========================================================
-def urutkan_cabdin(cabdin_list):
-    def ambil_angka(text):
-        angka = "".join(filter(str.isdigit, str(text)))
-        return int(angka) if angka else 999
-    return sorted(cabdin_list, key=ambil_angka)
 
 # =========================================================
 # LOAD DATA UTAMA
@@ -135,19 +104,16 @@ rename_map_ks = {
     "NAMA KASEK": "Nama Kepala Sekolah",
     "Nama Kasek": "Nama Kepala Sekolah",
     "Nama Kepsek": "Nama Kepala Sekolah",
-    "Nama Kepala Sekolah ": "Nama Kepala Sekolah",
 
     "Keterangan": "Keterangan Akhir",
     "KETERANGAN": "Keterangan Akhir",
     "KETERANGAN AKHIR": "Keterangan Akhir",
-    "Keterangan Akhir ": "Keterangan Akhir",
-
-    "Cabang Dinas ": "Cabang Dinas",
-    "CABANG DINAS": "Cabang Dinas",
 
     "Ket. Sertifikat BCKS": "Ket Sertifikat BCKS",
-    "Sertifikat BCKS": "Ket Sertifikat BCKS",
     "Ket Sertifikat BCKS ": "Ket Sertifikat BCKS",
+    "Sertifikat BCKS": "Ket Sertifikat BCKS",
+
+    "CABANG DINAS": "Cabang Dinas",
 }
 
 rename_map_guru = {
@@ -158,22 +124,24 @@ rename_map_guru = {
 
     "NIP ": "NIP",
     "NIP.": "NIP",
+    "NIP Guru": "NIP",
     "NIP GURU": "NIP",
 }
 
 df_ks.rename(columns=rename_map_ks, inplace=True)
 df_guru.rename(columns=rename_map_guru, inplace=True)
 
+# hapus kolom duplikat
 df_ks = df_ks.loc[:, ~df_ks.columns.duplicated()]
 df_guru = df_guru.loc[:, ~df_guru.columns.duplicated()]
 
 # =========================================================
 # PAKSA KOLOM WAJIB ADA
 # =========================================================
-wajib = ["Nama Sekolah", "Cabang Dinas", "Jenjang", "Keterangan Akhir"]
-for w in wajib:
-    if w not in df_ks.columns:
-        df_ks[w] = ""
+wajib = ["Jenjang", "Cabang Dinas", "Nama Sekolah", "Keterangan Akhir"]
+for col in wajib:
+    if col not in df_ks.columns:
+        df_ks[col] = ""
 
 if "Nama Kepala Sekolah" not in df_ks.columns:
     df_ks["Nama Kepala Sekolah"] = ""
@@ -184,8 +152,11 @@ if "Masa Periode Sesuai KSPSTK" not in df_ks.columns:
 if "Ket Sertifikat BCKS" not in df_ks.columns:
     df_ks["Ket Sertifikat BCKS"] = ""
 
+if "Keterangan Jabatan" not in df_ks.columns:
+    df_ks["Keterangan Jabatan"] = ""
+
 # =========================================================
-# NORMALISASI NAMA SEKOLAH (ANTI DETAIL KOSONG)
+# NORMALISASI NAMA SEKOLAH (PENTING BIAR DETAIL TIDAK KOSONG)
 # =========================================================
 df_ks["Nama Sekolah"] = (
     df_ks["Nama Sekolah"]
@@ -204,11 +175,20 @@ if "NAMA GURU" not in df_guru.columns:
 guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 
 # =========================================================
-# MAP STATUS REGULATIF
+# URUT CABDIN
+# =========================================================
+def urutkan_cabdin(cabdin_list):
+    def ambil_angka(text):
+        angka = "".join(filter(str.isdigit, str(text)))
+        return int(angka) if angka else 999
+    return sorted(cabdin_list, key=ambil_angka)
+
+# =========================================================
+# LOGIKA STATUS PERIODE
 # =========================================================
 def map_status(row):
-    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
-    ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
+    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).strip().lower()
+    ket_akhir = str(row.get("Keterangan Akhir", "")).strip().lower()
 
     if "periode 1" in masa:
         return "Aktif Periode 1"
@@ -225,35 +205,15 @@ def map_status(row):
     return "Lainnya"
 
 # =========================================================
-# BADGE STYLE
-# =========================================================
-def badge(text, bg, color="white"):
-    return f"""
-    <span style="
-        padding:6px 12px;
-        border-radius:12px;
-        font-weight:700;
-        color:{color};
-        background:{bg};
-        font-size:14px;
-        display:inline-block;
-        margin-right:6px;
-        margin-bottom:6px;
-    ">
-        {text}
-    </span>
-    """
-
-# =========================================================
-# CSS CARD SEKOLAH FIX UKURAN SERAGAM
+# CSS CARD SEKOLAH SERAGAM
 # =========================================================
 st.markdown("""
 <style>
 div[data-testid="stButton"] > button {
     border-radius: 14px !important;
-    height: 120px !important;
+    height: 95px !important;
     font-weight: 700 !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
     text-align: center !important;
     border: 1px solid #ddd !important;
     box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
@@ -265,23 +225,42 @@ div[data-testid="stButton"] > button {
 """, unsafe_allow_html=True)
 
 # =========================================================
+# LOGIN PAGE
+# =========================================================
+if not st.session_state.login:
+    st.markdown("## 🔐 Login Dashboard Kepala Sekolah")
+
+    col1, col2, col3 = st.columns([2, 3, 2])
+    with col2:
+        username = st.text_input("👤 Username")
+        password = st.text_input("🔑 Password", type="password")
+
+        if st.button("🔓 Login", use_container_width=True):
+            if username in USERS and USERS[username]["password"] == password:
+                st.session_state.login = True
+                st.session_state.role = USERS[username]["role"]
+                st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
+                st.rerun()
+            else:
+                st.error("❌ Username atau Password salah")
+
+    st.stop()
+
+# =========================================================
+# HEADER LOGIN INFO
+# =========================================================
+st.caption(f"👤 Login sebagai: **{st.session_state.role}**")
+
+# =========================================================
 # SIDEBAR FILTER
 # =========================================================
 st.sidebar.header("🔍 Filter & Pencarian")
 
 search_nama = st.sidebar.text_input("Cari Nama Kepala Sekolah")
-
-jenjang_filter = st.sidebar.selectbox(
-    "Jenjang",
-    ["Semua"] + sorted(df_ks["Jenjang"].dropna().unique())
-)
-
-ket_filter = st.sidebar.selectbox(
-    "Keterangan Akhir",
-    ["Semua"] + sorted(df_ks["Keterangan Akhir"].dropna().unique())
-)
-
 search_sekolah = st.sidebar.text_input("Cari Nama Sekolah")
+
+jenjang_filter = st.sidebar.selectbox("Jenjang", ["Semua"] + sorted(df_ks["Jenjang"].dropna().unique()))
+ket_filter = st.sidebar.selectbox("Keterangan Akhir", ["Semua"] + sorted(df_ks["Keterangan Akhir"].dropna().unique()))
 
 # =========================================================
 # APPLY FILTER
@@ -302,40 +281,54 @@ def apply_filter(df):
     return df
 
 # =========================================================
-# HALAMAN CABDIN (HOME)
+# PENCARIAN SIMPEG
+# =========================================================
+with st.expander("🔍 Pencarian Guru (SIMPEG)", expanded=False):
+    keyword = st.text_input("Ketik Nama Guru atau NIP", placeholder="contoh: Mhd Aripin Ritonga / 1994")
+
+    if keyword:
+        hasil = df_guru[
+            df_guru.astype(str)
+            .apply(lambda col: col.str.contains(keyword, case=False, na=False))
+            .any(axis=1)
+        ]
+
+        if hasil.empty:
+            st.error("❌ Guru tidak ditemukan di data SIMPEG")
+        else:
+            st.success(f"✅ Ditemukan {len(hasil)} data guru")
+            st.dataframe(hasil, use_container_width=True)
+
+st.divider()
+
+# =========================================================
+# HALAMAN CABDIN
 # =========================================================
 def page_cabdin():
-    col1, col2, col3, col4, col5, col6 = st.columns([5, 2, 2, 2, 2, 2])
+    col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
 
     with col1:
         st.markdown("## 📊 Dashboard Kepala Sekolah")
 
     with col2:
-        if st.button("🏠 Home", key="btn_home", use_container_width=True):
-            st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
-            st.session_state.selected_sekolah = None
-            st.rerun()
-
-    with col3:
-        if st.button("🔄 Refresh SIMPEG", key="btn_refresh_simpeg", use_container_width=True):
+        if st.button("🔄 Refresh SIMPEG", use_container_width=True):
             st.cache_data.clear()
             st.success("✅ Data SIMPEG diperbarui")
             st.rerun()
 
-    with col4:
-        if st.button("🔄 Refresh Kepsek", key="btn_refresh_kepsek", use_container_width=True):
+    with col3:
+        if st.button("🔄 Refresh Kepsek", use_container_width=True):
             st.cache_data.clear()
             st.success("✅ Data Kepala Sekolah diperbarui")
             st.rerun()
 
-    with col5:
-        if st.button("📌 Rekap", key="btn_rekap", use_container_width=True):
+    with col4:
+        if st.button("📌 Rekap", use_container_width=True):
             st.session_state.page = "rekap"
             st.rerun()
 
-    with col6:
-        if st.button("🚪 Logout", key="btn_logout", use_container_width=True):
+    with col5:
+        if st.button("🚪 Logout", use_container_width=True):
             st.session_state.login = False
             st.session_state.role = None
             st.session_state.page = "cabdin"
@@ -348,8 +341,8 @@ def page_cabdin():
 
     df_view = apply_filter(df_ks)
     cabdin_list = urutkan_cabdin(df_view["Cabang Dinas"].dropna().unique())
-    cols = st.columns(4)
 
+    cols = st.columns(4)
     for i, cabdin in enumerate(cabdin_list):
         with cols[i % 4]:
             if st.button(f"📍 {cabdin}", key=f"cabdin_{i}", use_container_width=True):
@@ -357,9 +350,6 @@ def page_cabdin():
                 st.session_state.page = "sekolah"
                 st.rerun()
 
-    # =========================================================
-    # REKAP PIMPINAN
-    # =========================================================
     st.divider()
     st.markdown("## 📑 Rekap & Analisis Kepala Sekolah (Pimpinan)")
 
@@ -367,14 +357,32 @@ def page_cabdin():
     df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
 
     rekap_cabdin = (
-        df_rekap
-        .groupby(["Cabang Dinas", "Status Regulatif"])
+        df_rekap.groupby(["Cabang Dinas", "Status Regulatif"])
         .size()
         .unstack(fill_value=0)
         .reset_index()
     )
 
+    rekap_cabdin["__urut__"] = rekap_cabdin["Cabang Dinas"].apply(
+        lambda x: int("".join(filter(str.isdigit, str(x))))
+        if "".join(filter(str.isdigit, str(x))) else 999
+    )
+
+    rekap_cabdin = rekap_cabdin.sort_values("__urut__").drop(columns="__urut__")
     st.dataframe(rekap_cabdin, use_container_width=True)
+
+    excel_file = "rekap_kepala_sekolah_per_cabdin.xlsx"
+    rekap_cabdin.to_excel(excel_file, index=False)
+
+    with open(excel_file, "rb") as f:
+        st.download_button(
+            label="📥 Download Rekap (Excel)",
+            data=f,
+            file_name=excel_file,
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+    st.subheader("📊 Grafik Status Kepala Sekolah")
 
     grafik_data = (
         df_rekap["Status Regulatif"]
@@ -389,16 +397,15 @@ def page_cabdin():
         ], fill_value=0)
     )
 
-    st.subheader("📊 Grafik Status Kepala Sekolah")
     st.bar_chart(grafik_data)
 
     # =========================================================
-    # PERMENDIKDASMEN NO 7 2025 (TAMPIL DI AKHIR HOME)
+    # PERMENDIKDASMEN NO 7 TAHUN 2025 (SEBELUM FOOTER)
     # =========================================================
     st.divider()
     st.markdown("""
-    <div style="background:#0d6efd;padding:14px;border-radius:12px;color:white;font-weight:800;font-size:18px;">
-    ⚖️ PERMENDIKDASMEN NO 7 TAHUN 2025
+    <div style="background:#0d6efd; padding:14px; border-radius:14px; color:white; font-size:16px; font-weight:700;">
+        ⚖️ Permendikdasmen Nomor 7 Tahun 2025
     </div>
     """, unsafe_allow_html=True)
 
@@ -406,9 +413,9 @@ def page_cabdin():
     **Pokok Ketentuan:**
     1. Kepala Sekolah diberikan tugas maksimal **2 (dua) periode**
     2. Satu periode = **4 (empat) tahun**
-    3. Kepala Sekolah yang telah menjabat **lebih dari 2 periode wajib diberhentikan**
-    4. Kepala Sekolah yang telah menjabat **periode 1 dapat diperpanjang jika memiliki Sertifikat BCKS**
-    5. Sekolah tanpa Kepala Sekolah definitif **wajib segera diisi (Plt/Definitif)**
+    3. Kepala Sekolah yang telah menjabat **Lebih dari 2 periode wajib diberhentikan**
+    4. Kepala Sekolah periode 1 dapat diperpanjang jika memiliki Sertifikat BCKS (Pasal 32)
+    5. Sekolah tanpa Kepala Sekolah definitif wajib segera diisi (Plt/Definitif)
     """)
 
 # =========================================================
@@ -419,20 +426,20 @@ def page_sekolah():
         st.session_state.page = "cabdin"
         st.rerun()
 
-    col_a, col_b, col_c = st.columns([1, 6, 2])
+    col_a, col_b, col_c = st.columns([1, 6, 1])
 
     with col_a:
-        if st.button("⬅️", key="btn_back_sekolah", use_container_width=True):
+        if st.button("🏠", key="home_sekolah"):
             st.session_state.page = "cabdin"
             st.session_state.selected_cabdin = None
             st.session_state.selected_sekolah = None
             st.rerun()
 
     with col_b:
-        st.subheader(f"🏫 Sekolah — {st.session_state.selected_cabdin}")
+        st.subheader(f"🏫 Daftar Sekolah — {st.session_state.selected_cabdin}")
 
     with col_c:
-        if st.button("🏠 Home", key="btn_home_sekolah", use_container_width=True):
+        if st.button("⬅️", key="back_sekolah"):
             st.session_state.page = "cabdin"
             st.session_state.selected_cabdin = None
             st.session_state.selected_sekolah = None
@@ -445,47 +452,12 @@ def page_sekolah():
         st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
         st.stop()
 
-    # =========================================================
-    # REKAP CABDIN INI
-    # =========================================================
-    st.markdown("## 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
-
-    df_cab_rekap = df_cab.copy()
-    df_cab_rekap["Status Regulatif"] = df_cab_rekap.apply(map_status, axis=1)
-
-    rekap_status_cab = (
-        df_cab_rekap["Status Regulatif"]
-        .value_counts()
-        .reindex([
-            "Aktif Periode 1",
-            "Aktif Periode 2",
-            "Lebih dari 2 Periode",
-            "Plt",
-            "Harus Diberhentikan",
-            "Lainnya"
-        ], fill_value=0)
-    )
-
-    colx1, colx2, colx3, colx4, colx5, colx6 = st.columns(6)
-    colx1.metric("dalam Periode 1", int(rekap_status_cab["Aktif Periode 1"]))
-    colx2.metric("dalam Periode 2", int(rekap_status_cab["Aktif Periode 2"]))
-    colx3.metric("Lebih 2 Periode", int(rekap_status_cab["Lebih dari 2 Periode"]))
-    colx4.metric("Kasek Plt", int(rekap_status_cab["Plt"]))
-
-    total_bisa_diberhentikan = int(rekap_status_cab["Aktif Periode 2"]) + int(rekap_status_cab["Lebih dari 2 Periode"])
-    colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
-
-    colx6.metric("Lainnya", int(rekap_status_cab["Lainnya"]))
-
-    st.divider()
-
-    # =========================================================
-    # GRID SEKOLAH
-    # =========================================================
     cols = st.columns(4)
+    idx = 0
 
-    for idx, (_, row) in enumerate(df_cab.iterrows()):
-        nama_sekolah = str(row.get("Nama Sekolah", "-")).strip()
+    for _, row in df_cab.iterrows():
+        nama_sekolah = str(row.get("Nama Sekolah", "-"))
+
         masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
         ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
 
@@ -506,6 +478,8 @@ def page_sekolah():
                 st.session_state.page = "detail"
                 st.rerun()
 
+        idx += 1
+
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
@@ -514,11 +488,12 @@ def page_detail():
         st.session_state.page = "sekolah"
         st.rerun()
 
-    col_a, col_b, col_c = st.columns([1, 6, 2])
+    col_a, col_b, col_c = st.columns([1, 6, 1])
 
     with col_a:
-        if st.button("⬅️", key="btn_back_detail", use_container_width=True):
-            st.session_state.page = "sekolah"
+        if st.button("🏠", key="home_detail"):
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
             st.session_state.selected_sekolah = None
             st.rerun()
 
@@ -526,18 +501,12 @@ def page_detail():
         st.subheader(f"📄 Detail Sekolah: {st.session_state.selected_sekolah}")
 
     with col_c:
-        if st.button("🏠 Home", key="btn_home_detail", use_container_width=True):
-            st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
+        if st.button("⬅️", key="back_detail"):
+            st.session_state.page = "sekolah"
             st.session_state.selected_sekolah = None
             st.rerun()
 
-    # NORMALISASI NAMA
-    nama = (
-        str(st.session_state.selected_sekolah)
-        .replace("\xa0", " ")
-        .strip()
-    )
+    nama = str(st.session_state.selected_sekolah).replace("\xa0", " ").strip()
 
     row_detail = df_ks[
         df_ks["Nama Sekolah"]
@@ -553,37 +522,40 @@ def page_detail():
 
     row = row_detail.iloc[0]
 
+    # =========================================================
+    # WARNA STATUS (TANPA KOLOM BARU)
+    # =========================================================
     masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
-    jabatan = str(row.get("Keterangan Jabatan", row.get("Jabatan", ""))).lower()
+    jabatan = str(row.get("Keterangan Jabatan", "")).lower()
     bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
 
-    # =========================================================
-    # BADGE STATUS (TIDAK BUAT KOLOM BARU)
-    # =========================================================
-    status_reg = map_status(row)
+    status_color = "#0d6efd"
+    if "periode 2" in masa:
+        status_color = "#ffc107"
+    if "lebih dari 2" in masa or ">2" in masa:
+        status_color = "#dc3545"
 
-    badge_html = ""
+    jabatan_color = "#0d6efd"
+    if "plt" in jabatan:
+        jabatan_color = "#198754"
 
-    if status_reg == "Aktif Periode 1":
-        badge_html += badge("Aktif Periode 1", "#0d6efd")
-    elif status_reg == "Aktif Periode 2":
-        badge_html += badge("Aktif Periode 2", "#f59f00", "black")
-    elif status_reg == "Lebih dari 2 Periode":
-        badge_html += badge("Lebih dari 2 Periode", "#dc3545")
-    elif status_reg == "Plt":
-        badge_html += badge("Plt", "#198754")
-
-    if "definitif" in jabatan:
-        badge_html += badge("Definitif", "#0b5ed7")
-    elif "plt" in jabatan:
-        badge_html += badge("Plt", "#198754")
-
+    bcks_color = "#fd7e14"
     if "sudah" in bcks:
-        badge_html += badge("Sudah BCKS", "#198754")
-    else:
-        badge_html += badge("Belum BCKS", "#f59f00", "black")
+        bcks_color = "#198754"
 
-    st.markdown(badge_html, unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="display:flex; gap:15px; flex-wrap:wrap; margin-top:10px;">
+        <div style="background:{status_color}; padding:14px 22px; border-radius:18px; color:white; font-weight:800; font-size:18px;">
+            {map_status(row)}
+        </div>
+        <div style="background:{jabatan_color}; padding:14px 22px; border-radius:18px; color:white; font-weight:800; font-size:18px;">
+            {row.get("Keterangan Jabatan","-")}
+        </div>
+        <div style="background:{bcks_color}; padding:14px 22px; border-radius:18px; color:black; font-weight:900; font-size:18px;">
+            {"Sudah BCKS" if "sudah" in bcks else "Belum BCKS"}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.divider()
     st.markdown("## 📝 Data Lengkap (Sesuai Excel)")
@@ -612,6 +584,7 @@ def page_detail():
     # SIMPAN PENGGANTI
     # =========================================================
     is_view_only = st.session_state.role in ["Kadis", "View"]
+
     calon_tersimpan = perubahan_kepsek.get(nama)
 
     if is_view_only:
@@ -626,34 +599,34 @@ def page_detail():
             st.rerun()
 
     # =========================================================
-    # KEMBALIKAN KE KEPSEK LAMA
+    # KEMBALIKAN KEPSEK LAMA
     # =========================================================
     if calon_tersimpan:
         st.info(f"👤 Pengganti Saat Ini: **{calon_tersimpan}**")
 
         if not is_view_only:
-            if st.button("✏️ Kembalikan ke Kepala Sekolah Lama", key="btn_kembalikan", use_container_width=True):
+            if st.button("✏️ Kembalikan ke Kepala Sekolah Lama", key="btn_kembali_lama", use_container_width=True):
                 perubahan_kepsek.pop(nama, None)
                 save_perubahan(perubahan_kepsek)
                 st.success("🔄 Berhasil dikembalikan")
                 st.rerun()
 
 # =========================================================
-# HALAMAN REKAP BISA DIBERHENTIKAN
+# HALAMAN REKAP
 # =========================================================
 def page_rekap():
-    col_a, col_b, col_c = st.columns([1, 6, 2])
+    col_a, col_b, col_c = st.columns([1, 6, 1])
 
     with col_a:
-        if st.button("⬅️", key="btn_back_rekap", use_container_width=True):
+        if st.button("🏠", key="home_rekap"):
             st.session_state.page = "cabdin"
             st.rerun()
 
     with col_b:
-        st.subheader("📌 Rekap Kepala Sekolah Bisa Diberhentikan")
+        st.markdown("## 📌 Rekap Kepala Sekolah Bisa Diberhentikan")
 
     with col_c:
-        if st.button("🏠 Home", key="btn_home_rekap", use_container_width=True):
+        if st.button("⬅️", key="back_rekap"):
             st.session_state.page = "cabdin"
             st.rerun()
 
@@ -681,19 +654,16 @@ def page_rekap():
 
     st.dataframe(tampil, use_container_width=True, hide_index=True)
 
-    st.divider()
-    st.markdown("### 📄 Lihat Detail Sekolah")
-
     sekolah_opsi = df_bisa["Nama Sekolah"].unique().tolist()
-    pilih = st.selectbox("Pilih Sekolah", sekolah_opsi, key="rekap_pilih")
+    pilih = st.selectbox("📄 Pilih Sekolah untuk lihat detail", sekolah_opsi, key="rekap_pilih")
 
-    if st.button("📌 Buka Detail Sekolah", key="btn_open_detail_rekap", use_container_width=True):
+    if st.button("📌 Lihat Detail Sekolah", key="rekap_btn_detail", use_container_width=True):
         st.session_state.selected_sekolah = pilih
         st.session_state.page = "detail"
         st.rerun()
 
 # =========================================================
-# ROUTING UTAMA (CLEAN FINAL)
+# ROUTING UTAMA
 # =========================================================
 if st.session_state.page == "cabdin":
     page_cabdin()
