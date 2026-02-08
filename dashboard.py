@@ -327,7 +327,7 @@ def page_cabdin():
             st.rerun()
 
     with col4:
-        if st.button("📌 Rekap Bisa Diberhentikan", use_container_width=True):
+        if st.button("📌 Rekap Data", use_container_width=True):
             st.session_state.page = "rekap"
             st.rerun()
 
@@ -739,3 +739,4 @@ elif st.session_state.page == "rekap":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
