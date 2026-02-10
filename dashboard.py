@@ -2,10 +2,6 @@ import streamlit as st
 import pandas as pd
 import os
 
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from io import BytesIO
-
 # =========================================================
 # KONFIGURASI APP
 # =========================================================
@@ -134,7 +130,6 @@ rename_map_guru = {
 df_ks.rename(columns=rename_map_ks, inplace=True)
 df_guru.rename(columns=rename_map_guru, inplace=True)
 
-# hapus kolom duplikat
 df_ks = df_ks.loc[:, ~df_ks.columns.duplicated()]
 df_guru = df_guru.loc[:, ~df_guru.columns.duplicated()]
 
@@ -187,7 +182,7 @@ def urutkan_cabdin(cabdin_list):
     return sorted(cabdin_list, key=ambil_angka)
 
 # =========================================================
-# LOGIKA STATUS UTAMA (AKTIF PERIODE 1/2/LBH 2/PLT)
+# LOGIKA STATUS UTAMA
 # =========================================================
 def map_status(row):
     masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).strip().lower()
@@ -203,13 +198,7 @@ def map_status(row):
     if "lebih dari 2" in masa or ">2" in masa or "lebih dari 2" in ket_akhir or ">2" in ket_akhir:
         return "Lebih dari 2 Periode"
 
-    # kalau tidak terbaca, fallback ke isi keterangan akhir jika ada
-    if "aktif" in ket_akhir and "1" in ket_akhir:
-        return "Aktif Periode 1"
-    if "aktif" in ket_akhir and "2" in ket_akhir:
-        return "Aktif Periode 2"
-
-    return "Aktif Periode 1"  # default aman
+    return "Aktif Periode 1"
 
 # =========================================================
 # CSS CARD SEKOLAH SERAGAM
@@ -218,7 +207,7 @@ st.markdown("""
 <style>
 div[data-testid="stButton"] > button {
     border-radius: 14px !important;
-    height: 95px !important;
+    height: 100px !important;
     font-weight: 700 !important;
     font-size: 13px !important;
     text-align: center !important;
@@ -306,7 +295,7 @@ with st.expander("🔍 Pencarian Guru (SIMPEG)", expanded=False):
 st.divider()
 
 # =========================================================
-# HALAMAN CABDIN (TAMBAH REKAP ATAS + REKAP PERCABDIS)
+# HALAMAN CABDIN
 # =========================================================
 def page_cabdin():
     col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
@@ -342,9 +331,6 @@ def page_cabdin():
 
     st.divider()
 
-    # =========================================================
-    # REKAP ATAS SEBELUM CABDIN
-    # =========================================================
     df_rekap = df_ks.copy()
     df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
 
@@ -366,9 +352,6 @@ def page_cabdin():
 
     st.divider()
 
-    # =========================================================
-    # DAFTAR CABDIN
-    # =========================================================
     st.subheader("🏢 Cabang Dinas Pendidikan Wilayah")
 
     df_view = apply_filter(df_ks)
@@ -382,87 +365,8 @@ def page_cabdin():
                 st.session_state.page = "sekolah"
                 st.rerun()
 
-    st.divider()
-
-    # =========================================================
-    # REKAP PER CABDIN (INI YANG HILANG)
-    # =========================================================
-    st.markdown("## 📑 Rekap Kepala Sekolah per Cabang Dinas")
-
-    rekap_cabdin = (
-        df_rekap
-        .groupby(["Cabang Dinas", "Status Regulatif"])
-        .size()
-        .unstack(fill_value=0)
-        .reset_index()
-    )
-
-    for col in ["Aktif Periode 1", "Aktif Periode 2", "Lebih dari 2 Periode", "Plt"]:
-        if col not in rekap_cabdin.columns:
-            rekap_cabdin[col] = 0
-
-    rekap_cabdin["Bisa Diberhentikan"] = (
-        rekap_cabdin["Aktif Periode 2"] +
-        rekap_cabdin["Lebih dari 2 Periode"] +
-        rekap_cabdin["Plt"]
-    )
-
-    # hapus lainnya kalau ada
-    if "Lainnya" in rekap_cabdin.columns:
-        rekap_cabdin.drop(columns=["Lainnya"], inplace=True)
-
-    # urutkan cabdin wil 1-14
-    rekap_cabdin["__urut__"] = rekap_cabdin["Cabang Dinas"].apply(
-        lambda x: int("".join(filter(str.isdigit, str(x)))) if "".join(filter(str.isdigit, str(x))) else 999
-    )
-    rekap_cabdin = rekap_cabdin.sort_values("__urut__").drop(columns="__urut__")
-
-    tampil = rekap_cabdin[[
-        "Cabang Dinas",
-        "Aktif Periode 1",
-        "Aktif Periode 2",
-        "Lebih dari 2 Periode",
-        "Plt",
-        "Bisa Diberhentikan"
-    ]].copy()
-
-    st.dataframe(tampil, use_container_width=True, hide_index=True)
-
-    excel_file = "rekap_kepala_sekolah_per_cabdin.xlsx"
-    tampil.to_excel(excel_file, index=False)
-
-    with open(excel_file, "rb") as f:
-        st.download_button(
-            label="📥 Download Rekap per Cabang Dinas (Excel)",
-            data=f,
-            file_name=excel_file,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
-    st.divider()
-
-    # =========================================================
-    # PERMENDIKDASMEN
-    # =========================================================
-    st.markdown("## ⚖️ Permendikdasmen No 7 Tahun 2025")
-
-    st.markdown("""
-    <div style="background:#0d6efd; padding:14px; border-radius:14px; color:white; font-size:16px; font-weight:800;">
-        Permendikdasmen Nomor 7 Tahun 2025 (Maksimal 2 Periode / 1 Periode 4 Tahun)
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.info("""
-    **Pokok Ketentuan:**
-    1. Kepala Sekolah diberikan tugas maksimal **2 (dua) periode**
-    2. Satu periode = **4 (empat) tahun**
-    3. Kepala Sekolah yang telah menjabat **Lebih dari 2 periode wajib diberhentikan**
-    4. Kepala Sekolah periode 1 dapat diperpanjang jika memiliki Sertifikat BCKS (Pasal 32)
-    5. Sekolah tanpa Kepala Sekolah definitif wajib segera diisi (Plt/Definitif)
-    """)
-
 # =========================================================
-# HALAMAN SEKOLAH
+# HALAMAN SEKOLAH (ADA REKAP CABDIN)
 # =========================================================
 def page_sekolah():
     if st.session_state.selected_cabdin is None:
@@ -495,6 +399,39 @@ def page_sekolah():
         st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
         st.stop()
 
+    # ==========================
+    # REKAP CABDIN
+    # ==========================
+    st.markdown("## 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
+
+    df_cab_rekap = df_cab.copy()
+    df_cab_rekap["Status Regulatif"] = df_cab_rekap.apply(map_status, axis=1)
+
+    rekap = (
+        df_cab_rekap["Status Regulatif"]
+        .value_counts()
+        .reindex(["Aktif Periode 1", "Aktif Periode 2", "Lebih dari 2 Periode", "Plt"], fill_value=0)
+    )
+
+    jumlah_p1 = int(rekap["Aktif Periode 1"])
+    jumlah_p2 = int(rekap["Aktif Periode 2"])
+    jumlah_lebih2 = int(rekap["Lebih dari 2 Periode"])
+    jumlah_plt = int(rekap["Plt"])
+
+    total_bisa_diberhentikan = jumlah_p2 + jumlah_lebih2 + jumlah_plt
+
+    colx1, colx2, colx3, colx4, colx5 = st.columns(5)
+    colx1.metric("dalam Periode 1", jumlah_p1)
+    colx2.metric("dalam Periode 2", jumlah_p2)
+    colx3.metric("Lebih 2 Periode", jumlah_lebih2)
+    colx4.metric("Kasek Plt", jumlah_plt)
+    colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
+
+    st.divider()
+
+    # ==========================
+    # LIST SEKOLAH
+    # ==========================
     cols = st.columns(4)
     idx = 0
 
@@ -511,7 +448,7 @@ def page_sekolah():
             warna = "🟦"
         elif "periode 2" in masa or "periode 2" in ket_akhir:
             warna = "🟨"
-        elif "lebih dari 2" in masa or ">2" in masa or "lebih dari 2" in ket_akhir:
+        elif "lebih dari 2" in masa or ">2" in masa or "lebih dari 2" in ket_akhir or ">2" in ket_akhir:
             warna = "🟥"
         else:
             warna = "⬜"
@@ -580,15 +517,10 @@ def page_detail():
     st.divider()
     st.markdown("## 📝 Data Lengkap (Sesuai Excel)")
 
-    ket_akhir = str(row.get("Keterangan Akhir", "")).lower()
-    masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).lower()
+    status_regulatif = map_status(row)
     jabatan = str(row.get("Keterangan Jabatan", "")).lower()
     bcks = str(row.get("Ket Sertifikat BCKS", "")).lower()
 
-    # === Keterangan Akhir harus bukan nan ===
-    status_regulatif = map_status(row)
-
-    # warna keterangan akhir
     bg_ket = "#dbeeff"
     if "periode 2" in status_regulatif.lower():
         bg_ket = "#fff3cd"
@@ -597,41 +529,27 @@ def page_detail():
     if "plt" in status_regulatif.lower():
         bg_ket = "#d1e7dd"
 
-    # warna jabatan
     bg_jabatan = "#dbeeff"
     if "plt" in jabatan:
         bg_jabatan = "#d1e7dd"
 
-    # warna bcks
     bg_bcks = "#dbeeff"
     if "belum" in bcks or "tidak" in bcks:
-        bg_bcks = "#d1e7dd"
+        bg_bcks = "#f8d7da"
 
     col_left, col_right = st.columns(2)
 
     with col_left:
-        tampil_colored_field("NO", row.get("NO", "-"))
         tampil_colored_field("Nama Kepala Sekolah", row.get("Nama Kepala Sekolah", "-"))
-        tampil_colored_field("Status", row.get("Status", "-"))
         tampil_colored_field("Cabang Dinas", row.get("Cabang Dinas", "-"))
         tampil_colored_field("Ket Sertifikat BCKS", row.get("Ket Sertifikat BCKS", "-"), bg=bg_bcks)
-        tampil_colored_field("Tahun Berjalan", row.get("Tahun Berjalan", "-"))
-
-        tampil_colored_field(
-            "Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode (1 Periode 4 Tahun)",
-            row.get("Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode (1 Periode 4 Tahun)", "-")
-        )
-
         tampil_colored_field("Keterangan Akhir", status_regulatif, bg=bg_ket)
 
     with col_right:
         tampil_colored_field("Nama Sekolah", row.get("Nama Sekolah", "-"))
         tampil_colored_field("Jenjang", row.get("Jenjang", "-"))
-        tampil_colored_field("Kabupaten", row.get("Kabupaten", "-"))
         tampil_colored_field("Keterangan Jabatan", row.get("Keterangan Jabatan", "-"), bg=bg_jabatan)
-        tampil_colored_field("Tahun Pengangkatan", row.get("Tahun Pengangkatan", "-"))
         tampil_colored_field("Masa Periode Sesuai KSPSTK", row.get("Masa Periode Sesuai KSPSTK", "-"))
-        tampil_colored_field("Riwayat Dapodik", row.get("Riwayat Dapodik", "-"))
 
         pengganti = perubahan_kepsek.get(nama, "-")
         tampil_colored_field("Calon Pengganti jika Sudah Harus di Berhentikan", pengganti)
@@ -655,9 +573,6 @@ def page_detail():
             st.success(f"✅ Diganti dengan: {calon}")
             st.rerun()
 
-    # =========================================================
-    # KEMBALIKAN KEPSEK LAMA
-    # =========================================================
     if calon_tersimpan:
         st.info(f"👤 Pengganti Saat Ini: **{calon_tersimpan}**")
 
@@ -739,4 +654,3 @@ elif st.session_state.page == "rekap":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
