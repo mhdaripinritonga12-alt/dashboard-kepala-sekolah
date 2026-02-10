@@ -137,7 +137,6 @@ rename_map_guru = {
 df_ks.rename(columns=rename_map_ks, inplace=True)
 df_guru.rename(columns=rename_map_guru, inplace=True)
 
-# hapus kolom duplikat
 df_ks = df_ks.loc[:, ~df_ks.columns.duplicated()]
 df_guru = df_guru.loc[:, ~df_guru.columns.duplicated()]
 
@@ -303,11 +302,63 @@ with st.expander("🔍 Pencarian Guru (SIMPEG)", expanded=False):
 st.divider()
 
 # =========================================================
+# FUNGSI WARNA OTOMATIS
+# =========================================================
+def get_warna_jabatan(value):
+    v = str(value).lower()
+    if "plt" in v:
+        return "#d1e7dd"  # hijau
+    return "#dbeeff"  # biru
+
+def get_warna_bcks(value):
+    v = str(value).lower()
+    if "belum" in v or v.strip() == "" or v.strip() == "nan":
+        return "#f8d7da"  # merah
+    if "sudah" in v or "ada" in v:
+        return "#d1e7dd"  # hijau
+    return "#dbeeff"
+
+# =========================================================
+# FUNGSI PASAL PERMENDIKDASMEN OTOMATIS
+# =========================================================
+def tampil_pasal_permendikdasmen(status, ket_bcks):
+    ket_bcks = str(ket_bcks).lower()
+
+    tampil31 = False
+    tampil32 = False
+
+    if status in ["Aktif Periode 2", "Lebih dari 2 Periode", "Plt"]:
+        tampil31 = True
+
+    if status == "Aktif Periode 1":
+        tampil32 = True
+
+    if status == "Lebih dari 2 Periode" and ("belum" in ket_bcks or ket_bcks.strip() == "" or ket_bcks.strip() == "nan"):
+        tampil31 = True
+        tampil32 = True
+
+    st.markdown("## ⚖️ Permendikdasmen No 7 Tahun 2025")
+
+    if tampil31:
+        st.error("""
+        **📌 PASAL 31 (Penugasan Kepala Sekolah)**
+        - Kepala Sekolah dapat ditugaskan maksimal **2 periode**
+        - 1 periode = **4 tahun**
+        - Jika sudah menjabat **lebih dari 2 periode**, maka wajib dilakukan pergantian
+        """)
+
+    if tampil32:
+        st.warning("""
+        **📌 PASAL 32 (Sertifikat BCKS)**
+        - Kepala Sekolah wajib memiliki Sertifikat BCKS
+        - Jika belum memiliki BCKS maka menjadi catatan evaluasi dalam perpanjangan jabatan
+        """)
+
+# =========================================================
 # HALAMAN CABDIN (DASHBOARD AWAL)
 # =========================================================
 def page_cabdin():
 
-    # ===== HEADER + MENU ATAS =====
     col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
 
     with col1:
@@ -342,7 +393,6 @@ def page_cabdin():
 
     st.divider()
 
-    # ===== REKAP PROVINSI =====
     df_rekap = df_ks.copy()
     df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
 
@@ -364,7 +414,6 @@ def page_cabdin():
 
     st.divider()
 
-    # ===== CABDIN LIST =====
     st.subheader("🏢 Cabang Dinas Pendidikan Wilayah")
 
     df_view = apply_filter(df_ks)
@@ -380,7 +429,6 @@ def page_cabdin():
 
     st.divider()
 
-    # ===== TABEL REKAP CABDIN =====
     st.markdown("## 📑 Rekap Kepala Sekolah per Cabang Dinas")
 
     rekap_cabdin = (
@@ -432,22 +480,12 @@ def page_cabdin():
 
     st.divider()
 
-    # ===== PERMENDIKDASMEN =====
     st.markdown("## ⚖️ Permendikdasmen No 7 Tahun 2025")
-
-    st.markdown("""
-    <div style="background:#0d6efd; padding:14px; border-radius:14px; color:white; font-size:16px; font-weight:800;">
-        Permendikdasmen Nomor 7 Tahun 2025 (Maksimal 2 Periode / 1 Periode 4 Tahun)
-    </div>
-    """, unsafe_allow_html=True)
-
     st.info("""
-    **Pokok Ketentuan:**
-    1. Kepala Sekolah diberikan tugas maksimal **2 (dua) periode**
-    2. Satu periode = **4 (empat) tahun**
-    3. Kepala Sekolah yang telah menjabat **Lebih dari 2 periode wajib diberhentikan**
-    4. Kepala Sekolah periode 1 dapat diperpanjang jika memiliki Sertifikat BCKS (Pasal 32)
-    5. Sekolah tanpa Kepala Sekolah definitif wajib segera diisi (Plt/Definitif)
+    **Ringkasan Ketentuan:**
+    - Kepala Sekolah maksimal **2 periode**
+    - 1 periode = **4 tahun**
+    - Sertifikat **BCKS wajib dimiliki**
     """)
 
 # =========================================================
@@ -484,9 +522,6 @@ def page_sekolah():
         st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
         st.stop()
 
-    # ==========================
-    # REKAP CABDIN
-    # ==========================
     df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
 
     jumlah_p1 = int((df_cab["Status Regulatif"] == "Aktif Periode 1").sum())
@@ -505,54 +540,8 @@ def page_sekolah():
     col4.metric("Plt", jumlah_plt)
     col5.metric("Bisa Diberhentikan", total_bisa)
 
-    # ==========================
-    # BUTTON FILTER REKAP
-    # ==========================
-    st.markdown("### 🔍 Klik untuk Lihat Daftar Sekolah")
-
-    f1, f2, f3, f4, f5, f6 = st.columns(6)
-
-    with f1:
-        if st.button("📌 Semua", use_container_width=True):
-            st.session_state.filter_status = "Semua"
-            st.session_state.page = "rekap_cabdin"
-            st.rerun()
-
-    with f2:
-        if st.button("🟦 Periode 1", use_container_width=True):
-            st.session_state.filter_status = "Aktif Periode 1"
-            st.session_state.page = "rekap_cabdin"
-            st.rerun()
-
-    with f3:
-        if st.button("🟨 Periode 2", use_container_width=True):
-            st.session_state.filter_status = "Aktif Periode 2"
-            st.session_state.page = "rekap_cabdin"
-            st.rerun()
-
-    with f4:
-        if st.button("🟥 Lebih 2", use_container_width=True):
-            st.session_state.filter_status = "Lebih dari 2 Periode"
-            st.session_state.page = "rekap_cabdin"
-            st.rerun()
-
-    with f5:
-        if st.button("🟩 PLT", use_container_width=True):
-            st.session_state.filter_status = "Plt"
-            st.session_state.page = "rekap_cabdin"
-            st.rerun()
-
-    with f6:
-        if st.button("🚨 Bisa Diberhentikan", use_container_width=True):
-            st.session_state.filter_status = "Bisa Diberhentikan"
-            st.session_state.page = "rekap_cabdin"
-            st.rerun()
-
     st.divider()
 
-    # ==========================
-    # GRID SEKOLAH
-    # ==========================
     cols = st.columns(4)
     idx = 0
 
@@ -578,70 +567,6 @@ def page_sekolah():
                 st.rerun()
 
         idx += 1
-
-# =========================================================
-# HALAMAN REKAP CABDIN (SETELAH KLIK METRIC)
-# =========================================================
-def page_rekap_cabdin():
-    if st.session_state.selected_cabdin is None:
-        st.session_state.page = "cabdin"
-        st.rerun()
-
-    status_filter = st.session_state.filter_status
-
-    col_a, col_b, col_c = st.columns([1, 6, 1])
-
-    with col_a:
-        if st.button("🏠", key="home_rekapcab"):
-            st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
-            st.rerun()
-
-    with col_b:
-        st.subheader(f"📌 Rekap Sekolah — {st.session_state.selected_cabdin}")
-
-    with col_c:
-        if st.button("⬅️", key="back_rekapcab"):
-            st.session_state.page = "sekolah"
-            st.rerun()
-
-    df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
-    df_cab = apply_filter(df_cab)
-    df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
-
-    if status_filter == "Bisa Diberhentikan":
-        df_cab = df_cab[df_cab["Status Regulatif"].isin(["Aktif Periode 2", "Lebih dari 2 Periode", "Plt"])]
-    elif status_filter and status_filter != "Semua":
-        df_cab = df_cab[df_cab["Status Regulatif"] == status_filter]
-
-    if df_cab.empty:
-        st.warning("⚠️ Tidak ada sekolah sesuai filter.")
-        st.stop()
-
-    st.markdown(f"### 📄 Daftar Sekolah ({status_filter})")
-
-    tampil = df_cab[[
-        "Nama Sekolah",
-        "Nama Kepala Sekolah",
-        "Jenjang",
-        "Ket Sertifikat BCKS",
-        "Masa Periode Sesuai KSPSTK",
-        "Keterangan Jabatan",
-        "Keterangan Akhir",
-        "Status Regulatif"
-    ]].copy()
-
-    st.dataframe(tampil, use_container_width=True, hide_index=True)
-
-    st.markdown("### 📌 Klik Sekolah untuk Detail")
-
-    sekolah_opsi = df_cab["Nama Sekolah"].unique().tolist()
-    pilih = st.selectbox("Pilih Sekolah", sekolah_opsi)
-
-    if st.button("📄 Buka Detail Sekolah", use_container_width=True):
-        st.session_state.selected_sekolah = pilih
-        st.session_state.page = "detail"
-        st.rerun()
 
 # =========================================================
 # FIELD WARNA
@@ -701,31 +626,41 @@ def page_detail():
 
     status_regulatif = map_status(row)
 
-    bg_ket = "#dbeeff"
+    bg_status = "#dbeeff"
     if status_regulatif == "Aktif Periode 2":
-        bg_ket = "#fff3cd"
+        bg_status = "#fff3cd"
     if status_regulatif == "Lebih dari 2 Periode":
-        bg_ket = "#f8d7da"
+        bg_status = "#f8d7da"
     if status_regulatif == "Plt":
-        bg_ket = "#d1e7dd"
+        bg_status = "#d1e7dd"
+
+    ket_jabatan = row.get("Keterangan Jabatan", "-")
+    ket_bcks = row.get("Ket Sertifikat BCKS", "-")
+
+    bg_jabatan = get_warna_jabatan(ket_jabatan)
+    bg_bcks = get_warna_bcks(ket_bcks)
 
     col_left, col_right = st.columns(2)
 
     with col_left:
         tampil_colored_field("Nama Kepala Sekolah", row.get("Nama Kepala Sekolah", "-"))
         tampil_colored_field("Cabang Dinas", row.get("Cabang Dinas", "-"))
-        tampil_colored_field("Ket Sertifikat BCKS", row.get("Ket Sertifikat BCKS", "-"))
+        tampil_colored_field("Ket Sertifikat BCKS", ket_bcks, bg=bg_bcks)
         tampil_colored_field("Keterangan Akhir", row.get("Keterangan Akhir", "-"))
-        tampil_colored_field("Status Regulatif", status_regulatif, bg=bg_ket)
+        tampil_colored_field("Status Regulatif", status_regulatif, bg=bg_status)
 
     with col_right:
         tampil_colored_field("Nama Sekolah", row.get("Nama Sekolah", "-"))
         tampil_colored_field("Jenjang", row.get("Jenjang", "-"))
         tampil_colored_field("Masa Periode Sesuai KSPSTK", row.get("Masa Periode Sesuai KSPSTK", "-"))
-        tampil_colored_field("Keterangan Jabatan", row.get("Keterangan Jabatan", "-"))
+        tampil_colored_field("Keterangan Jabatan", ket_jabatan, bg=bg_jabatan)
 
         pengganti = perubahan_kepsek.get(nama, "-")
         tampil_colored_field("Calon Pengganti", pengganti)
+
+    st.divider()
+
+    tampil_pasal_permendikdasmen(status_regulatif, ket_bcks)
 
     st.divider()
 
@@ -736,11 +671,24 @@ def page_detail():
     else:
         calon = st.selectbox("👤 Pilih Calon Pengganti (SIMPEG)", guru_list, key=f"calon_{nama}")
 
-        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-            perubahan_kepsek[nama] = calon
-            save_perubahan(perubahan_kepsek)
-            st.success(f"✅ Diganti dengan: {calon}")
-            st.rerun()
+        colbtn1, colbtn2 = st.columns(2)
+
+        with colbtn1:
+            if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+                perubahan_kepsek[nama] = calon
+                save_perubahan(perubahan_kepsek)
+                st.success(f"✅ Diganti dengan: {calon}")
+                st.rerun()
+
+        with colbtn2:
+            if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
+                if nama in perubahan_kepsek:
+                    del perubahan_kepsek[nama]
+                    save_perubahan(perubahan_kepsek)
+                    st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
+                    st.rerun()
+                else:
+                    st.info("ℹ️ Tidak ada calon pengganti yang tersimpan")
 
 # =========================================================
 # HALAMAN REKAP PROVINSI
@@ -788,9 +736,6 @@ if st.session_state.page == "cabdin":
 
 elif st.session_state.page == "sekolah":
     page_sekolah()
-
-elif st.session_state.page == "rekap_cabdin":
-    page_rekap_cabdin()
 
 elif st.session_state.page == "detail":
     page_detail()
