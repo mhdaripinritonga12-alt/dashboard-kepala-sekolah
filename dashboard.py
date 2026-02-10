@@ -477,16 +477,40 @@ def page_cabdin():
             file_name=excel_file,
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+st.divider()
+st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
 
-    st.divider()
+st.markdown("""
+<div style="
+    background: linear-gradient(90deg, #0d6efd, #198754);
+    padding: 18px;
+    border-radius: 16px;
+    color: white;
+    font-size: 18px;
+    font-weight: 800;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+">
+📌 Permendikdasmen Nomor 7 Tahun 2025  
+<br>
+<span style="font-size:14px; font-weight:500;">
+Penugasan Kepala Sekolah Maksimal 2 Periode (1 Periode = 4 Tahun)
+</span>
+</div>
+""", unsafe_allow_html=True)
 
-    st.markdown("## ⚖️ Permendikdasmen No 7 Tahun 2025")
-    st.info("""
-    **Ringkasan Ketentuan:**
-    - Kepala Sekolah maksimal **2 periode**
-    - 1 periode = **4 tahun**
-    - Sertifikat **BCKS wajib dimiliki**
-    """)
+st.info("""
+### 📌 Ringkasan Pokok Ketentuan Permendikdasmen No. 7 Tahun 2025
+
+1. Kepala Sekolah ditugaskan maksimal **2 (dua) periode**.  
+2. **1 (satu) periode = 4 (empat) tahun**.  
+3. Kepala Sekolah yang telah menjabat **lebih dari 2 periode wajib diberhentikan dari penugasan**.  
+4. Kepala Sekolah **Periode 1** dapat diperpanjang menjadi Periode 2 apabila memenuhi syarat, termasuk sertifikat kompetensi (misalnya **BCKS**).  
+5. Kepala Sekolah wajib dievaluasi kinerjanya secara berkala sebagai dasar perpanjangan atau pemberhentian.  
+6. Jika terjadi kekosongan jabatan Kepala Sekolah, dapat ditunjuk **Pelaksana Tugas (Plt)** sampai Kepala Sekolah definitif ditetapkan.  
+7. Penugasan Kepala Sekolah merupakan **tugas tambahan bagi ASN** dan harus sesuai aturan manajemen ASN.  
+""")
+
+st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesuai Permendikdasmen No. 7 Tahun 2025.")
 
 # =========================================================
 # HALAMAN SEKOLAH (CABDIN)
@@ -748,3 +772,4 @@ elif st.session_state.page == "rekap":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
