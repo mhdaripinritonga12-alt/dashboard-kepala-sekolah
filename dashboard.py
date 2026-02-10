@@ -7,8 +7,8 @@ import os
 # =========================================================
 st.set_page_config(page_title="Dashboard Kepala Sekolah", layout="wide")
 
-DATA_SAVE = "perubahan_kepsek.xlsx"
-DATA_FILE = "data_kepala_seIet = st.sidebar.selectbox("Keterangan Akhir", ["Semua"] + sorted(df_ks["Keterangan Akhir"].dropna().unique()))
+    DATA_SAVE = "perubahan_kepsek.xlsx"
+    DATA_FILE = "data_kepala_seIet = st.sidebar.selectbox("Keterangan Akhir", ["Semua"] + sorted(df_ks["Keterangan Akhir"].dropna().unique()))
 
 # =========================================================
 # APPLY FILTER
@@ -453,3 +453,4 @@ elif st.session_state.page == "rekap":
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
