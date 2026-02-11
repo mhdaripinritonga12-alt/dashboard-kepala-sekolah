@@ -648,15 +648,24 @@ def page_detail():
 
     is_view_only = st.session_state.role in ["Kadis", "View"]
 
-if is_view_only:
-    st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
-else:
+    if is_view_only:
+        st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
+        return
+
+    # ============================================
+    # SELECTBOX CALON PENGGANTI
+    # ============================================
+    key_select = f"calon_{nama}"
+
     calon = st.selectbox(
         "👤 Pilih Calon Pengganti (SIMPEG)",
         ["-- Pilih Calon Pengganti --"] + guru_list,
-        key=f"calon_{nama}"
+        key=key_select
     )
 
+    # ============================================
+    # TAMPILKAN DATA SIMPEG CALON
+    # ============================================
     if calon != "-- Pilih Calon Pengganti --":
         st.markdown("### 📌 Data SIMPEG Calon Pengganti")
 
@@ -710,7 +719,9 @@ else:
 
             st.markdown(html_card, unsafe_allow_html=True)
 
-    # 🔥 TOMBOL HARUS SEJAJAR DENGAN SELECTBOX (bukan di dalam if data_calon.empty)
+    # ============================================
+    # BUTTON SIMPAN / RESET
+    # ============================================
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
@@ -729,12 +740,14 @@ else:
                 del perubahan_kepsek[nama]
                 save_perubahan(perubahan_kepsek)
 
-            # RESET DROPDOWN AMAN
-            st.session_state.pop(f"calon_{nama}", None)
+            # ============================================
+            # FIX ERROR RESET SELECTBOX
+            # ============================================
+            if key_select in st.session_state:
+                del st.session_state[key_select]
 
             st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
             st.rerun()
-
 
 # =========================================================
 # HALAMAN REKAP PROVINSI
@@ -829,5 +842,3 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
