@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import os
-import re
 
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -207,20 +206,18 @@ def cari_kolom(df, kandidat):
     return None
 
 # =========================================================
-# FIX BERSIHKAN NILAI HTML (SUPAYA <p style=...> TIDAK MUNCUL)
+# BERSIHKAN NILAI
 # =========================================================
 def bersihkan(teks):
     if teks is None:
         return "-"
-
     teks = str(teks)
 
-    # hapus semua tag HTML apapun
-    teks = re.sub(r"<[^>]*>", "", teks)
+    hapus = ["<", ">", "</b>", "<b>", "</p>", "<p>"]
+    for h in hapus:
+        teks = teks.replace(h, "")
 
-    teks = teks.replace("\xa0", " ").strip()
-
-    if teks.strip().lower() == "nan" or teks.strip() == "":
+    if teks.strip().lower() == "nan":
         return "-"
 
     return teks.strip()
@@ -644,7 +641,9 @@ def page_detail():
         tampil_colored_field("Calon Pengganti", pengganti if pengganti else "-")
 
     st.divider()
+
     tampil_pasal_permendikdasmen(status_regulatif, ket_bcks)
+
     st.divider()
 
     is_view_only = st.session_state.role in ["Kadis", "View"]
@@ -653,6 +652,9 @@ def page_detail():
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
         return
 
+    # ============================================
+    # SELECTBOX CALON PENGGANTI
+    # ============================================
     key_select = f"calon_{nama}"
 
     calon = st.selectbox(
@@ -661,6 +663,9 @@ def page_detail():
         key=key_select
     )
 
+    # ============================================
+    # TAMPILKAN DATA SIMPEG CALON
+    # ============================================
     if calon != "-- Pilih Calon Pengganti --":
         st.markdown("### 📌 Data SIMPEG Calon Pengganti")
 
@@ -714,6 +719,9 @@ def page_detail():
 
             st.markdown(html_card, unsafe_allow_html=True)
 
+    # ============================================
+    # BUTTON SIMPAN / RESET
+    # ============================================
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
@@ -732,10 +740,11 @@ def page_detail():
                 del perubahan_kepsek[nama]
                 save_perubahan(perubahan_kepsek)
 
-            # =========================================================
-            # FIX RESET SELECTBOX (JANGAN DIHAPUS, TAPI DISET NILAI DEFAULT)
-            # =========================================================
-            st.session_state[key_select] = "-- Pilih Calon Pengganti --"
+            # ============================================
+            # FIX ERROR RESET SELECTBOX
+            # ============================================
+            if key_select in st.session_state:
+                del st.session_state[key_select]
 
             st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
             st.rerun()
