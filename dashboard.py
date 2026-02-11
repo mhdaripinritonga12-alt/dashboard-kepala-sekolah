@@ -772,40 +772,57 @@ def page_update_operator():
             return pd.to_datetime(teks, dayfirst=True).date()
         except:
             return None
+from datetime import date
 
-    def hitung_total_menjabat_detail(tmt1, tst1, tmt2=None, tst2=None):
-        today = date.today()
+def hitung_total_menjabat_detail(tmt1, tst1, tmt2=None, tst2=None):
+    today = date.today()
 
-        tmt1 = parse_tanggal_fleksibel(tmt1)
-        tst1 = parse_tanggal_fleksibel(tst1)
-        tmt2 = parse_tanggal_fleksibel(tmt2)
-        tst2 = parse_tanggal_fleksibel(tst2)
+    tmt1 = parse_tanggal_fleksibel(tmt1)
+    tst1 = parse_tanggal_fleksibel(tst1)
+    tmt2 = parse_tanggal_fleksibel(tmt2)
+    tst2 = parse_tanggal_fleksibel(tst2)
 
-        hari_1 = 0
-        hari_2 = 0
+    hari_1 = 0
+    hari_2 = 0
 
-        if tmt1:
-            if tst1:
-                hari_1 = (tst1 - tmt1).days
-            else:
-                hari_1 = (today - tmt1).days
+    # periode pertama
+    if tmt1:
+        if tst1:
+            hari_1 = (tst1 - tmt1).days
+        else:
+            hari_1 = (today - tmt1).days
 
-        if tmt2:
-            if tst2:
-                hari_2 = (tst2 - tmt2).days
-            else:
-                hari_2 = (today - tmt2).days
+    # periode kedua
+    if tmt2:
+        if tst2:
+            hari_2 = (tst2 - tmt2).days
+        else:
+            hari_2 = (today - tmt2).days
 
-        if hari_1 < 0: hari_1 = 0
-        if hari_2 < 0: hari_2 = 0
+    if hari_1 < 0: hari_1 = 0
+    if hari_2 < 0: hari_2 = 0
 
-        total_hari = hari_1 + hari_2
-        total_tahun = total_hari / 365.25
+    total_hari = hari_1 + hari_2
 
-        tahun_1 = hari_1 / 365.25
-        tahun_2 = hari_2 / 365.25
+    # konversi hari -> tahun bulan hari (estimasi 365 hari & 30 hari/bulan)
+    tahun = total_hari // 365
+    sisa_hari = total_hari % 365
+    bulan = sisa_hari // 30
+    hari = sisa_hari % 30
 
-        return tahun_1, tahun_2, total_tahun
+    # juga hitung detail masing-masing periode
+    tahun1 = hari_1 // 365
+    sisa1 = hari_1 % 365
+    bulan1 = sisa1 // 30
+    hari1 = sisa1 % 30
+
+    tahun2 = hari_2 // 365
+    sisa2 = hari_2 % 365
+    bulan2 = sisa2 // 30
+    hari2 = sisa2 % 30
+
+    return (tahun1, bulan1, hari1), (tahun2, bulan2, hari2), (tahun, bulan, hari), total_hari
+
 
     def tentukan_status(total_tahun):
         if total_tahun < 4:
@@ -1013,4 +1030,5 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
