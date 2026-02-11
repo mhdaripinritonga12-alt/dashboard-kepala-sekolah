@@ -684,12 +684,19 @@ def page_detail():
             cabdis = bersihkan(calon_row.get(kol_cabdis, "-")) if kol_cabdis else "-"
             alamat = bersihkan(calon_row.get(kol_alamat, "-")) if kol_alamat else "-"
 
-            nip = bersihkan(calon_row.get("NIP", "-"))
-            nik = bersihkan(calon_row.get("NIK", "-"))
-            nohp = bersihkan(calon_row.get("No HP", "-"))
-            jabatan = bersihkan(calon_row.get("JABATAN", "-"))
-            jenis_pegawai = bersihkan(calon_row.get("Jenis Pegawai", "-"))
-            nama_guru = bersihkan(calon_row.get("NAMA GURU", "-"))
+            kol_nip = cari_kolom(data_calon, ["NIP"])
+            kol_nik = cari_kolom(data_calon, ["NIK"])
+            kol_nohp = cari_kolom(data_calon, ["NO HP", "NO. HP", "HP", "HANDPHONE", "TELP", "TELEPON"])
+            kol_jabatan = cari_kolom(data_calon, ["JABATAN", "JABATAN TERAKHIR", "JABATAN FUNGSIONAL"])
+            kol_jenis = cari_kolom(data_calon, ["JENIS PEGAWAI", "STATUS PEGAWAI", "KEDUDUKAN"])
+            kol_nama = cari_kolom(data_calon, ["NAMA GURU", "NAMA"])
+
+            nip = bersihkan(calon_row.get(kol_nip, "-")) if kol_nip else "-"
+            nik = bersihkan(calon_row.get(kol_nik, "-")) if kol_nik else "-"
+            nohp = bersihkan(calon_row.get(kol_nohp, "-")) if kol_nohp else "-"
+            jabatan = bersihkan(calon_row.get(kol_jabatan, "-")) if kol_jabatan else "-"
+            jenis_pegawai = bersihkan(calon_row.get(kol_jenis, "-")) if kol_jenis else "-"
+            nama_guru = bersihkan(calon_row.get(kol_nama, "-")) if kol_nama else "-"
 
             html_card = f"""
             <div style="
@@ -842,3 +849,4 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
