@@ -195,7 +195,7 @@ def ambil_data_simpeg(nama_guru):
     return hasil
 
 # =========================================================
-# TAMBAHAN: DETEKSI KOLOM SIMPEG (UNOR/CABDIS/ALAMAT)
+# DETEKSI KOLOM SIMPEG (UNOR/CABDIS/ALAMAT)
 # =========================================================
 def cari_kolom(df, kandidat):
     for col in df.columns:
@@ -206,19 +206,20 @@ def cari_kolom(df, kandidat):
     return None
 
 # =========================================================
-# TAMBAHAN: BERSIHKAN NILAI AGAR TIDAK ADA HTML ANEH
+# BERSIHKAN NILAI
 # =========================================================
 def bersihkan(teks):
     if teks is None:
         return "-"
     teks = str(teks)
-    teks = teks.replace("<", "")
-    teks = teks.replace(">", "")
-    teks = teks.replace("</b>", "")
-    teks = teks.replace("<b>", "")
-    teks = teks.replace("</p>", "")
-    teks = teks.replace("<p>", "")
-    teks = teks.replace("nan", "-")
+
+    hapus = ["<", ">", "</b>", "<b>", "</p>", "<p>"]
+    for h in hapus:
+        teks = teks.replace(h, "")
+
+    if teks.strip().lower() == "nan":
+        return "-"
+
     return teks.strip()
 
 # =========================================================
@@ -506,9 +507,6 @@ def page_sekolah():
 
     df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
 
-    # ==========================
-    # REKAP CABDIN DIKEMBALIKAN
-    # ==========================
     jumlah_p1 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 1").sum())
     jumlah_p2 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 2").sum())
     jumlah_lebih2 = int((df_cab["Status Regulatif"] == "Lebih dari 2 Periode").sum())
@@ -652,86 +650,104 @@ def page_detail():
 
     if is_view_only:
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
-    else:
-        calon = st.selectbox(
-            "👤 Pilih Calon Pengganti (SIMPEG)",
-            ["-- Pilih Calon Pengganti --"] + guru_list,
-            key=f"calon_{nama}"
-        )
+        return
 
-        if calon != "-- Pilih Calon Pengganti --":
-            st.markdown("### 📌 Data SIMPEG Calon Pengganti")
+    # ============================================
+    # SELECTBOX CALON PENGGANTI
+    # ============================================
+    key_select = f"calon_{nama}"
 
-            data_calon = ambil_data_simpeg(calon)
+    calon = st.selectbox(
+        "👤 Pilih Calon Pengganti (SIMPEG)",
+        ["-- Pilih Calon Pengganti --"] + guru_list,
+        key=key_select
+    )
 
-            if data_calon.empty:
-                st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
+    # ============================================
+    # TAMPILKAN DATA SIMPEG CALON
+    # ============================================
+    if calon != "-- Pilih Calon Pengganti --":
+        st.markdown("### 📌 Data SIMPEG Calon Pengganti")
+
+        data_calon = ambil_data_simpeg(calon)
+
+        if data_calon.empty:
+            st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
+        else:
+            calon_row = data_calon.iloc[0]
+
+            kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
+            kol_cabdis = cari_kolom(data_calon, ["CABANG DINAS", "CABDIS", "WILAYAH", "KCD"])
+            kol_alamat = cari_kolom(data_calon, ["ALAMAT", "JALAN", "DOMISILI", "TEMPAT TINGGAL", "ALAMAT RUMAH"])
+
+            unor = bersihkan(calon_row.get(kol_unor, "-")) if kol_unor else "-"
+            cabdis = bersihkan(calon_row.get(kol_cabdis, "-")) if kol_cabdis else "-"
+            alamat = bersihkan(calon_row.get(kol_alamat, "-")) if kol_alamat else "-"
+
+            nip = bersihkan(calon_row.get("NIP", "-"))
+            nik = bersihkan(calon_row.get("NIK", "-"))
+            nohp = bersihkan(calon_row.get("No HP", "-"))
+            jabatan = bersihkan(calon_row.get("JABATAN", "-"))
+            jenis_pegawai = bersihkan(calon_row.get("Jenis Pegawai", "-"))
+            nama_guru = bersihkan(calon_row.get("NAMA GURU", "-"))
+
+            html_card = f"""
+            <div style="
+                background: white;
+                border-radius: 18px;
+                padding: 18px;
+                border-left: 8px solid #0d6efd;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+                margin-top: 10px;
+                margin-bottom: 10px;
+            ">
+                <h3 style="margin:0;">👤 {nama_guru}</h3>
+                <hr>
+
+                <p style="margin:6px 0;"><b>NIP:</b> {nip}</p>
+                <p style="margin:6px 0;"><b>NIK:</b> {nik}</p>
+                <p style="margin:6px 0;"><b>No HP:</b> {nohp}</p>
+                <p style="margin:6px 0;"><b>Jabatan:</b> {jabatan}</p>
+                <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {jenis_pegawai}</p>
+
+                <hr>
+                <p style="margin:6px 0;"><b>UNOR / Unit Kerja:</b> {unor}</p>
+                <p style="margin:6px 0;"><b>Cabang Dinas:</b> {cabdis}</p>
+                <p style="margin:6px 0;"><b>Alamat:</b> {alamat}</p>
+            </div>
+            """
+
+            st.markdown(html_card, unsafe_allow_html=True)
+
+    # ============================================
+    # BUTTON SIMPAN / RESET
+    # ============================================
+    colbtn1, colbtn2 = st.columns(2)
+
+    with colbtn1:
+        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+            if calon == "-- Pilih Calon Pengganti --":
+                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
             else:
-                calon_row = data_calon.iloc[0]
-
-                kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
-                kol_cabdis = cari_kolom(data_calon, ["CABANG DINAS", "CABDIS", "WILAYAH", "KCD"])
-                kol_alamat = cari_kolom(data_calon, ["ALAMAT", "JALAN", "DOMISILI", "TEMPAT TINGGAL", "ALAMAT RUMAH"])
-
-                unor = bersihkan(calon_row.get(kol_unor, "-")) if kol_unor else "-"
-                cabdis = bersihkan(calon_row.get(kol_cabdis, "-")) if kol_cabdis else "-"
-                alamat = bersihkan(calon_row.get(kol_alamat, "-")) if kol_alamat else "-"
-
-                nip = bersihkan(calon_row.get("NIP", "-"))
-                nik = bersihkan(calon_row.get("NIK", "-"))
-                nohp = bersihkan(calon_row.get("No HP", "-"))
-                jabatan = bersihkan(calon_row.get("JABATAN", "-"))
-                jenis_pegawai = bersihkan(calon_row.get("Jenis Pegawai", "-"))
-
-                nama_guru = bersihkan(calon_row.get("NAMA GURU", "-"))
-
-                st.markdown(f"""
-                <div style="
-                    background: white;
-                    border-radius: 18px;
-                    padding: 18px;
-                    border-left: 8px solid #0d6efd;
-                    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-                    margin-top: 10px;
-                    margin-bottom: 10px;
-                ">
-                    <h3 style="margin:0;">👤 {nama_guru}</h3>
-                    <hr>
-
-                    <p style="margin:6px 0;"><b>NIP:</b> {nip}</p>
-                    <p style="margin:6px 0;"><b>NIK:</b> {nik}</p>
-                    <p style="margin:6px 0;"><b>No HP:</b> {nohp}</p>
-                    <p style="margin:6px 0;"><b>Jabatan:</b> {jabatan}</p>
-                    <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {jenis_pegawai}</p>
-
-                    <hr>
-                    <p style="margin:6px 0;"><b>UNOR / Unit Kerja:</b> {unor}</p>
-                    <p style="margin:6px 0;"><b>Cabang Dinas:</b> {cabdis}</p>
-                    <p style="margin:6px 0;"><b>Alamat:</b> {alamat}</p>
-                </div>
-                """, unsafe_allow_html=True)
-
-        colbtn1, colbtn2 = st.columns(2)
-
-        with colbtn1:
-            if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-                if calon == "-- Pilih Calon Pengganti --":
-                    st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-                else:
-                    perubahan_kepsek[nama] = calon
-                    save_perubahan(perubahan_kepsek)
-                    st.success(f"✅ Diganti dengan: {calon}")
-                    st.rerun()
-
-        with colbtn2:
-            if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
-                if nama in perubahan_kepsek:
-                    del perubahan_kepsek[nama]
-                    save_perubahan(perubahan_kepsek)
-
-                st.session_state[f"calon_{nama}"] = "-- Pilih Calon Pengganti --"
-                st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
+                perubahan_kepsek[nama] = calon
+                save_perubahan(perubahan_kepsek)
+                st.success(f"✅ Diganti dengan: {calon}")
                 st.rerun()
+
+    with colbtn2:
+        if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
+            if nama in perubahan_kepsek:
+                del perubahan_kepsek[nama]
+                save_perubahan(perubahan_kepsek)
+
+            # ============================================
+            # FIX ERROR RESET SELECTBOX
+            # ============================================
+            if key_select in st.session_state:
+                del st.session_state[key_select]
+
+            st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
+            st.rerun()
 
 # =========================================================
 # HALAMAN REKAP PROVINSI
