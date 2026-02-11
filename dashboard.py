@@ -818,8 +818,7 @@ else:
             st.markdown("### ✍️ Form Update Data Kepala Sekolah")
 
             colA, colB = st.columns(2)
-
-            with colA:
+                with colA:
                 upd_nama_kepsek = st.text_input(
                     "Nama Kepala Sekolah (Update)",
                     value=str(row_asli.get("Nama Kepala Sekolah", ""))
@@ -1039,6 +1038,7 @@ upd_keterangan_akhir = st.text_area(
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
