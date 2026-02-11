@@ -983,17 +983,22 @@ with colB:
         ["Sudah", "Belum"],
         index=0
     )
+upd_ket_akhir = st.text_input(
+    "Keterangan Akhir (Manual Jika Perlu)",
+    value=str(row_asli.get("Keterangan Akhir", ""))
+)
 
-    upd_ket_akhir = st.text_input(
-        "Keterangan Akhir (Manual Jika Perlu)",
-        value=str(row_asli.get("Keterangan Akhir", ""))
-    )
-            st.markdown("### 📌 Catatan Tambahan (Opsional)")
-            upd_catatan = st.text_area("Catatan / Riwayat Pernah Menjadi Kepala Sekolah", height=100)
+st.markdown("### 📌 Catatan Tambahan (Opsional)")
+upd_catatan = st.text_area(
+    "Catatan / Riwayat Pernah Menjadi Kepala Sekolah",
+    height=100
+)
 
-            st.divider()
+st.divider()
 
-            if st.button("💾 Simpan Update Data Sekolah Ini", use_container_width=True):
+if st.button("💾 Simpan Update Data Sekolah Ini", use_container_width=True):
+    pass
+
 
                 new_row = {
                     "Nama Sekolah": sekolah_aktif,
@@ -1051,6 +1056,7 @@ with colB:
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
