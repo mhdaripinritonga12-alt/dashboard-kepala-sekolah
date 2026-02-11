@@ -839,7 +839,117 @@ else:
                     "TMT Pengangkatan (contoh: 01-01-2024)",
                     value=str(row_asli.get("TMT", ""))
                 )
+from datetime import date
+import pandas as pd
 
+def parse_tanggal_fleksibel(teks):
+    teks = str(teks).strip()
+
+    if teks == "" or teks.lower() == "nan":
+        return None
+
+    # input hanya tahun: "2012"
+    if teks.isdigit() and len(teks) == 4:
+        return date(int(teks), 1, 1)
+
+    # input tanggal lengkap
+    try:
+        return pd.to_datetime(teks, dayfirst=True).date()
+    except:
+        return None
+
+
+def hitung_total_menjabat_detail(tmt1, tst1, tmt2=None, tst2=None):
+    today = date.today()
+
+    tmt1 = parse_tanggal_fleksibel(tmt1)
+    tst1 = parse_tanggal_fleksibel(tst1)
+    tmt2 = parse_tanggal_fleksibel(tmt2)
+    tst2 = parse_tanggal_fleksibel(tst2)
+
+    hari_1 = 0
+    hari_2 = 0
+
+    # periode pertama
+    if tmt1:
+        if tst1:
+            hari_1 = (tst1 - tmt1).days
+        else:
+            hari_1 = (today - tmt1).days
+
+    # periode kedua
+    if tmt2:
+        if tst2:
+            hari_2 = (tst2 - tmt2).days
+        else:
+            hari_2 = (today - tmt2).days
+
+    if hari_1 < 0: hari_1 = 0
+    if hari_2 < 0: hari_2 = 0
+
+    total_hari = hari_1 + hari_2
+    total_tahun = total_hari / 365.25
+
+    tahun_1 = hari_1 / 365.25
+    tahun_2 = hari_2 / 365.25
+
+    return tahun_1, tahun_2, total_tahun
+
+
+def tentukan_status(total_tahun):
+    if total_tahun < 4:
+        return "Aktif Periode 1"
+    elif total_tahun < 8:
+        return "Aktif Periode 2"
+    else:
+        return "Lebih dari 2 Periode"
+
+
+# ================================
+# INPUT RIWAYAT MENJABAT
+# ================================
+st.markdown("## 🧾 Riwayat Jabatan Kepala Sekolah (Otomatis Hitung)")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    tmt1 = st.text_input("TMT 1 (Mulai Menjabat Pertama)", placeholder="contoh: 2012 atau 01-01-2012")
+    tst1 = st.text_input("TST 1 (Berhenti Pertama)", placeholder="contoh: 2018 atau 01-01-2018")
+
+with col2:
+    tmt2 = st.text_input("TMT 2 (Menjabat Lagi)", placeholder="contoh: 2019 atau 01-01-2019")
+    tst2 = st.text_input("TST 2 (Jika Berhenti Lagi)", placeholder="kosongkan jika masih menjabat")
+
+# ================================
+# HITUNG OTOMATIS
+# ================================
+tahun_1, tahun_2, total_tahun = hitung_total_menjabat_detail(tmt1, tst1, tmt2, tst2)
+
+status_regulatif_otomatis = tentukan_status(total_tahun)
+
+keterangan_otomatis = (
+    f"Total menjabat {total_tahun:.1f} tahun "
+    f"(Periode 1: {tahun_1:.1f} tahun, Periode 2: {tahun_2:.1f} tahun) "
+    f"→ Status: {status_regulatif_otomatis}"
+)
+
+st.info(f"⏳ Periode 1: **{tahun_1:.1f} tahun**")
+st.info(f"⏳ Periode 2: **{tahun_2:.1f} tahun**")
+st.success(f"✅ Total Masa Menjabat: **{total_tahun:.1f} tahun**")
+st.error(f"📌 Status Regulatif Otomatis: **{status_regulatif_otomatis}**")
+
+st.markdown("### 📌 Keterangan Akhir Otomatis")
+st.write(keterangan_otomatis)
+
+# ================================
+# AUTO SET FIELD KETERANGAN AKHIR
+# ================================
+st.markdown("### 📝 Masukkan ke Keterangan Akhir (Otomatis)")
+upd_keterangan_akhir = st.text_area(
+    "Keterangan Akhir (Auto Generate)",
+    value=keterangan_otomatis,
+    height=80
+)
             with colB:
                 upd_jabatan = st.selectbox(
                     "Keterangan Jabatan",
@@ -929,6 +1039,7 @@ else:
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
