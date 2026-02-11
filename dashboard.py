@@ -180,7 +180,7 @@ if "NAMA GURU" not in df_guru.columns:
 guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 
 # =========================================================
-# 🔥 FUNGSI AMBIL DATA SIMPEG (INI YANG ANDA BELUM PUNYA)
+# FUNGSI AMBIL DATA SIMPEG
 # =========================================================
 def ambil_data_simpeg(nama_guru):
     if nama_guru is None:
@@ -370,7 +370,7 @@ def tampil_pasal_permendikdasmen(status, ket_bcks):
         """)
 
 # =========================================================
-# HALAMAN CABDIN (DASHBOARD AWAL)
+# HALAMAN CABDIN
 # =========================================================
 def page_cabdin():
 
@@ -444,57 +444,8 @@ def page_cabdin():
 
     st.divider()
 
-    st.markdown("## 📑 Rekap Kepala Sekolah per Cabang Dinas")
-
-    rekap_cabdin = (
-        df_rekap
-        .groupby(["Cabang Dinas", "Status Regulatif"])
-        .size()
-        .unstack(fill_value=0)
-        .reset_index()
-    )
-
-    for col in ["Aktif Periode Ke 1", "Aktif Periode Ke 2", "Lebih dari 2 Periode", "Plt"]:
-        if col not in rekap_cabdin.columns:
-            rekap_cabdin[col] = 0
-
-    rekap_cabdin["Bisa Diberhentikan"] = (
-        rekap_cabdin["Aktif Periode Ke 2"] +
-        rekap_cabdin["Lebih dari 2 Periode"] +
-        rekap_cabdin["Plt"]
-    )
-
-    rekap_cabdin["__urut__"] = rekap_cabdin["Cabang Dinas"].apply(
-        lambda x: int("".join(filter(str.isdigit, str(x)))) if "".join(filter(str.isdigit, str(x))) else 999
-    )
-    rekap_cabdin = rekap_cabdin.sort_values("__urut__").drop(columns="__urut__")
-
-    tampil = rekap_cabdin[[
-        "Cabang Dinas",
-        "Aktif Periode Ke 1",
-        "Aktif Periode Ke 2",
-        "Lebih dari 2 Periode",
-        "Plt",
-        "Bisa Diberhentikan"
-    ]].copy()
-
-    tampil.insert(0, "No", range(1, len(tampil) + 1))
-
-    st.dataframe(tampil, use_container_width=True, hide_index=True)
-
-    excel_file = "rekap_kepala_sekolah_per_cabdin.xlsx"
-    tampil.to_excel(excel_file, index=False)
-
-    with open(excel_file, "rb") as f:
-        st.download_button(
-            label="📥 Download Rekap Cabdis (Excel)",
-            data=f,
-            file_name=excel_file,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
 # =========================================================
-# HALAMAN SEKOLAH (CABDIN)
+# HALAMAN SEKOLAH
 # =========================================================
 def page_sekolah():
     if st.session_state.selected_cabdin is None:
@@ -528,24 +479,6 @@ def page_sekolah():
         st.stop()
 
     df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
-
-    jumlah_p1 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 1").sum())
-    jumlah_p2 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 2").sum())
-    jumlah_lebih2 = int((df_cab["Status Regulatif"] == "Lebih dari 2 Periode").sum())
-    jumlah_plt = int((df_cab["Status Regulatif"] == "Plt").sum())
-
-    total_bisa = jumlah_p2 + jumlah_lebih2 + jumlah_plt
-
-    st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
-
-    col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric("Aktif Periode Ke 1", jumlah_p1)
-    col2.metric("Aktif Periode Ke 2", jumlah_p2)
-    col3.metric("Lebih 2 Periode", jumlah_lebih2)
-    col4.metric("Plt", jumlah_plt)
-    col5.metric("Bisa Diberhentikan", total_bisa)
-
-    st.divider()
 
     cols = st.columns(4)
     idx = 0
@@ -660,8 +593,8 @@ def page_detail():
         tampil_colored_field("Masa Periode Sesuai KSPSTK", row.get("Masa Periode Sesuai KSPSTK", "-"))
         tampil_colored_field("Keterangan Jabatan", ket_jabatan, bg=bg_jabatan)
 
-        pengganti = perubahan_kepsek.get(nama, "-")
-        tampil_colored_field("Calon Pengganti", pengganti)
+        pengganti = perubahan_kepsek.get(nama, "")
+        tampil_colored_field("Calon Pengganti", pengganti if pengganti else "-")
 
     st.divider()
 
@@ -674,74 +607,74 @@ def page_detail():
     if is_view_only:
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
     else:
-    calon = st.selectbox(
-        "👤 Pilih Calon Pengganti (SIMPEG)",
-        guru_list,
-        key=f"calon_{nama}"
-    )
+        calon = st.selectbox(
+            "👤 Pilih Calon Pengganti (SIMPEG)",
+            ["-- Pilih Calon Pengganti --"] + guru_list,
+            key=f"calon_{nama}"
+        )
 
-    st.markdown("### 📌 Data SIMPEG Calon Pengganti")
+        if calon != "-- Pilih Calon Pengganti --":
+            st.markdown("### 📌 Data SIMPEG Calon Pengganti")
 
-    data_calon = ambil_data_simpeg(calon)
+            data_calon = ambil_data_simpeg(calon)
 
-    if data_calon.empty:
-        st.info("ℹ️ Silakan pilih calon pengganti terlebih dahulu.")
-    else:
-        calon_row = data_calon.iloc[0]
-
-        # Cari kolom asal sekolah/unit kerja
-        kolom_sekolah = None
-        for c in data_calon.columns:
-            if "SEKOLAH" in c.upper() or "UNIT KERJA" in c.upper():
-                kolom_sekolah = c
-                break
-
-        asal_sekolah = "-"
-        if kolom_sekolah:
-            asal_sekolah = str(calon_row.get(kolom_sekolah, "-"))
-
-        # CARD VIEW
-        st.markdown(f"""
-        <div style="
-            background: white;
-            border-radius: 18px;
-            padding: 18px;
-            border-left: 8px solid #0d6efd;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-            margin-top: 10px;
-            margin-bottom: 10px;
-        ">
-            <h4 style="margin:0;">👤 {calon_row.get("NAMA GURU","-")}</h4>
-            <p style="margin:6px 0;"><b>NIP:</b> {calon_row.get("NIP","-")}</p>
-            <p style="margin:6px 0;"><b>NIK:</b> {calon_row.get("NIK","-")}</p>
-            <p style="margin:6px 0;"><b>No HP:</b> {calon_row.get("No HP","-")}</p>
-            <p style="margin:6px 0;"><b>Jabatan:</b> {calon_row.get("JABATAN","-")}</p>
-            <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {calon_row.get("Jenis Pegawai","-")}</p>
-            <p style="margin:6px 0;"><b>Asal Sekolah/Unit Kerja:</b> {asal_sekolah}</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    colbtn1, colbtn2 = st.columns(2)
-
-    with colbtn1:
-        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-            if calon == "-- Pilih Calon Pengganti --":
-                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+            if data_calon.empty:
+                st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
             else:
-                perubahan_kepsek[nama] = calon
-                save_perubahan(perubahan_kepsek)
-                st.success(f"✅ Diganti dengan: {calon}")
+                calon_row = data_calon.iloc[0]
+
+                kolom_sekolah = None
+                for c in data_calon.columns:
+                    if "SEKOLAH" in c.upper() or "UNIT KERJA" in c.upper():
+                        kolom_sekolah = c
+                        break
+
+                asal_sekolah = "-"
+                if kolom_sekolah:
+                    asal_sekolah = str(calon_row.get(kolom_sekolah, "-"))
+
+                st.markdown(f"""
+                <div style="
+                    background: white;
+                    border-radius: 18px;
+                    padding: 18px;
+                    border-left: 8px solid #0d6efd;
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+                    margin-top: 10px;
+                    margin-bottom: 10px;
+                ">
+                    <h4 style="margin:0;">👤 {calon_row.get("NAMA GURU","-")}</h4>
+                    <p style="margin:6px 0;"><b>NIP:</b> {calon_row.get("NIP","-")}</p>
+                    <p style="margin:6px 0;"><b>NIK:</b> {calon_row.get("NIK","-")}</p>
+                    <p style="margin:6px 0;"><b>No HP:</b> {calon_row.get("No HP","-")}</p>
+                    <p style="margin:6px 0;"><b>Jabatan:</b> {calon_row.get("JABATAN","-")}</p>
+                    <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {calon_row.get("Jenis Pegawai","-")}</p>
+                    <p style="margin:6px 0;"><b>Asal Sekolah/Unit Kerja:</b> {asal_sekolah}</p>
+                </div>
+                """, unsafe_allow_html=True)
+
+        colbtn1, colbtn2 = st.columns(2)
+
+        with colbtn1:
+            if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+                if calon == "-- Pilih Calon Pengganti --":
+                    st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+                else:
+                    perubahan_kepsek[nama] = calon
+                    save_perubahan(perubahan_kepsek)
+                    st.success(f"✅ Diganti dengan: {calon}")
+                    st.rerun()
+
+        with colbtn2:
+            if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
+                if nama in perubahan_kepsek:
+                    del perubahan_kepsek[nama]
+                    save_perubahan(perubahan_kepsek)
+
+                st.session_state[f"calon_{nama}"] = "-- Pilih Calon Pengganti --"
+                st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
                 st.rerun()
 
-    with colbtn2:
-        if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
-            if nama in perubahan_kepsek:
-                del perubahan_kepsek[nama]
-                save_perubahan(perubahan_kepsek)
-
-            st.session_state[f"calon_{nama}"] = "-- Pilih Calon Pengganti --"
-            st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
-            st.rerun()
 # =========================================================
 # HALAMAN REKAP PROVINSI
 # =========================================================
@@ -796,7 +729,7 @@ elif st.session_state.page == "rekap":
     page_rekap()
 
 # =========================================================
-# ⚖️ PERMENDIKDASMEN NO 7 TAHUN 2025 (SEBELUM FOOTER)
+# ⚖️ PERMENDIKDASMEN NO 7 TAHUN 2025
 # =========================================================
 st.divider()
 st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
@@ -819,18 +752,6 @@ Penugasan Kepala Sekolah Maksimal 2 Periode (1 Periode = 4 Tahun)
 </div>
 """, unsafe_allow_html=True)
 
-st.info("""
-### 📌 Ringkasan Pokok Ketentuan Permendikdasmen No. 7 Tahun 2025
-
-1. Kepala Sekolah ditugaskan maksimal **2 (dua) periode**.  
-2. **1 (satu) periode = 4 (empat) tahun**.  
-3. Kepala Sekolah yang telah menjabat **lebih dari 2 periode wajib diberhentikan dari penugasan**.  
-4. Kepala Sekolah **Periode 1** dapat diperpanjang menjadi Periode 2 apabila memenuhi syarat, termasuk sertifikat kompetensi (misalnya **BCKS**).  
-5. Kepala Sekolah wajib dievaluasi kinerjanya secara berkala sebagai dasar perpanjangan atau pemberhentian.  
-6. Jika terjadi kekosongan jabatan Kepala Sekolah, dapat ditunjuk **Pelaksana Tugas (Plt)** sampai Kepala Sekolah definitif ditetapkan.  
-7. Penugasan Kepala Sekolah merupakan **tugas tambahan ASN** dan harus sesuai aturan manajemen ASN.  
-""")
-
 st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesuai Permendikdasmen No. 7 Tahun 2025.")
 
 # =========================================================
@@ -838,7 +759,3 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
-
-
