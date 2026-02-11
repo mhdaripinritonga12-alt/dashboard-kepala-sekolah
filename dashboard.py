@@ -648,24 +648,15 @@ def page_detail():
 
     is_view_only = st.session_state.role in ["Kadis", "View"]
 
-    if is_view_only:
-        st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
-        return
-
-    # ============================================
-    # SELECTBOX CALON PENGGANTI
-    # ============================================
-    key_select = f"calon_{nama}"
-
+if is_view_only:
+    st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
+else:
     calon = st.selectbox(
         "👤 Pilih Calon Pengganti (SIMPEG)",
         ["-- Pilih Calon Pengganti --"] + guru_list,
-        key=key_select
+        key=f"calon_{nama}"
     )
 
-    # ============================================
-    # TAMPILKAN DATA SIMPEG CALON
-    # ============================================
     if calon != "-- Pilih Calon Pengganti --":
         st.markdown("### 📌 Data SIMPEG Calon Pengganti")
 
@@ -691,38 +682,35 @@ def page_detail():
             jenis_pegawai = bersihkan(calon_row.get("Jenis Pegawai", "-"))
             nama_guru = bersihkan(calon_row.get("NAMA GURU", "-"))
 
-html_card = f"""
-<div style="
-    background: white;
-    border-radius: 18px;
-    padding: 18px;
-    border-left: 8px solid #0d6efd;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-    margin-top: 10px;
-    margin-bottom: 10px;
-">
-    <h3 style="margin:0;">👤 {nama_guru}</h3>
-    <hr>
+            html_card = f"""
+            <div style="
+                background: white;
+                border-radius: 18px;
+                padding: 18px;
+                border-left: 8px solid #0d6efd;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+                margin-top: 10px;
+                margin-bottom: 10px;
+            ">
+                <h3 style="margin:0;">👤 {nama_guru}</h3>
+                <hr>
 
-    <p style="margin:6px 0;"><b>NIP:</b> {nip}</p>
-    <p style="margin:6px 0;"><b>NIK:</b> {nik}</p>
-    <p style="margin:6px 0;"><b>No HP:</b> {nohp}</p>
-    <p style="margin:6px 0;"><b>Jabatan:</b> {jabatan}</p>
-    <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {jenis_pegawai}</p>
+                <p style="margin:6px 0;"><b>NIP:</b> {nip}</p>
+                <p style="margin:6px 0;"><b>NIK:</b> {nik}</p>
+                <p style="margin:6px 0;"><b>No HP:</b> {nohp}</p>
+                <p style="margin:6px 0;"><b>Jabatan:</b> {jabatan}</p>
+                <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {jenis_pegawai}</p>
 
-    <hr>
-    <p style="margin:6px 0;"><b>UNOR / Unit Kerja:</b> {unor}</p>
-    <p style="margin:6px 0;"><b>Cabang Dinas:</b> {cabdis}</p>
-    <p style="margin:6px 0;"><b>Alamat:</b> {alamat}</p>
-</div>
-"""
+                <hr>
+                <p style="margin:6px 0;"><b>UNOR / Unit Kerja:</b> {unor}</p>
+                <p style="margin:6px 0;"><b>Cabang Dinas:</b> {cabdis}</p>
+                <p style="margin:6px 0;"><b>Alamat:</b> {alamat}</p>
+            </div>
+            """
 
-st.markdown(html_card, unsafe_allow_html=True)
+            st.markdown(html_card, unsafe_allow_html=True)
 
-
-    # ============================================
-    # BUTTON SIMPAN / RESET
-    # ============================================
+    # 🔥 TOMBOL HARUS SEJAJAR DENGAN SELECTBOX (bukan di dalam if data_calon.empty)
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
@@ -741,14 +729,12 @@ st.markdown(html_card, unsafe_allow_html=True)
                 del perubahan_kepsek[nama]
                 save_perubahan(perubahan_kepsek)
 
-            # ============================================
-            # FIX ERROR RESET SELECTBOX
-            # ============================================
-            if key_select in st.session_state:
-                del st.session_state[key_select]
+            # RESET DROPDOWN AMAN
+            st.session_state.pop(f"calon_{nama}", None)
 
             st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
             st.rerun()
+
 
 # =========================================================
 # HALAMAN REKAP PROVINSI
@@ -843,4 +829,5 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
