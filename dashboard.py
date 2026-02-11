@@ -1002,32 +1002,32 @@ if st.button("💾 Simpan Update Data Sekolah Ini", use_container_width=True):
     st.rerun()
 
 st.divider()
+# Tampilkan hasil update jika ada
+if not df_update_sekolah.empty and "Nama Sekolah" in df_update_sekolah.columns:
+    cek = df_update_sekolah[df_update_sekolah["Nama Sekolah"] == sekolah_aktif]
 
+    if not cek.empty:
+        st.markdown("### ✅ Data Update Terakhir Sekolah Ini")
+        st.dataframe(cek, use_container_width=True, hide_index=True)
 
-            # Tampilkan hasil update jika ada
-            if not df_update_sekolah.empty and "Nama Sekolah" in df_update_sekolah.columns:
-                cek = df_update_sekolah[df_update_sekolah["Nama Sekolah"] == sekolah_aktif]
+st.divider()
 
-                if not cek.empty:
-                    st.markdown("### ✅ Data Update Terakhir Sekolah Ini")
-                    st.dataframe(cek, use_container_width=True, hide_index=True)
-
-            st.divider()
-
-            # Download file update
-            if os.path.exists(DATA_UPDATE_SEKOLAH):
-                with open(DATA_UPDATE_SEKOLAH, "rb") as f:
-                    st.download_button(
-                        label="📥 Download File Update Sekolah (Excel)",
-                        data=f,
-                        file_name="update_data_sekolah.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
+# Download file update
+if os.path.exists(DATA_UPDATE_SEKOLAH):
+    with open(DATA_UPDATE_SEKOLAH, "rb") as f:
+        st.download_button(
+            label="📥 Download File Update Sekolah (Excel)",
+            data=f,
+            file_name="update_data_sekolah.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+    
 # =========================================================
 # FOOTER
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
