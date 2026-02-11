@@ -195,7 +195,7 @@ def ambil_data_simpeg(nama_guru):
     return hasil
 
 # =========================================================
-# 🔥 TAMBAHAN: FUNGSI DETEKSI KOLOM SIMPEG (UNOR/CABDIS/ALAMAT)
+# TAMBAHAN: DETEKSI KOLOM SIMPEG (UNOR/CABDIS/ALAMAT)
 # =========================================================
 def cari_kolom(df, kandidat):
     for col in df.columns:
@@ -204,6 +204,22 @@ def cari_kolom(df, kandidat):
             if k in nama_col:
                 return col
     return None
+
+# =========================================================
+# TAMBAHAN: BERSIHKAN NILAI AGAR TIDAK ADA HTML ANEH
+# =========================================================
+def bersihkan(teks):
+    if teks is None:
+        return "-"
+    teks = str(teks)
+    teks = teks.replace("<", "")
+    teks = teks.replace(">", "")
+    teks = teks.replace("</b>", "")
+    teks = teks.replace("<b>", "")
+    teks = teks.replace("</p>", "")
+    teks = teks.replace("<p>", "")
+    teks = teks.replace("nan", "-")
+    return teks.strip()
 
 # =========================================================
 # URUT CABDIN
@@ -333,15 +349,15 @@ st.divider()
 def get_warna_jabatan(value):
     v = str(value).lower()
     if "plt" in v:
-        return "#d1e7dd"  # hijau
-    return "#dbeeff"  # biru
+        return "#d1e7dd"
+    return "#dbeeff"
 
 def get_warna_bcks(value):
     v = str(value).lower()
     if "belum" in v or v.strip() == "" or v.strip() == "nan":
-        return "#f8d7da"  # merah
+        return "#f8d7da"
     if "sudah" in v or "ada" in v:
-        return "#d1e7dd"  # hijau
+        return "#d1e7dd"
     return "#dbeeff"
 
 # =========================================================
@@ -384,7 +400,6 @@ def tampil_pasal_permendikdasmen(status, ket_bcks):
 # HALAMAN CABDIN
 # =========================================================
 def page_cabdin():
-
     col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
 
     with col1:
@@ -490,6 +505,26 @@ def page_sekolah():
         st.stop()
 
     df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
+
+    # ==========================
+    # REKAP CABDIN DIKEMBALIKAN
+    # ==========================
+    jumlah_p1 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 1").sum())
+    jumlah_p2 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 2").sum())
+    jumlah_lebih2 = int((df_cab["Status Regulatif"] == "Lebih dari 2 Periode").sum())
+    jumlah_plt = int((df_cab["Status Regulatif"] == "Plt").sum())
+    total_bisa = jumlah_p2 + jumlah_lebih2 + jumlah_plt
+
+    st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric("Aktif Periode Ke 1", jumlah_p1)
+    col2.metric("Aktif Periode Ke 2", jumlah_p2)
+    col3.metric("Lebih 2 Periode", jumlah_lebih2)
+    col4.metric("Plt", jumlah_plt)
+    col5.metric("Bisa Diberhentikan", total_bisa)
+
+    st.divider()
 
     cols = st.columns(4)
     idx = 0
@@ -634,14 +669,21 @@ def page_detail():
             else:
                 calon_row = data_calon.iloc[0]
 
-                # DETEKSI KOLOM UNOR / CABDIS / ALAMAT
                 kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
                 kol_cabdis = cari_kolom(data_calon, ["CABANG DINAS", "CABDIS", "WILAYAH", "KCD"])
                 kol_alamat = cari_kolom(data_calon, ["ALAMAT", "JALAN", "DOMISILI", "TEMPAT TINGGAL", "ALAMAT RUMAH"])
 
-                unor = str(calon_row.get(kol_unor, "-")) if kol_unor else "-"
-                cabdis = str(calon_row.get(kol_cabdis, "-")) if kol_cabdis else "-"
-                alamat = str(calon_row.get(kol_alamat, "-")) if kol_alamat else "-"
+                unor = bersihkan(calon_row.get(kol_unor, "-")) if kol_unor else "-"
+                cabdis = bersihkan(calon_row.get(kol_cabdis, "-")) if kol_cabdis else "-"
+                alamat = bersihkan(calon_row.get(kol_alamat, "-")) if kol_alamat else "-"
+
+                nip = bersihkan(calon_row.get("NIP", "-"))
+                nik = bersihkan(calon_row.get("NIK", "-"))
+                nohp = bersihkan(calon_row.get("No HP", "-"))
+                jabatan = bersihkan(calon_row.get("JABATAN", "-"))
+                jenis_pegawai = bersihkan(calon_row.get("Jenis Pegawai", "-"))
+
+                nama_guru = bersihkan(calon_row.get("NAMA GURU", "-"))
 
                 st.markdown(f"""
                 <div style="
@@ -653,14 +695,14 @@ def page_detail():
                     margin-top: 10px;
                     margin-bottom: 10px;
                 ">
-                    <h3 style="margin:0;">👤 {calon_row.get("NAMA GURU","-")}</h3>
+                    <h3 style="margin:0;">👤 {nama_guru}</h3>
                     <hr>
 
-                    <p style="margin:6px 0;"><b>NIP:</b> {calon_row.get("NIP","-")}</p>
-                    <p style="margin:6px 0;"><b>NIK:</b> {calon_row.get("NIK","-")}</p>
-                    <p style="margin:6px 0;"><b>No HP:</b> {calon_row.get("No HP","-")}</p>
-                    <p style="margin:6px 0;"><b>Jabatan:</b> {calon_row.get("JABATAN","-")}</p>
-                    <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {calon_row.get("Jenis Pegawai","-")}</p>
+                    <p style="margin:6px 0;"><b>NIP:</b> {nip}</p>
+                    <p style="margin:6px 0;"><b>NIK:</b> {nik}</p>
+                    <p style="margin:6px 0;"><b>No HP:</b> {nohp}</p>
+                    <p style="margin:6px 0;"><b>Jabatan:</b> {jabatan}</p>
+                    <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {jenis_pegawai}</p>
 
                     <hr>
                     <p style="margin:6px 0;"><b>UNOR / Unit Kerja:</b> {unor}</p>
@@ -781,8 +823,6 @@ st.info("""
 """)
 
 st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesuai Permendikdasmen No. 7 Tahun 2025.")
-# =========================================================
-# FOOTER
-# =========================================================
+
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
