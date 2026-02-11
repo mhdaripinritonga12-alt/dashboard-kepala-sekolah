@@ -40,7 +40,7 @@ if "filter_status" not in st.session_state:
 # =========================================================
 USERS = {
     "operator": {"password": "operator123", "role": "Operator"},
-    "kabidptk": {"password": "kabid123", "role": "Kabid"},
+    "kabidptk": {"password": "kabid111", "role": "Kabid"},
     "kadis": {"password": "kadis123", "role": "Kadis"},
     "viewer": {"password": "viewer123", "role": "View"},
 }
@@ -774,4 +774,5 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
