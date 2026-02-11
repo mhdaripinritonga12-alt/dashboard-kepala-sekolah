@@ -675,6 +675,8 @@ def page_detail():
             st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
         else:
             calon_row = data_calon.iloc[0]
+            # PAKSA SEMUA NILAI JADI STRING POLOS (HAPUS HTML)
+            calon_row = calon_row.apply(lambda x: bersihkan(x))
 
             kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
             kol_cabdis = cari_kolom(data_calon, ["CABANG DINAS", "CABDIS", "WILAYAH", "KCD"])
@@ -849,4 +851,5 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
