@@ -195,6 +195,17 @@ def ambil_data_simpeg(nama_guru):
     return hasil
 
 # =========================================================
+# 🔥 TAMBAHAN: FUNGSI DETEKSI KOLOM SIMPEG (UNOR/CABDIS/ALAMAT)
+# =========================================================
+def cari_kolom(df, kandidat):
+    for col in df.columns:
+        nama_col = str(col).upper().strip()
+        for k in kandidat:
+            if k in nama_col:
+                return col
+    return None
+
+# =========================================================
 # URUT CABDIN
 # =========================================================
 def urutkan_cabdin(cabdin_list):
@@ -623,15 +634,14 @@ def page_detail():
             else:
                 calon_row = data_calon.iloc[0]
 
-                kolom_sekolah = None
-                for c in data_calon.columns:
-                    if "SEKOLAH" in c.upper() or "UNIT KERJA" in c.upper():
-                        kolom_sekolah = c
-                        break
+                # DETEKSI KOLOM UNOR / CABDIS / ALAMAT
+                kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
+                kol_cabdis = cari_kolom(data_calon, ["CABANG DINAS", "CABDIS", "WILAYAH", "KCD"])
+                kol_alamat = cari_kolom(data_calon, ["ALAMAT", "JALAN", "DOMISILI", "TEMPAT TINGGAL", "ALAMAT RUMAH"])
 
-                asal_sekolah = "-"
-                if kolom_sekolah:
-                    asal_sekolah = str(calon_row.get(kolom_sekolah, "-"))
+                unor = str(calon_row.get(kol_unor, "-")) if kol_unor else "-"
+                cabdis = str(calon_row.get(kol_cabdis, "-")) if kol_cabdis else "-"
+                alamat = str(calon_row.get(kol_alamat, "-")) if kol_alamat else "-"
 
                 st.markdown(f"""
                 <div style="
@@ -643,13 +653,19 @@ def page_detail():
                     margin-top: 10px;
                     margin-bottom: 10px;
                 ">
-                    <h4 style="margin:0;">👤 {calon_row.get("NAMA GURU","-")}</h4>
+                    <h3 style="margin:0;">👤 {calon_row.get("NAMA GURU","-")}</h3>
+                    <hr>
+
                     <p style="margin:6px 0;"><b>NIP:</b> {calon_row.get("NIP","-")}</p>
                     <p style="margin:6px 0;"><b>NIK:</b> {calon_row.get("NIK","-")}</p>
                     <p style="margin:6px 0;"><b>No HP:</b> {calon_row.get("No HP","-")}</p>
                     <p style="margin:6px 0;"><b>Jabatan:</b> {calon_row.get("JABATAN","-")}</p>
                     <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {calon_row.get("Jenis Pegawai","-")}</p>
-                    <p style="margin:6px 0;"><b>Asal Sekolah/Unit Kerja:</b> {asal_sekolah}</p>
+
+                    <hr>
+                    <p style="margin:6px 0;"><b>UNOR / Unit Kerja:</b> {unor}</p>
+                    <p style="margin:6px 0;"><b>Cabang Dinas:</b> {cabdis}</p>
+                    <p style="margin:6px 0;"><b>Alamat:</b> {alamat}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -729,7 +745,7 @@ elif st.session_state.page == "rekap":
     page_rekap()
 
 # =========================================================
-# ⚖️ PERMENDIKDASMEN NO 7 TAHUN 2025
+# FOOTER
 # =========================================================
 st.divider()
 st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
@@ -752,8 +768,19 @@ Penugasan Kepala Sekolah Maksimal 2 Periode (1 Periode = 4 Tahun)
 </div>
 """, unsafe_allow_html=True)
 
-st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesuai Permendikdasmen No. 7 Tahun 2025.")
+st.info("""
+### 📌 Ringkasan Pokok Ketentuan Permendikdasmen No. 7 Tahun 2025
 
+1. Kepala Sekolah ditugaskan maksimal **2 (dua) periode**.  
+2. **1 (satu) periode = 4 (empat) tahun**.  
+3. Kepala Sekolah yang telah menjabat **lebih dari 2 periode wajib diberhentikan dari penugasan**.  
+4. Kepala Sekolah **Periode 1** dapat diperpanjang menjadi Periode 2 apabila memenuhi syarat, termasuk sertifikat kompetensi (misalnya **BCKS**).  
+5. Kepala Sekolah wajib dievaluasi kinerjanya secara berkala sebagai dasar perpanjangan atau pemberhentian.  
+6. Jika terjadi kekosongan jabatan Kepala Sekolah, dapat ditunjuk **Pelaksana Tugas (Plt)** sampai Kepala Sekolah definitif ditetapkan.  
+7. Penugasan Kepala Sekolah merupakan **tugas tambahan ASN** dan harus sesuai aturan manajemen ASN.  
+""")
+
+st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesuai Permendikdasmen No. 7 Tahun 2025.")
 # =========================================================
 # FOOTER
 # =========================================================
