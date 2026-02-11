@@ -757,6 +757,67 @@ def page_update_operator():
 
     row_asli = data_asli.iloc[0]
 
+    # =========================================================
+    # FUNGSI PARSE TANGGAL
+    # =========================================================
+    def parse_tanggal_fleksibel(teks):
+        teks = str(teks).strip()
+        if teks == "" or teks.lower() == "nan":
+            return None
+
+        if teks.isdigit() and len(teks) == 4:
+            return date(int(teks), 1, 1)
+
+        try:
+            return pd.to_datetime(teks, dayfirst=True).date()
+        except:
+            return None
+
+    def hitung_total_menjabat_detail(tmt1, tst1, tmt2=None, tst2=None):
+        today = date.today()
+
+        tmt1 = parse_tanggal_fleksibel(tmt1)
+        tst1 = parse_tanggal_fleksibel(tst1)
+        tmt2 = parse_tanggal_fleksibel(tmt2)
+        tst2 = parse_tanggal_fleksibel(tst2)
+
+        hari_1 = 0
+        hari_2 = 0
+
+        if tmt1:
+            if tst1:
+                hari_1 = (tst1 - tmt1).days
+            else:
+                hari_1 = (today - tmt1).days
+
+        if tmt2:
+            if tst2:
+                hari_2 = (tst2 - tmt2).days
+            else:
+                hari_2 = (today - tmt2).days
+
+        if hari_1 < 0: hari_1 = 0
+        if hari_2 < 0: hari_2 = 0
+
+        total_hari = hari_1 + hari_2
+        total_tahun = total_hari / 365.25
+
+        tahun_1 = hari_1 / 365.25
+        tahun_2 = hari_2 / 365.25
+
+        return tahun_1, tahun_2, total_tahun
+
+    def tentukan_status(total_tahun):
+        if total_tahun < 4:
+            return "Aktif Periode 1"
+        elif total_tahun < 8:
+            return "Aktif Periode 2"
+        else:
+            return "Lebih dari 2 Periode"
+
+    # =========================================================
+    # FORM UPDATE
+    # =========================================================
     st.markdown("### ✍️ Form Update Data Kepala Sekolah")
 
     colA, colB = st.columns(2)
@@ -780,36 +841,46 @@ def page_update_operator():
             key=f"upd_sk_{sekolah_aktif}"
         )
 
-        upd_tmt = st.text_input(
-            "TMT Pengangkatan (contoh: 01-01-2024)",
-            value=str(row_asli.get("TMT", "")),
-            key=f"upd_tmt_{sekolah_aktif}"
-        )
+        st.markdown("### 📅 Periode 1")
+        upd_tmt1 = st.text_input("TMT 1 (contoh: 01-01-2020)", key=f"upd_tmt1_{sekolah_aktif}")
+        upd_tst1 = st.text_input("TST 1 (contoh: 01-01-2024)", key=f"upd_tst1_{sekolah_aktif}")
 
     with colB:
-        upd_jabatan = st.text_input(
-            "Keterangan Jabatan (Update)",
-            value=str(row_asli.get("Keterangan Jabatan", "")),
+        upd_jabatan = st.selectbox(
+            "Keterangan Jabatan",
+            ["Defenitif", "PLT"],
             key=f"upd_jabatan_{sekolah_aktif}"
         )
 
-        upd_periode = st.text_input(
-            "Masa Periode Sesuai KSPSTK (Update)",
-            value=str(row_asli.get("Masa Periode Sesuai KSPSTK", "")),
-            key=f"upd_periode_{sekolah_aktif}"
-        )
-
-        upd_bcks = st.text_input(
-            "Ket Sertifikat BCKS (Update)",
-            value=str(row_asli.get("Ket Sertifikat BCKS", "")),
+        upd_bcks = st.selectbox(
+            "Ket Sertifikat BCKS",
+            ["Sudah", "Belum"],
             key=f"upd_bcks_{sekolah_aktif}"
         )
 
-        upd_ket_akhir = st.text_input(
-            "Keterangan Akhir (Manual Jika Perlu)",
-            value=str(row_asli.get("Keterangan Akhir", "")),
-            key=f"upd_ketakhir_{sekolah_aktif}"
-        )
+        st.markdown("### 📅 Periode 2 (Jika Ada)")
+        upd_tmt2 = st.text_input("TMT 2 (contoh: 01-01-2024)", key=f"upd_tmt2_{sekolah_aktif}")
+        upd_tst2 = st.text_input("TST 2 (opsional)", key=f"upd_tst2_{sekolah_aktif}")
+
+    # =========================================================
+    # HITUNG STATUS OTOMATIS
+    # =========================================================
+    tahun_1, tahun_2, total_tahun = hitung_total_menjabat_detail(upd_tmt1, upd_tst1, upd_tmt2, upd_tst2)
+    status_hasil = tentukan_status(total_tahun)
+
+    st.info(f"""
+    **📌 Hasil Perhitungan Masa Jabatan Otomatis**
+    - Lama Periode 1: **{tahun_1:.2f} tahun**
+    - Lama Periode 2: **{tahun_2:.2f} tahun**
+    - Total Menjabat: **{total_tahun:.2f} tahun**
+    - Status Regulatif: **{status_hasil}**
+    """)
+
+    upd_ket_akhir = st.text_input(
+        "Keterangan Akhir (Manual Jika Perlu)",
+        value=str(row_asli.get("Keterangan Akhir", "")),
+        key=f"upd_ketakhir_{sekolah_aktif}"
+    )
 
     st.markdown("### 📌 Catatan Tambahan (Opsional)")
     upd_catatan = st.text_area(
@@ -820,6 +891,9 @@ def page_update_operator():
 
     st.divider()
 
+    # =========================================================
+    # SIMPAN UPDATE
+    # =========================================================
     if st.button("💾 Simpan Update Data Sekolah Ini", use_container_width=True, key=f"btn_simpan_update_{sekolah_aktif}"):
 
         new_row = {
@@ -830,24 +904,31 @@ def page_update_operator():
             "Nama Kepala Sekolah (Update)": upd_nama_kepsek,
             "NIP Kepala Sekolah (Update)": upd_nip,
             "Nomor SK Pengangkatan": upd_sk,
-            "TMT Pengangkatan": upd_tmt,
 
             "Keterangan Jabatan (Update)": upd_jabatan,
-            "Masa Periode Sesuai KSPSTK (Update)": upd_periode,
             "Ket Sertifikat BCKS (Update)": upd_bcks,
-            "Keterangan Akhir (Update)": upd_ket_akhir,
 
+            "TMT 1": upd_tmt1,
+            "TST 1": upd_tst1,
+            "TMT 2": upd_tmt2,
+            "TST 2": upd_tst2,
+
+            "Total Tahun Menjabat": round(total_tahun, 2),
+            "Status Regulatif (Hitung)": status_hasil,
+
+            "Keterangan Akhir (Update)": upd_ket_akhir,
             "Catatan Riwayat": upd_catatan,
             "Diupdate Oleh": st.session_state.role
         }
 
+        df_update_sekolah = load_update_sekolah()
+
         if not df_update_sekolah.empty and "Nama Sekolah" in df_update_sekolah.columns:
-            df_update_sekolah.drop(df_update_sekolah[df_update_sekolah["Nama Sekolah"] == sekolah_aktif].index, inplace=True)
+            df_update_sekolah = df_update_sekolah[df_update_sekolah["Nama Sekolah"] != sekolah_aktif]
 
-        df_update_baru = pd.DataFrame([new_row])
-        df_update_final = pd.concat([df_update_sekolah, df_update_baru], ignore_index=True)
+        df_update_sekolah = pd.concat([df_update_sekolah, pd.DataFrame([new_row])], ignore_index=True)
 
-        save_update_sekolah(df_update_final)
+        save_update_sekolah(df_update_sekolah)
 
         st.success("✅ Data update berhasil disimpan ke file update_data_sekolah.xlsx")
         st.rerun()
@@ -932,3 +1013,4 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
