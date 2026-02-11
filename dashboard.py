@@ -739,12 +739,9 @@ def page_detail():
                 del perubahan_kepsek[nama]
                 save_perubahan(perubahan_kepsek)
 
-            # reset dropdown jadi kosong
             st.session_state[f"calon_{nama}"] = "-- Pilih Calon Pengganti --"
-
             st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
             st.rerun()
- 
 # =========================================================
 # HALAMAN REKAP PROVINSI
 # =========================================================
@@ -841,6 +838,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
