@@ -214,13 +214,13 @@ def map_status(row):
     if "plt" in masa or "plt" in jabatan:
         return "Plt"
     if "periode 1" in masa or "periode 1" in ket_akhir:
-        return "Aktif Periode 1"
+        return "Aktif Periode Ke 1"
     if "periode 2" in masa or "periode 2" in ket_akhir:
-        return "Aktif Periode 2"
+        return "Aktif Periode Ke 2"
     if "lebih dari 2" in masa or ">2" in masa or "lebih dari 2" in ket_akhir or ">2" in ket_akhir:
         return "Lebih dari 2 Periode"
 
-    return "Aktif Periode 1"
+    return "Aktif Periode Ke 1"
 
 # =========================================================
 # CSS CARD SEKOLAH SERAGAM
@@ -342,10 +342,10 @@ def tampil_pasal_permendikdasmen(status, ket_bcks):
     tampil31 = False
     tampil32 = False
 
-    if status in ["Aktif Periode 2", "Lebih dari 2 Periode", "Plt"]:
+    if status in ["Aktif Periode Ke 2", "Lebih dari 2 Periode", "Plt"]:
         tampil31 = True
 
-    if status == "Aktif Periode 1":
+    if status == "Aktif Periode Ke 1":
         tampil32 = True
 
     if status == "Lebih dari 2 Periode" and ("belum" in ket_bcks or ket_bcks.strip() == "" or ket_bcks.strip() == "nan"):
@@ -411,8 +411,8 @@ def page_cabdin():
     df_rekap = df_ks.copy()
     df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
 
-    jumlah_p1 = int((df_rekap["Status Regulatif"] == "Aktif Periode 1").sum())
-    jumlah_p2 = int((df_rekap["Status Regulatif"] == "Aktif Periode 2").sum())
+    jumlah_p1 = int((df_rekap["Status Regulatif"] == "Aktif Periode Ke 1").sum())
+    jumlah_p2 = int((df_rekap["Status Regulatif"] == "Aktif Periode Ke 2").sum())
     jumlah_lebih2 = int((df_rekap["Status Regulatif"] == "Lebih dari 2 Periode").sum())
     jumlah_plt = int((df_rekap["Status Regulatif"] == "Plt").sum())
 
@@ -421,8 +421,8 @@ def page_cabdin():
     st.markdown("## 📌 Rekap Status Kepala Sekolah (Provinsi)")
 
     colx1, colx2, colx3, colx4, colx5 = st.columns(5)
-    colx1.metric("Aktif Periode 1", jumlah_p1)
-    colx2.metric("Aktif Periode 2", jumlah_p2)
+    colx1.metric("Aktif Periode Ke 1", jumlah_p1)
+    colx2.metric("Aktif Periode Ke 2", jumlah_p2)
     colx3.metric("Lebih 2 Periode", jumlah_lebih2)
     colx4.metric("Kasek Plt", jumlah_plt)
     colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
@@ -454,12 +454,12 @@ def page_cabdin():
         .reset_index()
     )
 
-    for col in ["Aktif Periode 1", "Aktif Periode 2", "Lebih dari 2 Periode", "Plt"]:
+    for col in ["Aktif Periode Ke 1", "Aktif Periode Ke 2", "Lebih dari 2 Periode", "Plt"]:
         if col not in rekap_cabdin.columns:
             rekap_cabdin[col] = 0
 
     rekap_cabdin["Bisa Diberhentikan"] = (
-        rekap_cabdin["Aktif Periode 2"] +
+        rekap_cabdin["Aktif Periode Ke 2"] +
         rekap_cabdin["Lebih dari 2 Periode"] +
         rekap_cabdin["Plt"]
     )
@@ -471,8 +471,8 @@ def page_cabdin():
 
     tampil = rekap_cabdin[[
         "Cabang Dinas",
-        "Aktif Periode 1",
-        "Aktif Periode 2",
+        "Aktif Periode Ke 1",
+        "Aktif Periode Ke 2",
         "Lebih dari 2 Periode",
         "Plt",
         "Bisa Diberhentikan"
@@ -529,8 +529,8 @@ def page_sekolah():
 
     df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
 
-    jumlah_p1 = int((df_cab["Status Regulatif"] == "Aktif Periode 1").sum())
-    jumlah_p2 = int((df_cab["Status Regulatif"] == "Aktif Periode 2").sum())
+    jumlah_p1 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 1").sum())
+    jumlah_p2 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 2").sum())
     jumlah_lebih2 = int((df_cab["Status Regulatif"] == "Lebih dari 2 Periode").sum())
     jumlah_plt = int((df_cab["Status Regulatif"] == "Plt").sum())
 
@@ -539,8 +539,8 @@ def page_sekolah():
     st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
 
     col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric("Aktif Periode 1", jumlah_p1)
-    col2.metric("Aktif Periode 2", jumlah_p2)
+    col1.metric("Aktif Periode Ke 1", jumlah_p1)
+    col2.metric("Aktif Periode Ke 2", jumlah_p2)
     col3.metric("Lebih 2 Periode", jumlah_lebih2)
     col4.metric("Plt", jumlah_plt)
     col5.metric("Bisa Diberhentikan", total_bisa)
@@ -554,9 +554,9 @@ def page_sekolah():
         nama_sekolah = str(row.get("Nama Sekolah", "-"))
         status = map_status(row)
 
-        if status == "Aktif Periode 1":
+        if status == "Aktif Periode Ke 1":
             warna = "🟦"
-        elif status == "Aktif Periode 2":
+        elif status == "Aktif Periode Ke 2":
             warna = "🟨"
         elif status == "Lebih dari 2 Periode":
             warna = "🟥"
@@ -632,7 +632,7 @@ def page_detail():
     status_regulatif = map_status(row)
 
     bg_status = "#dbeeff"
-    if status_regulatif == "Aktif Periode 2":
+    if status_regulatif == "Aktif Periode Ke 2":
         bg_status = "#fff3cd"
     if status_regulatif == "Lebih dari 2 Periode":
         bg_status = "#f8d7da"
@@ -735,7 +735,7 @@ def page_rekap():
     df_rekap = df_ks.copy()
     df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
 
-    df_bisa = df_rekap[df_rekap["Status Regulatif"].isin(["Aktif Periode 2", "Lebih dari 2 Periode", "Plt"])].copy()
+    df_bisa = df_rekap[df_rekap["Status Regulatif"].isin(["Aktif Periode Ke 2", "Lebih dari 2 Periode", "Plt"])].copy()
 
     if df_bisa.empty:
         st.warning("⚠️ Tidak ada data Kepala Sekolah Bisa Diberhentikan.")
@@ -812,3 +812,4 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
