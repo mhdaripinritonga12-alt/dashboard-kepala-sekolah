@@ -732,8 +732,10 @@ def page_detail():
                 del perubahan_kepsek[nama]
                 save_perubahan(perubahan_kepsek)
 
-            if key_select in st.session_state:
-                del st.session_state[key_select]
+            # =========================================================
+            # FIX RESET SELECTBOX (JANGAN DIHAPUS, TAPI DISET NILAI DEFAULT)
+            # =========================================================
+            st.session_state[key_select] = "-- Pilih Calon Pengganti --"
 
             st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
             st.rerun()
