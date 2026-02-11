@@ -676,45 +676,62 @@ def page_detail():
     else:
         calon = st.selectbox("👤 Pilih Calon Pengganti (SIMPEG)", guru_list, key=f"calon_{nama}")
 
-        st.markdown("### 📌 Data SIMPEG Calon Pengganti")
+st.markdown("### 📌 Data SIMPEG Calon Pengganti")
 
-        data_calon = ambil_data_simpeg(calon)
+# fungsi ambil data simpeg (pastikan ada di atas page_detail)
+def ambil_data_simpeg(nama_guru):
+    return df_guru[df_guru["NAMA GURU"].astype(str).str.strip() == str(nama_guru).strip()]
 
-        if data_calon.empty:
-            st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
-        else:
-            st.dataframe(data_calon, use_container_width=True, hide_index=True)
+data_calon = ambil_data_simpeg(calon)
 
-            kolom_sekolah = None
-            for c in data_calon.columns:
-                if "SEKOLAH" in c.upper() or "UNIT KERJA" in c.upper():
-                    kolom_sekolah = c
-                    break
+# Jika belum ada calon dipilih, kosongkan tampilan
+if calon is None or str(calon).strip() == "":
+    st.info("ℹ️ Silakan pilih calon pengganti terlebih dahulu.")
+else:
+    if data_calon.empty:
+        st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
+    else:
+        calon_row = data_calon.iloc[0]
 
-            if kolom_sekolah:
-                asal_sekolah = str(data_calon.iloc[0][kolom_sekolah])
-                st.success(f"🏫 Asal Sekolah/Unit Kerja Calon Pengganti: **{asal_sekolah}**")
-            else:
-                st.info("ℹ️ Kolom Asal Sekolah/Unit Kerja tidak ditemukan di SIMPEG.")
+        # Cari kolom asal sekolah/unit kerja
+        kolom_sekolah = None
+        for c in data_calon.columns:
+            if "SEKOLAH" in c.upper() or "UNIT KERJA" in c.upper():
+                kolom_sekolah = c
+                break
 
-        colbtn1, colbtn2 = st.columns(2)
+        asal_sekolah = "-"
+        if kolom_sekolah:
+            asal_sekolah = str(calon_row.get(kolom_sekolah, "-"))
 
-        with colbtn1:
-            if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-                perubahan_kepsek[nama] = calon
-                save_perubahan(perubahan_kepsek)
-                st.success(f"✅ Diganti dengan: {calon}")
-                st.rerun()
+        # CARD VIEW
+        st.markdown(f"""
+        <div style="
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            border-left: 8px solid #0d6efd;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.10);
+            margin-top: 10px;
+        ">
+            <h4 style="margin:0;">👤 {calon_row.get("NAMA GURU","-")}</h4>
+            <p style="margin:6px 0;"><b>NIP:</b> {calon_row.get("NIP","-")}</p>
+            <p style="margin:6px 0;"><b>NIK:</b> {calon_row.get("NIK","-")}</p>
+            <p style="margin:6px 0;"><b>No HP:</b> {calon_row.get("No HP","-")}</p>
+            <p style="margin:6px 0;"><b>Jabatan:</b> {calon_row.get("JABATAN","-")}</p>
+            <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {calon_row.get("Jenis Pegawai","-")}</p>
+            <p style="margin:6px 0;"><b>Asal Sekolah/Unit Kerja:</b> {asal_sekolah}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
+    if nama in perubahan_kepsek:
+        del perubahan_kepsek[nama]
+        save_perubahan(perubahan_kepsek)
 
-        with colbtn2:
-            if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
-                if nama in perubahan_kepsek:
-                    del perubahan_kepsek[nama]
-                    save_perubahan(perubahan_kepsek)
-                    st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
-                    st.rerun()
-                else:
-                    st.info("ℹ️ Tidak ada calon pengganti yang tersimpan")
+    st.session_state[f"calon_{nama}"] = ""   # reset dropdown
+    st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
+    st.rerun()
+
 
 # =========================================================
 # HALAMAN REKAP PROVINSI
@@ -812,4 +829,5 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
