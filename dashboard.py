@@ -661,24 +661,27 @@ def page_detail():
     else:
         calon = st.selectbox("👤 Pilih Calon Pengganti (SIMPEG)", guru_list, key=f"calon_{nama}")
 
-        colbtn1, colbtn2 = st.columns(2)
+        st.markdown("### 📌 Data SIMPEG Calon Pengganti")
 
-        with colbtn1:
-            if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-                perubahan_kepsek[nama] = calon
-                save_perubahan(perubahan_kepsek)
-                st.success(f"✅ Diganti dengan: {calon}")
-                st.rerun()
+data_calon = ambil_data_simpeg(calon)
 
-        with colbtn2:
-            if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
-                if nama in perubahan_kepsek:
-                    del perubahan_kepsek[nama]
-                    save_perubahan(perubahan_kepsek)
-                    st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
-                    st.rerun()
-                else:
-                    st.info("ℹ️ Tidak ada calon pengganti yang tersimpan")
+if data_calon.empty:
+    st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
+else:
+    st.dataframe(data_calon, use_container_width=True, hide_index=True)
+
+    # Coba ambil info asal sekolah jika ada kolomnya
+    kolom_sekolah = None
+    for c in data_calon.columns:
+        if "SEKOLAH" in c.upper() or "UNIT KERJA" in c.upper():
+            kolom_sekolah = c
+            break
+
+    if kolom_sekolah:
+        asal_sekolah = str(data_calon.iloc[0][kolom_sekolah])
+        st.success(f"🏫 Asal Sekolah/Unit Kerja Calon Pengganti: **{asal_sekolah}**")
+    else:
+        st.info("ℹ️ Kolom Asal Sekolah/Unit Kerja tidak ditemukan di SIMPEG.")
 
 # =========================================================
 # HALAMAN REKAP PROVINSI
@@ -774,6 +777,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
