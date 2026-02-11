@@ -882,16 +882,17 @@ def hitung_total_menjabat_detail(tmt1, tst1, tmt2=None, tst2=None):
     # =========================================================
     # HITUNG STATUS OTOMATIS
     # =========================================================
-    tahun_1, tahun_2, total_tahun = hitung_total_menjabat_detail(upd_tmt1, upd_tst1, upd_tmt2, upd_tst2)
-    status_hasil = tentukan_status(total_tahun)
+    p1, p2, total, total_hari = hitung_total_menjabat_detail(upd_tmt1, upd_tst1, upd_tmt2, upd_tst2)
+    status_hasil = tentukan_status(total_hari / 365)
 
     st.info(f"""
     **📌 Hasil Perhitungan Masa Jabatan Otomatis**
-    - Lama Periode 1: **{tahun_1:.2f} tahun**
-    - Lama Periode 2: **{tahun_2:.2f} tahun**
-    - Total Menjabat: **{total_tahun:.2f} tahun**
+    - Lama Periode 1: **{p1[0]} tahun {p1[1]} bulan {p1[2]} hari**
+    - Lama Periode 2: **{p2[0]} tahun {p2[1]} bulan {p2[2]} hari**
+    - Total Menjabat: **{total[0]} tahun {total[1]} bulan {total[2]} hari**
     - Status Regulatif: **{status_hasil}**
     """)
+
 
     upd_ket_akhir = st.text_input(
         "Keterangan Akhir (Manual Jika Perlu)",
@@ -930,8 +931,9 @@ def hitung_total_menjabat_detail(tmt1, tst1, tmt2=None, tst2=None):
             "TMT 2": upd_tmt2,
             "TST 2": upd_tst2,
 
-            "Total Tahun Menjabat": round(total_tahun, 2),
-            "Status Regulatif (Hitung)": status_hasil,
+            "Total Menjabat (Hari)": total_hari,
+            "Total Menjabat (Format)": f"{total[0]} tahun {total[1]} bulan {total[2]} hari",
+
 
             "Keterangan Akhir (Update)": upd_ket_akhir,
             "Catatan Riwayat": upd_catatan,
@@ -1030,5 +1032,6 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
