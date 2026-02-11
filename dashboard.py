@@ -921,68 +921,7 @@ with colA:
         "Nomor SK Pengangkatan",
         value=str(row_asli.get("SK Pengangkatan", ""))
     )
-
-    upd_tmt = st.text_input(
-        "TMT Pengangkatan (contoh: 2012 atau 01-01-2012)",
-        value=str(row_asli.get("TMT", ""))
-    )
-
-    st.markdown("### 🧾 Riwayat Jabatan Kepala Sekolah")
-
-    tmt1 = st.text_input("TMT 1 (Mulai Menjabat Pertama)", placeholder="contoh: 2012")
-    tst1 = st.text_input("TST 1 (Berhenti Pertama)", placeholder="contoh: 2018")
-    tmt2 = st.text_input("TMT 2 (Menjabat Lagi)", placeholder="contoh: 2019")
-    tst2 = st.text_input("TST 2 (Jika Berhenti Lagi)", placeholder="kosongkan jika masih menjabat")
-
-    tahun_1, tahun_2, total_tahun = hitung_total_menjabat_detail(tmt1, tst1, tmt2, tst2)
-
-    status_regulatif_otomatis = tentukan_status(total_tahun)
-
-    keterangan_otomatis = (
-        f"Total menjabat {total_tahun:.1f} tahun "
-        f"(Periode 1: {tahun_1:.1f} tahun, Periode 2: {tahun_2:.1f} tahun) "
-        f"→ Status: {status_regulatif_otomatis}"
-    )
-
-    st.info(f"⏳ Periode 1: **{tahun_1:.1f} tahun**")
-    st.info(f"⏳ Periode 2: **{tahun_2:.1f} tahun**")
-    st.success(f"✅ Total Menjabat: **{total_tahun:.1f} tahun**")
-    st.error(f"📌 Status Otomatis: **{status_regulatif_otomatis}**")
-
-    upd_keterangan_akhir = st.text_area(
-        "Keterangan Akhir (Auto Generate)",
-        value=keterangan_otomatis,
-        height=80
-    )
-
-
-with colB:
-    upd_jabatan = st.selectbox(
-        "Keterangan Jabatan",
-        ["Definitif", "Plt", "Kosong"],
-        index=0
-    )
-
-    periode_list = ["Periode 1", "Periode 2", "Lebih dari 2 Periode"]
-    default_index = 0
-    if status_regulatif_otomatis == "Aktif Periode 1":
-        default_index = 0
-    elif status_regulatif_otomatis == "Aktif Periode 2":
-        default_index = 1
-    else:
-        default_index = 2
-
-    upd_periode = st.selectbox(
-        "Masa Periode Sesuai KSPSTK",
-        periode_list,
-        index=default_index
-    )
-
-    upd_bcks = st.selectbox(
-        "Ket Sertifikat BCKS",
-        ["Sudah", "Belum"],
-        index=0
-    )upd_ket_akhir = st.text_input(
+upd_ket_akhir = st.text_input(
     "Keterangan Akhir (Manual Jika Perlu)",
     value=str(row_asli.get("Keterangan Akhir", ""))
 )
@@ -995,6 +934,41 @@ upd_catatan = st.text_area(
 
 st.divider()
 
+if st.button("💾 Simpan Update Data Sekolah Ini", use_container_width=True):
+
+    new_row = {
+        "Nama Sekolah": sekolah_aktif,
+        "Cabang Dinas": row_asli.get("Cabang Dinas", "-"),
+        "Jenjang": row_asli.get("Jenjang", "-"),
+
+        "Nama Kepala Sekolah (Update)": upd_nama_kepsek,
+        "NIP Kepala Sekolah (Update)": upd_nip,
+        "Nomor SK Pengangkatan": upd_sk,
+        "TMT Pengangkatan": upd_tmt,
+
+        "Keterangan Jabatan (Update)": upd_jabatan,
+        "Masa Periode Sesuai KSPSTK (Update)": upd_periode,
+        "Ket Sertifikat BCKS (Update)": upd_bcks,
+        "Keterangan Akhir (Update)": upd_ket_akhir,
+
+        "Catatan Riwayat": upd_catatan,
+        "Diupdate Oleh": st.session_state.role
+    }
+
+    if not df_update_sekolah.empty and "Nama Sekolah" in df_update_sekolah.columns:
+        df_update_sekolah = df_update_sekolah[df_update_sekolah["Nama Sekolah"] != sekolah_aktif]
+
+    df_update_sekolah = pd.concat(
+        [df_update_sekolah, pd.DataFrame([new_row])],
+        ignore_index=True
+    )
+
+    save_update_sekolah(df_update_sekolah)
+
+    st.success("✅ Data update berhasil disimpan ke file update_data_sekolah.xlsx")
+    st.rerun()
+
+st.divider()
 if st.button("💾 Simpan Update Data Sekolah Ini", use_container_width=True):
 
     new_row = {
@@ -1054,6 +1028,7 @@ st.divider()
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
