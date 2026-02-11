@@ -770,9 +770,165 @@ st.info("""
 
 st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesuai Permendikdasmen No. 7 Tahun 2025.")
 # =========================================================
+# ✍️ UPDATE DATA KEPALA SEKOLAH (KHUSUS OPERATOR SEKOLAH)
+# =========================================================
+
+DATA_UPDATE_SEKOLAH = "update_data_sekolah.xlsx"
+
+def load_update_sekolah():
+    if os.path.exists(DATA_UPDATE_SEKOLAH):
+        try:
+            df = pd.read_excel(DATA_UPDATE_SEKOLAH)
+            df.columns = df.columns.astype(str).str.strip()
+            return df
+        except:
+            return pd.DataFrame()
+    return pd.DataFrame()
+
+def save_update_sekolah(df_update):
+    df_update.to_excel(DATA_UPDATE_SEKOLAH, index=False)
+
+df_update_sekolah = load_update_sekolah()
+
+st.divider()
+st.markdown("## 🛠️ Update Data Kepala Sekolah (Operator Sekolah)")
+
+# Hanya operator yang boleh update
+if st.session_state.role not in ["Operator", "Kabid"]:
+    st.info("ℹ️ Menu update hanya tersedia untuk Operator / Kabid.")
+else:
+
+    # Pastikan sudah memilih sekolah
+    if st.session_state.selected_sekolah is None:
+        st.warning("⚠️ Pilih sekolah terlebih dahulu untuk melakukan update.")
+    else:
+
+        sekolah_aktif = str(st.session_state.selected_sekolah).strip()
+
+        st.markdown(f"### 🏫 Sekolah Aktif: **{sekolah_aktif}**")
+
+        # Ambil data asli dari df_ks
+        data_asli = df_ks[df_ks["Nama Sekolah"].astype(str).str.strip() == sekolah_aktif]
+
+        if data_asli.empty:
+            st.error("❌ Data sekolah tidak ditemukan di file utama.")
+        else:
+            row_asli = data_asli.iloc[0]
+
+            st.markdown("### ✍️ Form Update Data Kepala Sekolah")
+
+            colA, colB = st.columns(2)
+
+            with colA:
+                upd_nama_kepsek = st.text_input(
+                    "Nama Kepala Sekolah (Update)",
+                    value=str(row_asli.get("Nama Kepala Sekolah", ""))
+                )
+
+                upd_nip = st.text_input(
+                    "NIP Kepala Sekolah (Update)",
+                    value=str(row_asli.get("NIP", ""))
+                )
+
+                upd_sk = st.text_input(
+                    "Nomor SK Pengangkatan",
+                    value=str(row_asli.get("SK Pengangkatan", ""))
+                )
+
+                upd_tmt = st.text_input(
+                    "TMT Pengangkatan (contoh: 01-01-2024)",
+                    value=str(row_asli.get("TMT", ""))
+                )
+
+            with colB:
+                upd_jabatan = st.selectbox(
+                    "Keterangan Jabatan",
+                    ["Definitif", "Plt", "Kosong"],
+                    index=0
+                )
+
+                upd_periode = st.selectbox(
+                    "Masa Periode Sesuai KSPSTK",
+                    ["Periode 1", "Periode 2", "Lebih dari 2 Periode"],
+                    index=0
+                )
+
+                upd_bcks = st.selectbox(
+                    "Ket Sertifikat BCKS",
+                    ["Sudah", "Belum"],
+                    index=0
+                )
+
+                upd_ket_akhir = st.text_input(
+                    "Keterangan Akhir",
+                    value=str(row_asli.get("Keterangan Akhir", ""))
+                )
+
+            st.divider()
+
+            st.markdown("### 📌 Catatan Tambahan (Opsional)")
+            upd_catatan = st.text_area("Catatan / Riwayat Pernah Menjadi Kepala Sekolah", height=100)
+
+            st.divider()
+
+            if st.button("💾 Simpan Update Data Sekolah Ini", use_container_width=True):
+
+                new_row = {
+                    "Nama Sekolah": sekolah_aktif,
+                    "Cabang Dinas": row_asli.get("Cabang Dinas", "-"),
+                    "Jenjang": row_asli.get("Jenjang", "-"),
+
+                    "Nama Kepala Sekolah (Update)": upd_nama_kepsek,
+                    "NIP Kepala Sekolah (Update)": upd_nip,
+                    "Nomor SK Pengangkatan": upd_sk,
+                    "TMT Pengangkatan": upd_tmt,
+
+                    "Keterangan Jabatan (Update)": upd_jabatan,
+                    "Masa Periode Sesuai KSPSTK (Update)": upd_periode,
+                    "Ket Sertifikat BCKS (Update)": upd_bcks,
+                    "Keterangan Akhir (Update)": upd_ket_akhir,
+
+                    "Catatan Riwayat": upd_catatan,
+                    "Diupdate Oleh": st.session_state.role
+                }
+
+                # Jika sekolah sudah pernah update, replace
+                if not df_update_sekolah.empty and "Nama Sekolah" in df_update_sekolah.columns:
+                    df_update_sekolah = df_update_sekolah[df_update_sekolah["Nama Sekolah"] != sekolah_aktif]
+
+                df_update_sekolah = pd.concat([df_update_sekolah, pd.DataFrame([new_row])], ignore_index=True)
+
+                save_update_sekolah(df_update_sekolah)
+
+                st.success("✅ Data update berhasil disimpan ke file update_data_sekolah.xlsx")
+                st.rerun()
+
+            st.divider()
+
+            # Tampilkan hasil update jika ada
+            if not df_update_sekolah.empty and "Nama Sekolah" in df_update_sekolah.columns:
+                cek = df_update_sekolah[df_update_sekolah["Nama Sekolah"] == sekolah_aktif]
+
+                if not cek.empty:
+                    st.markdown("### ✅ Data Update Terakhir Sekolah Ini")
+                    st.dataframe(cek, use_container_width=True, hide_index=True)
+
+            st.divider()
+
+            # Download file update
+            if os.path.exists(DATA_UPDATE_SEKOLAH):
+                with open(DATA_UPDATE_SEKOLAH, "rb") as f:
+                    st.download_button(
+                        label="📥 Download File Update Sekolah (Excel)",
+                        data=f,
+                        file_name="update_data_sekolah.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+# =========================================================
 # FOOTER
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
