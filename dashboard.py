@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+import re   # ✅ TAMBAHAN (UNTUK HAPUS HTML TAG)
 
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -206,21 +207,45 @@ def cari_kolom(df, kandidat):
     return None
 
 # =========================================================
-# BERSIHKAN NILAI
+# BERSIHKAN NILAI (FIX HTML TAG)
 # =========================================================
 def bersihkan(teks):
     if teks is None:
         return "-"
+
     teks = str(teks)
 
-    hapus = ["<", ">", "</b>", "<b>", "</p>", "<p>"]
-    for h in hapus:
-        teks = teks.replace(h, "")
+    # hapus semua tag html seperti <p style=...> </p>
+    teks = re.sub(r"<[^>]*>", "", teks)
 
-    if teks.strip().lower() == "nan":
+    teks = teks.replace("\xa0", " ").strip()
+
+    if teks.strip().lower() == "nan" or teks.strip() == "":
         return "-"
 
     return teks.strip()
+
+# =========================================================
+# TAMBAHAN: DETEKSI CABDIS DARI UNOR (AUTO CABDIS)
+# =========================================================
+def deteksi_cabdis_dari_unor(unor_text):
+    if unor_text is None:
+        return "-"
+
+    unor_text = str(unor_text).upper().strip()
+
+    if unor_text == "" or unor_text == "-" or unor_text.lower() == "nan":
+        return "-"
+
+    df_tmp = df_ks.copy()
+    df_tmp["Nama Sekolah"] = df_tmp["Nama Sekolah"].astype(str).str.upper().str.strip()
+
+    cocok = df_tmp[df_tmp["Nama Sekolah"].apply(lambda x: x in unor_text or unor_text in x)]
+
+    if cocok.empty:
+        return "-"
+
+    return str(cocok.iloc[0].get("Cabang Dinas", "-"))
 
 # =========================================================
 # URUT CABDIN
@@ -675,7 +700,6 @@ def page_detail():
             st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
         else:
             calon_row = data_calon.iloc[0]
-            # PAKSA SEMUA NILAI JADI STRING POLOS (HAPUS HTML)
             calon_row = calon_row.apply(lambda x: bersihkan(x))
 
             kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
@@ -685,6 +709,12 @@ def page_detail():
             unor = bersihkan(calon_row.get(kol_unor, "-")) if kol_unor else "-"
             cabdis = bersihkan(calon_row.get(kol_cabdis, "-")) if kol_cabdis else "-"
             alamat = bersihkan(calon_row.get(kol_alamat, "-")) if kol_alamat else "-"
+
+            # =========================================================
+            # FIX CABDIS OTOMATIS JIKA KOSONG DI SIMPEG
+            # =========================================================
+            if cabdis == "-" or cabdis.strip() == "":
+                cabdis = deteksi_cabdis_dari_unor(unor)
 
             kol_nip = cari_kolom(data_calon, ["NIP"])
             kol_nik = cari_kolom(data_calon, ["NIK"])
@@ -749,9 +779,6 @@ def page_detail():
                 del perubahan_kepsek[nama]
                 save_perubahan(perubahan_kepsek)
 
-            # ============================================
-            # FIX ERROR RESET SELECTBOX
-            # ============================================
             if key_select in st.session_state:
                 del st.session_state[key_select]
 
@@ -851,5 +878,3 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
