@@ -1,7 +1,10 @@
 import streamlit as st
 import pandas as pd
 import os
-from datetime import date
+
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 # =========================================================
 # KONFIGURASI APP
@@ -10,7 +13,6 @@ st.set_page_config(page_title="Dashboard Kepala Sekolah", layout="wide")
 
 DATA_SAVE = "perubahan_kepsek.xlsx"
 DATA_FILE = "data_kepala_sekolah.xlsx"
-DATA_UPDATE_SEKOLAH = "update_data_sekolah.xlsx"
 
 # =========================================================
 # SESSION STATE DEFAULT
@@ -300,27 +302,28 @@ with st.expander("🔍 Pencarian Guru (SIMPEG)", expanded=False):
 st.divider()
 
 # =========================================================
-# FUNGSI WARNA
+# FUNGSI WARNA OTOMATIS
 # =========================================================
 def get_warna_jabatan(value):
     v = str(value).lower()
     if "plt" in v:
-        return "#d1e7dd"
-    return "#dbeeff"
+        return "#d1e7dd"  # hijau
+    return "#dbeeff"  # biru
 
 def get_warna_bcks(value):
     v = str(value).lower()
     if "belum" in v or v.strip() == "" or v.strip() == "nan":
-        return "#f8d7da"
+        return "#f8d7da"  # merah
     if "sudah" in v or "ada" in v:
-        return "#d1e7dd"
+        return "#d1e7dd"  # hijau
     return "#dbeeff"
 
 # =========================================================
-# PASAL PERMENDIKDASMEN OTOMATIS
+# FUNGSI PASAL PERMENDIKDASMEN OTOMATIS
 # =========================================================
 def tampil_pasal_permendikdasmen(status, ket_bcks):
     ket_bcks = str(ket_bcks).lower()
+
     tampil31 = False
     tampil32 = False
 
@@ -338,32 +341,21 @@ def tampil_pasal_permendikdasmen(status, ket_bcks):
 
     if tampil31:
         st.error("""
-        **📌 PASAL 31 (Penugasan Kepala Sekolah)**  
-        - Kepala Sekolah maksimal **2 periode**  
-        - 1 periode = **4 tahun**  
-        - Jika lebih dari 2 periode maka **wajib diganti**
+        **📌 PASAL 31 (Penugasan Kepala Sekolah)**
+        - Kepala Sekolah dapat ditugaskan maksimal **2 periode**
+        - 1 periode = **4 tahun**
+        - Jika sudah menjabat **lebih dari 2 periode**, maka wajib dilakukan pergantian
         """)
 
     if tampil32:
         st.warning("""
-        **📌 PASAL 32 (Sertifikat BCKS)**  
-        - Kepala Sekolah wajib memiliki Sertifikat BCKS  
-        - Jika belum, menjadi catatan evaluasi dalam perpanjangan jabatan
+        **📌 PASAL 32 (Sertifikat BCKS)**
+        - Kepala Sekolah wajib memiliki Sertifikat BCKS
+        - Jika belum memiliki BCKS maka menjadi catatan evaluasi dalam perpanjangan jabatan
         """)
 
 # =========================================================
-# FIELD WARNA
-# =========================================================
-def tampil_colored_field(label, value, bg="#f1f1f1", text_color="black"):
-    st.markdown(f"""
-    <div style="padding:10px; border-radius:10px; background:{bg}; margin-bottom:8px;">
-        <b>{label}:</b>
-        <span style="color:{text_color}; font-weight:700;"> {value}</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-# =========================================================
-# HALAMAN CABDIN
+# HALAMAN CABDIN (DASHBOARD AWAL)
 # =========================================================
 def page_cabdin():
 
@@ -472,6 +464,7 @@ def page_cabdin():
     ]].copy()
 
     tampil.insert(0, "No", range(1, len(tampil) + 1))
+
     st.dataframe(tampil, use_container_width=True, hide_index=True)
 
     excel_file = "rekap_kepala_sekolah_per_cabdin.xlsx"
@@ -486,7 +479,7 @@ def page_cabdin():
         )
 
 # =========================================================
-# HALAMAN SEKOLAH
+# HALAMAN SEKOLAH (CABDIN)
 # =========================================================
 def page_sekolah():
     if st.session_state.selected_cabdin is None:
@@ -566,7 +559,18 @@ def page_sekolah():
         idx += 1
 
 # =========================================================
-# HALAMAN DETAIL
+# FIELD WARNA
+# =========================================================
+def tampil_colored_field(label, value, bg="#f1f1f1", text_color="black"):
+    st.markdown(f"""
+    <div style="padding:10px; border-radius:10px; background:{bg}; margin-bottom:8px;">
+        <b>{label}:</b>
+        <span style="color:{text_color}; font-weight:700;"> {value}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+# =========================================================
+# HALAMAN DETAIL SEKOLAH
 # =========================================================
 def page_detail():
     if st.session_state.selected_sekolah is None:
@@ -645,7 +649,9 @@ def page_detail():
         tampil_colored_field("Calon Pengganti", pengganti)
 
     st.divider()
+
     tampil_pasal_permendikdasmen(status_regulatif, ket_bcks)
+
     st.divider()
 
     is_view_only = st.session_state.role in ["Kadis", "View"]
@@ -658,14 +664,14 @@ def page_detail():
         colbtn1, colbtn2 = st.columns(2)
 
         with colbtn1:
-            if st.button("💾 Simpan Pengganti", key=f"btn_simpan_pengganti_{nama}", use_container_width=True):
+            if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
                 perubahan_kepsek[nama] = calon
                 save_perubahan(perubahan_kepsek)
                 st.success(f"✅ Diganti dengan: {calon}")
                 st.rerun()
 
         with colbtn2:
-            if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key=f"btn_reset_pengganti_{nama}", use_container_width=True):
+            if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
                 if nama in perubahan_kepsek:
                     del perubahan_kepsek[nama]
                     save_perubahan(perubahan_kepsek)
@@ -713,267 +719,6 @@ def page_rekap():
     st.dataframe(tampil, use_container_width=True, hide_index=True)
 
 # =========================================================
-# UPDATE SEKOLAH EXCEL
-# =========================================================
-def load_update_sekolah():
-    if os.path.exists(DATA_UPDATE_SEKOLAH):
-        try:
-            df = pd.read_excel(DATA_UPDATE_SEKOLAH)
-            df.columns = df.columns.astype(str).str.strip()
-            return df
-        except:
-            return pd.DataFrame()
-    return pd.DataFrame()
-
-def save_update_sekolah(df_update):
-    df_update.to_excel(DATA_UPDATE_SEKOLAH, index=False)
-
-df_update_sekolah = load_update_sekolah()
-
-# =========================================================
-# MENU UPDATE OPERATOR
-# =========================================================
-def page_update_operator():
-
-    st.divider()
-    st.markdown("## 🛠️ Update Data Kepala Sekolah (Operator Sekolah)")
-
-    if st.session_state.role not in ["Operator", "Kabid"]:
-        st.info("ℹ️ Menu update hanya tersedia untuk Operator / Kabid.")
-        return
-
-    if st.session_state.selected_sekolah is None:
-        st.warning("⚠️ Pilih sekolah terlebih dahulu untuk melakukan update.")
-        return
-
-    sekolah_aktif = str(st.session_state.selected_sekolah).strip()
-    st.markdown(f"### 🏫 Sekolah Aktif: **{sekolah_aktif}**")
-
-    data_asli = df_ks[df_ks["Nama Sekolah"].astype(str).str.strip() == sekolah_aktif]
-
-    if data_asli.empty:
-        st.error("❌ Data sekolah tidak ditemukan di file utama.")
-        return
-
-    row_asli = data_asli.iloc[0]
-
-    # =========================================================
-    # FUNGSI PARSE TANGGAL
-    # =========================================================
-    def parse_tanggal_fleksibel(teks):
-        teks = str(teks).strip()
-        if teks == "" or teks.lower() == "nan":
-            return None
-
-        if teks.isdigit() and len(teks) == 4:
-            return date(int(teks), 1, 1)
-
-        try:
-            return pd.to_datetime(teks, dayfirst=True).date()
-        except:
-            return None
-from datetime import date
-
-def hitung_total_menjabat_detail(tmt1, tst1, tmt2=None, tst2=None):
-    today = date.today()
-
-    tmt1 = parse_tanggal_fleksibel(tmt1)
-    tst1 = parse_tanggal_fleksibel(tst1)
-    tmt2 = parse_tanggal_fleksibel(tmt2)
-    tst2 = parse_tanggal_fleksibel(tst2)
-
-    hari_1 = 0
-    hari_2 = 0
-
-    # periode pertama
-    if tmt1:
-        if tst1:
-            hari_1 = (tst1 - tmt1).days
-        else:
-            hari_1 = (today - tmt1).days
-
-    # periode kedua
-    if tmt2:
-        if tst2:
-            hari_2 = (tst2 - tmt2).days
-        else:
-            hari_2 = (today - tmt2).days
-
-    if hari_1 < 0: hari_1 = 0
-    if hari_2 < 0: hari_2 = 0
-
-    total_hari = hari_1 + hari_2
-
-    # konversi hari -> tahun bulan hari (estimasi 365 hari & 30 hari/bulan)
-    tahun = total_hari // 365
-    sisa_hari = total_hari % 365
-    bulan = sisa_hari // 30
-    hari = sisa_hari % 30
-
-    # juga hitung detail masing-masing periode
-    tahun1 = hari_1 // 365
-    sisa1 = hari_1 % 365
-    bulan1 = sisa1 // 30
-    hari1 = sisa1 % 30
-
-    tahun2 = hari_2 // 365
-    sisa2 = hari_2 % 365
-    bulan2 = sisa2 // 30
-    hari2 = sisa2 % 30
-
-    return (tahun1, bulan1, hari1), (tahun2, bulan2, hari2), (tahun, bulan, hari), total_hari
-
-
-    def tentukan_status(total_tahun):
-        if total_tahun < 4:
-            return "Aktif Periode 1"
-        elif total_tahun < 8:
-            return "Aktif Periode 2"
-        else:
-            return "Lebih dari 2 Periode"
-
-    # =========================================================
-    # FORM UPDATE
-    # =========================================================
-    st.markdown("### ✍️ Form Update Data Kepala Sekolah")
-
-    colA, colB = st.columns(2)
-
-    with colA:
-        upd_nama_kepsek = st.text_input(
-            "Nama Kepala Sekolah (Update)",
-            value=str(row_asli.get("Nama Kepala Sekolah", "")),
-            key=f"upd_nama_{sekolah_aktif}"
-        )
-
-        upd_nip = st.text_input(
-            "NIP Kepala Sekolah (Update)",
-            value=str(row_asli.get("NIP", "")),
-            key=f"upd_nip_{sekolah_aktif}"
-        )
-
-        upd_sk = st.text_input(
-            "Nomor SK Pengangkatan",
-            value=str(row_asli.get("SK Pengangkatan", "")),
-            key=f"upd_sk_{sekolah_aktif}"
-        )
-
-        st.markdown("### 📅 Periode 1")
-        upd_tmt1 = st.text_input("TMT 1 (contoh: 01-01-2020)", key=f"upd_tmt1_{sekolah_aktif}")
-        upd_tst1 = st.text_input("TST 1 (contoh: 01-01-2024)", key=f"upd_tst1_{sekolah_aktif}")
-
-    with colB:
-        upd_jabatan = st.selectbox(
-            "Keterangan Jabatan",
-            ["Defenitif", "PLT"],
-            key=f"upd_jabatan_{sekolah_aktif}"
-        )
-
-        upd_bcks = st.selectbox(
-            "Ket Sertifikat BCKS",
-            ["Sudah", "Belum"],
-            key=f"upd_bcks_{sekolah_aktif}"
-        )
-
-        st.markdown("### 📅 Periode 2 (Jika Ada)")
-        upd_tmt2 = st.text_input("TMT 2 (contoh: 01-01-2024)", key=f"upd_tmt2_{sekolah_aktif}")
-        upd_tst2 = st.text_input("TST 2 (opsional)", key=f"upd_tst2_{sekolah_aktif}")
-
-    # =========================================================
-    # HITUNG STATUS OTOMATIS
-    # =========================================================
-    p1, p2, total, total_hari = hitung_total_menjabat_detail(upd_tmt1, upd_tst1, upd_tmt2, upd_tst2)
-    status_hasil = tentukan_status(total_hari / 365)
-
-    st.info(f"""
-    **📌 Hasil Perhitungan Masa Jabatan Otomatis**
-    - Lama Periode 1: **{p1[0]} tahun {p1[1]} bulan {p1[2]} hari**
-    - Lama Periode 2: **{p2[0]} tahun {p2[1]} bulan {p2[2]} hari**
-    - Total Menjabat: **{total[0]} tahun {total[1]} bulan {total[2]} hari**
-    - Status Regulatif: **{status_hasil}**
-    """)
-
-
-    upd_ket_akhir = st.text_input(
-        "Keterangan Akhir (Manual Jika Perlu)",
-        value=str(row_asli.get("Keterangan Akhir", "")),
-        key=f"upd_ketakhir_{sekolah_aktif}"
-    )
-
-    st.markdown("### 📌 Catatan Tambahan (Opsional)")
-    upd_catatan = st.text_area(
-        "Catatan / Riwayat Pernah Menjadi Kepala Sekolah",
-        height=100,
-        key=f"upd_catatan_{sekolah_aktif}"
-    )
-
-    st.divider()
-
-    # =========================================================
-    # SIMPAN UPDATE
-    # =========================================================
-    if st.button("💾 Simpan Update Data Sekolah Ini", use_container_width=True, key=f"btn_simpan_update_{sekolah_aktif}"):
-
-        new_row = {
-            "Nama Sekolah": sekolah_aktif,
-            "Cabang Dinas": row_asli.get("Cabang Dinas", "-"),
-            "Jenjang": row_asli.get("Jenjang", "-"),
-
-            "Nama Kepala Sekolah (Update)": upd_nama_kepsek,
-            "NIP Kepala Sekolah (Update)": upd_nip,
-            "Nomor SK Pengangkatan": upd_sk,
-
-            "Keterangan Jabatan (Update)": upd_jabatan,
-            "Ket Sertifikat BCKS (Update)": upd_bcks,
-
-            "TMT 1": upd_tmt1,
-            "TST 1": upd_tst1,
-            "TMT 2": upd_tmt2,
-            "TST 2": upd_tst2,
-
-            "Total Menjabat (Hari)": total_hari,
-            "Total Menjabat (Format)": f"{total[0]} tahun {total[1]} bulan {total[2]} hari",
-
-
-            "Keterangan Akhir (Update)": upd_ket_akhir,
-            "Catatan Riwayat": upd_catatan,
-            "Diupdate Oleh": st.session_state.role
-        }
-
-        df_update_sekolah = load_update_sekolah()
-
-        if not df_update_sekolah.empty and "Nama Sekolah" in df_update_sekolah.columns:
-            df_update_sekolah = df_update_sekolah[df_update_sekolah["Nama Sekolah"] != sekolah_aktif]
-
-        df_update_sekolah = pd.concat([df_update_sekolah, pd.DataFrame([new_row])], ignore_index=True)
-
-        save_update_sekolah(df_update_sekolah)
-
-        st.success("✅ Data update berhasil disimpan ke file update_data_sekolah.xlsx")
-        st.rerun()
-
-    st.divider()
-
-    df_update_reload = load_update_sekolah()
-    cek = df_update_reload[df_update_reload["Nama Sekolah"] == sekolah_aktif]
-
-    if not cek.empty:
-        st.markdown("### ✅ Data Update Terakhir Sekolah Ini")
-        st.dataframe(cek, use_container_width=True, hide_index=True)
-
-    st.divider()
-
-    if os.path.exists(DATA_UPDATE_SEKOLAH):
-        with open(DATA_UPDATE_SEKOLAH, "rb") as f:
-            st.download_button(
-                label="📥 Download File Update Sekolah (Excel)",
-                data=f,
-                file_name="update_data_sekolah.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                key=f"download_update_{sekolah_aktif}"
-            )
-
-# =========================================================
 # ROUTING UTAMA
 # =========================================================
 if st.session_state.page == "cabdin":
@@ -984,13 +729,11 @@ elif st.session_state.page == "sekolah":
 
 elif st.session_state.page == "detail":
     page_detail()
-    page_update_operator()
 
 elif st.session_state.page == "rekap":
     page_rekap()
-
 # =========================================================
-# PERMENDIKDASMEN FOOTER INFO
+# ⚖️ PERMENDIKDASMEN NO 7 TAHUN 2025 (SEBELUM FOOTER)
 # =========================================================
 st.divider()
 st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
@@ -1026,12 +769,8 @@ st.info("""
 """)
 
 st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesuai Permendikdasmen No. 7 Tahun 2025.")
-
 # =========================================================
 # FOOTER
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
-
