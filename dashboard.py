@@ -674,22 +674,18 @@ def page_detail():
     if is_view_only:
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
     else:
-        calon = st.selectbox("👤 Pilih Calon Pengganti (SIMPEG)", guru_list, key=f"calon_{nama}")
+    calon = st.selectbox(
+        "👤 Pilih Calon Pengganti (SIMPEG)",
+        guru_list,
+        key=f"calon_{nama}"
+    )
 
-st.markdown("### 📌 Data SIMPEG Calon Pengganti")
+    st.markdown("### 📌 Data SIMPEG Calon Pengganti")
 
-# fungsi ambil data simpeg (pastikan ada di atas page_detail)
-def ambil_data_simpeg(nama_guru):
-    return df_guru[df_guru["NAMA GURU"].astype(str).str.strip() == str(nama_guru).strip()]
+    data_calon = ambil_data_simpeg(calon)
 
-data_calon = ambil_data_simpeg(calon)
-
-# Jika belum ada calon dipilih, kosongkan tampilan
-if calon is None or str(calon).strip() == "":
-    st.info("ℹ️ Silakan pilih calon pengganti terlebih dahulu.")
-else:
     if data_calon.empty:
-        st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
+        st.info("ℹ️ Silakan pilih calon pengganti terlebih dahulu.")
     else:
         calon_row = data_calon.iloc[0]
 
@@ -708,11 +704,12 @@ else:
         st.markdown(f"""
         <div style="
             background: white;
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 18px;
             border-left: 8px solid #0d6efd;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.10);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
             margin-top: 10px;
+            margin-bottom: 10px;
         ">
             <h4 style="margin:0;">👤 {calon_row.get("NAMA GURU","-")}</h4>
             <p style="margin:6px 0;"><b>NIP:</b> {calon_row.get("NIP","-")}</p>
@@ -723,16 +720,31 @@ else:
             <p style="margin:6px 0;"><b>Asal Sekolah/Unit Kerja:</b> {asal_sekolah}</p>
         </div>
         """, unsafe_allow_html=True)
-    if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
-    if nama in perubahan_kepsek:
-        del perubahan_kepsek[nama]
-        save_perubahan(perubahan_kepsek)
 
-    st.session_state[f"calon_{nama}"] = ""   # reset dropdown
-    st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
-    st.rerun()
+    colbtn1, colbtn2 = st.columns(2)
 
+    with colbtn1:
+        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+            if calon == "-- Pilih Calon Pengganti --":
+                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+            else:
+                perubahan_kepsek[nama] = calon
+                save_perubahan(perubahan_kepsek)
+                st.success(f"✅ Diganti dengan: {calon}")
+                st.rerun()
 
+    with colbtn2:
+        if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
+            if nama in perubahan_kepsek:
+                del perubahan_kepsek[nama]
+                save_perubahan(perubahan_kepsek)
+
+            # reset dropdown jadi kosong
+            st.session_state[f"calon_{nama}"] = "-- Pilih Calon Pengganti --"
+
+            st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
+            st.rerun()
+ 
 # =========================================================
 # HALAMAN REKAP PROVINSI
 # =========================================================
@@ -829,5 +841,6 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
