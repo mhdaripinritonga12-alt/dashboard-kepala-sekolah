@@ -982,8 +982,7 @@ with colB:
         "Ket Sertifikat BCKS",
         ["Sudah", "Belum"],
         index=0
-    )
-upd_ket_akhir = st.text_input(
+    )upd_ket_akhir = st.text_input(
     "Keterangan Akhir (Manual Jika Perlu)",
     value=str(row_asli.get("Keterangan Akhir", ""))
 )
@@ -997,40 +996,39 @@ upd_catatan = st.text_area(
 st.divider()
 
 if st.button("💾 Simpan Update Data Sekolah Ini", use_container_width=True):
-    pass
 
+    new_row = {
+        "Nama Sekolah": sekolah_aktif,
+        "Cabang Dinas": row_asli.get("Cabang Dinas", "-"),
+        "Jenjang": row_asli.get("Jenjang", "-"),
 
-                new_row = {
-                    "Nama Sekolah": sekolah_aktif,
-                    "Cabang Dinas": row_asli.get("Cabang Dinas", "-"),
-                    "Jenjang": row_asli.get("Jenjang", "-"),
+        "Nama Kepala Sekolah (Update)": upd_nama_kepsek,
+        "NIP Kepala Sekolah (Update)": upd_nip,
+        "Nomor SK Pengangkatan": upd_sk,
+        "TMT Pengangkatan": upd_tmt,
 
-                    "Nama Kepala Sekolah (Update)": upd_nama_kepsek,
-                    "NIP Kepala Sekolah (Update)": upd_nip,
-                    "Nomor SK Pengangkatan": upd_sk,
-                    "TMT Pengangkatan": upd_tmt,
+        "Keterangan Jabatan (Update)": upd_jabatan,
+        "Masa Periode Sesuai KSPSTK (Update)": upd_periode,
+        "Ket Sertifikat BCKS (Update)": upd_bcks,
+        "Keterangan Akhir (Update)": upd_ket_akhir,
 
-                    "Keterangan Jabatan (Update)": upd_jabatan,
-                    "Masa Periode Sesuai KSPSTK (Update)": upd_periode,
-                    "Ket Sertifikat BCKS (Update)": upd_bcks,
-                    "Keterangan Akhir (Update)": upd_ket_akhir,
+        "Catatan Riwayat": upd_catatan,
+        "Diupdate Oleh": st.session_state.role
+    }
 
-                    "Catatan Riwayat": upd_catatan,
-                    "Diupdate Oleh": st.session_state.role
-                }
+    # Jika sekolah sudah pernah update, replace
+    if not df_update_sekolah.empty and "Nama Sekolah" in df_update_sekolah.columns:
+        df_update_sekolah = df_update_sekolah[df_update_sekolah["Nama Sekolah"] != sekolah_aktif]
 
-                # Jika sekolah sudah pernah update, replace
-                if not df_update_sekolah.empty and "Nama Sekolah" in df_update_sekolah.columns:
-                    df_update_sekolah = df_update_sekolah[df_update_sekolah["Nama Sekolah"] != sekolah_aktif]
+    df_update_sekolah = pd.concat([df_update_sekolah, pd.DataFrame([new_row])], ignore_index=True)
 
-                df_update_sekolah = pd.concat([df_update_sekolah, pd.DataFrame([new_row])], ignore_index=True)
+    save_update_sekolah(df_update_sekolah)
 
-                save_update_sekolah(df_update_sekolah)
+    st.success("✅ Data update berhasil disimpan ke file update_data_sekolah.xlsx")
+    st.rerun()
 
-                st.success("✅ Data update berhasil disimpan ke file update_data_sekolah.xlsx")
-                st.rerun()
+st.divider()
 
-            st.divider()
 
             # Tampilkan hasil update jika ada
             if not df_update_sekolah.empty and "Nama Sekolah" in df_update_sekolah.columns:
@@ -1056,6 +1054,7 @@ if st.button("💾 Simpan Update Data Sekolah Ini", use_container_width=True):
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
