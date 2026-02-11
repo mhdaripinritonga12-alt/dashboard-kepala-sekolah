@@ -612,7 +612,7 @@ def page_detail():
     row = row_detail.iloc[0]
 
     st.divider()
-    st.markdown("## 📝 Data Lengkap (Sesuai Excel)")
+    st.markdown("## 📝 Data Lengkap (Database)")
 
     status_regulatif = map_status(row)
 
@@ -774,3 +774,4 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
