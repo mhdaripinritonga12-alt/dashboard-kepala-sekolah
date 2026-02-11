@@ -209,13 +209,15 @@ def cari_kolom(df, kandidat):
 # =========================================================
 # BERSIHKAN NILAI (FIX HTML TAG)
 # =========================================================
+import re
+
 def bersihkan(teks):
     if teks is None:
         return "-"
 
     teks = str(teks)
 
-    # hapus semua tag html seperti <p style=...> </p>
+    # hapus semua tag HTML lengkap (paling aman)
     teks = re.sub(r"<[^>]*>", "", teks)
 
     teks = teks.replace("\xa0", " ").strip()
@@ -878,3 +880,4 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
