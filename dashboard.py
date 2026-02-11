@@ -662,16 +662,16 @@ def page_detail():
         calon = st.selectbox("👤 Pilih Calon Pengganti (SIMPEG)", guru_list, key=f"calon_{nama}")
         st.markdown("### 📌 Data SIMPEG Calon Pengganti")
 
-data_calon = ambil_data_simpeg(calon)
+        data_calon = ambil_data_simpeg(calon)
 
-if data_calon.empty:
-    st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
-else:
-    st.dataframe(data_calon, use_container_width=True, hide_index=True)
+        if data_calon.empty:
+            st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
+        else:
+        st.dataframe(data_calon, use_container_width=True, hide_index=True)
 
-    # Coba ambil info asal sekolah jika ada kolomnya
-    kolom_sekolah = None
-    for c in data_calon.columns:
+        # Coba ambil info asal sekolah jika ada kolomnya
+        kolom_sekolah = None
+        for c in data_calon.columns:
         if "SEKOLAH" in c.upper() or "UNIT KERJA" in c.upper():
             kolom_sekolah = c
             break
@@ -796,6 +796,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 # =========================================================
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
