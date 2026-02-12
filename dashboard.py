@@ -524,22 +524,25 @@ def get_warna_bcks(value):
 # FUNGSI PASAL PERMENDIKDASMEN OTOMATIS
 # =========================================================
 def tampil_pasal_permendikdasmen(status, ket_bcks):
-    ket_bcks = str(ket_bcks).lower()
+    ket_bcks = str(ket_bcks).strip().lower()
 
     tampil31 = False
     tampil32 = False
 
+    # ================================
+    # PASAL 31: aturan periode jabatan
+    # ================================
     if status in ["Aktif Periode Ke 2", "Lebih dari 2 Periode", "Plt"]:
         tampil31 = True
 
-    if status == "Aktif Periode Ke 1":
+    # ================================
+    # PASAL 32: aturan sertifikat BCKS
+    # tampilkan jika BCKS belum ada
+    # ================================
+    if ("belum" in ket_bcks) or (ket_bcks == "") or (ket_bcks == "nan") or (ket_bcks == "-"):
         tampil32 = True
 
-    if status == "Lebih dari 2 Periode" and ("belum" in ket_bcks or ket_bcks.strip() == "" or ket_bcks.strip() == "nan"):
-        tampil31 = True
-        tampil32 = True
-
-    st.markdown("## ⚖️ Rincian Pada Permendikdasmen No 7 Tahun 2025")
+    st.markdown("## ⚖️ Permendikdasmen No 7 Tahun 2025")
 
     if tampil31:
         st.error("""
@@ -555,6 +558,7 @@ def tampil_pasal_permendikdasmen(status, ket_bcks):
         - Kepala Sekolah wajib memiliki Sertifikat BCKS
         - Jika belum memiliki BCKS maka menjadi catatan evaluasi dalam perpanjangan jabatan
         """)
+
 
 # =========================================================
 # HALAMAN CABDIN
@@ -1046,6 +1050,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
