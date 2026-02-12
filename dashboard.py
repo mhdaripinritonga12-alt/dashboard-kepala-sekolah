@@ -781,7 +781,7 @@ def page_detail():
     if pengganti:
         tampil_colored_field("Calon Pengganti (Yang Dipilih Operator)", pengganti, bg="#d1e7dd")
     else:
-        tampil_colored_field("Calon Pengganti (Excel)", pengganti_excel, bg="#fff3cd")
+        tampil_colored_field("Calon Pengganti", pengganti_excel, bg="#fff3cd")
 
     st.divider()
 
@@ -990,3 +990,4 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
