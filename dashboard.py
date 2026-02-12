@@ -716,6 +716,37 @@ def page_sekolah():
                 st.rerun()
 
         idx += 1
+    # =========================================================
+# ✅ REKAP CABANG DINAS (TABEL SEKOLAH BISA DIBERHENTIKAN)
+# =========================================================
+st.divider()
+st.markdown(f"## 📌 Rekap Kepala Sekolah Bisa Diberhentikan — {st.session_state.selected_cabdin}")
+
+df_cab_rekap = df_cab.copy()
+df_cab_rekap["Status Regulatif"] = df_cab_rekap.apply(map_status, axis=1)
+
+df_bisa = df_cab_rekap[df_cab_rekap["Status Regulatif"].isin([
+    "Aktif Periode Ke 2",
+    "Lebih dari 2 Periode",
+    "Plt"
+])].copy()
+
+if df_bisa.empty:
+    st.success("✅ Tidak ada Kepala Sekolah yang masuk kategori Bisa Diberhentikan pada Cabang Dinas ini.")
+else:
+    df_bisa["Calon Pengganti"] = df_bisa["Nama Sekolah"].map(perubahan_kepsek).fillna("-")
+
+    tampil = df_bisa[[
+        "Nama Sekolah",
+        "Nama Kepala Sekolah",
+        "Keterangan Jabatan",
+        "Status Regulatif",
+        "Ket Sertifikat BCKS",
+        "Riwayat Dapodik",
+        "Calon Pengganti"
+    ]].copy()
+
+    st.dataframe(tampil, use_container_width=True, hide_index=True)
 
     # =========================================================
     # ✅ REKAP CABANG DINAS (DITAMPILKAN DI AKHIR LIST SEKOLAH)
@@ -1079,6 +1110,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
