@@ -369,17 +369,24 @@ def map_status(row):
     jabatan = str(row.get("Keterangan Jabatan", "")).strip().lower()
     status_excel = str(row.get("Status", "")).strip().lower()
 
-    gabung = f"{masa} {ket_akhir} {jabatan} {status_excel}"
+    # ambil juga kolom lain yang mungkin berisi PLT
+    ket_bcks = str(row.get("Ket Sertifikat BCKS", "")).strip().lower()
+    permendik = str(row.get("Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode ( 1 Periode 4 Tahun )", "")).strip().lower()
 
-    # hapus semua simbol, titik, spasi
+    gabung = f"{masa} {ket_akhir} {jabatan} {status_excel} {ket_bcks} {permendik}"
+
+    # hapus simbol, titik, spasi (biar P.L.T jadi plt)
     cek = re.sub(r"[^a-z0-9]", "", gabung)
 
     # =========================================================
-    # FIX PLT DETEKSI SUPER KUAT
+    # ✅ DETEKSI PLT SUPER FINAL
     # =========================================================
-    if "plt" in cek or "pelaksanatugas" in cek:
+    if "plt" in cek or "pelaksanatugas" in cek or "masihplt" in cek:
         return "Plt"
 
+    # =========================================================
+    # DETEKSI PERIODE
+    # =========================================================
     if "periode1" in cek:
         return "Aktif Periode Ke 1"
 
@@ -390,8 +397,6 @@ def map_status(row):
         return "Lebih dari 2 Periode"
 
     return "Aktif Periode Ke 1"
-
-
 
 # =========================================================
 # CSS CARD SEKOLAH SERAGAM
@@ -1030,6 +1035,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
