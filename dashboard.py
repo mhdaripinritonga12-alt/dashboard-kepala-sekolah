@@ -497,7 +497,7 @@ def tampil_pasal_permendikdasmen(status, ket_bcks):
         tampil31 = True
         tampil32 = True
 
-    st.markdown("## ⚖️ Permendikdasmen No 7 Tahun 2025")
+    st.markdown("## ⚖️ Rincian Pada Permendikdasmen No 7 Tahun 2025")
 
     if tampil31:
         st.error("""
@@ -1006,6 +1006,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
