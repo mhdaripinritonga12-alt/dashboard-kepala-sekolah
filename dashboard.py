@@ -171,12 +171,20 @@ df_guru.rename(columns=rename_map_guru, inplace=True)
 df_ks = df_ks.fillna("")
 df_guru = df_guru.fillna("")
 # =========================================================
-# ✅ FIX FINAL MERGE CELL EXCEL (RIWAYAT DAPODIK)
+# ✅ FIX SUPER FINAL: PAKSA AMBIL KOLOM RIWAYAT DAPODIK MESKI NAMA KOLOM BERBEDA
 # =========================================================
-if "Riwayat Dapodik" in df_ks.columns:
-    df_ks["Riwayat Dapodik"] = df_ks["Riwayat Dapodik"].replace("", pd.NA)
-    df_ks["Riwayat Dapodik"] = df_ks["Riwayat Dapodik"].fillna(method="ffill")
-    df_ks["Riwayat Dapodik"] = df_ks["Riwayat Dapodik"].fillna("")
+kolom_riwayat_asli = None
+
+for c in df_ks.columns:
+    nama = str(c).upper().strip()
+    if "RIWAYAT" in nama and "DAPODIK" in nama:
+        kolom_riwayat_asli = c
+        break
+
+# jika ketemu kolom asli, pindahkan isinya ke kolom standar "Riwayat Dapodik"
+if kolom_riwayat_asli:
+    df_ks["Riwayat Dapodik"] = df_ks[kolom_riwayat_asli]
+
 
 
 df_ks = df_ks.loc[:, ~df_ks.columns.duplicated()]
@@ -998,6 +1006,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
