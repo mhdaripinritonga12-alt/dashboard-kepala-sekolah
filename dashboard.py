@@ -369,19 +369,23 @@ def map_status(row):
     jabatan = str(row.get("Keterangan Jabatan", "")).strip().lower()
     status_excel = str(row.get("Status", "")).strip().lower()
 
+    gabung = f"{masa} {ket_akhir} {jabatan} {status_excel}"
+
     # =========================================================
-    # ✅ FIX PLT: cek dari semua sumber (masa, jabatan, status)
+    # ✅ FIX PLT SUPER KUAT (HAPUS TITIK/SPASI)
     # =========================================================
-    if "plt" in masa or "plt" in jabatan or "plt" in status_excel:
+    cek = re.sub(r"[^a-z0-9]", "", gabung)   # hapus spasi, titik, simbol
+
+    if "plt" in cek or "pelaksanatugas" in cek:
         return "Plt"
 
-    if "periode 1" in masa or "periode 1" in ket_akhir:
+    if "periode1" in cek:
         return "Aktif Periode Ke 1"
 
-    if "periode 2" in masa or "periode 2" in ket_akhir:
+    if "periode2" in cek:
         return "Aktif Periode Ke 2"
 
-    if "lebih dari 2" in masa or ">2" in masa or "lebih dari 2" in ket_akhir or ">2" in ket_akhir:
+    if "lebihdari2" in cek or "lebih2" in cek or "lebihdaridua" in cek:
         return "Lebih dari 2 Periode"
 
     return "Aktif Periode Ke 1"
@@ -1024,6 +1028,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
