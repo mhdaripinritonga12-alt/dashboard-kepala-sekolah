@@ -162,6 +162,24 @@ if "Keterangan Jabatan" not in df_ks.columns:
     df_ks["Keterangan Jabatan"] = ""
 
 # =========================================================
+# ✅ TAMBAHAN BARU (PAKSA SEMUA KOLOM EXCEL AGAR SELALU ADA)
+# =========================================================
+kolom_excel_wajib = [
+    "NO",
+    "Status",
+    "Kabupaten",
+    "Tahun Pengangkatan",
+    "Tahun Berjalan",
+    "Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode ( 1 Periode 4 Tahun )",
+    "Riwayat Dapodik",
+    "Calon Pengganti jika Sudah Harus di Berhentikan"
+]
+
+for col in kolom_excel_wajib:
+    if col not in df_ks.columns:
+        df_ks[col] = ""
+
+# =========================================================
 # NORMALISASI NAMA SEKOLAH
 # =========================================================
 df_ks["Nama Sekolah"] = (
@@ -652,8 +670,11 @@ def page_detail():
     col_left, col_right = st.columns(2)
 
     with col_left:
+        tampil_colored_field("NO", row.get("NO", "-"))
         tampil_colored_field("Nama Kepala Sekolah", row.get("Nama Kepala Sekolah", "-"))
         tampil_colored_field("Cabang Dinas", row.get("Cabang Dinas", "-"))
+        tampil_colored_field("Kabupaten", row.get("Kabupaten", "-"))
+        tampil_colored_field("Status", row.get("Status", "-"))
         tampil_colored_field("Ket Sertifikat BCKS", ket_bcks, bg=bg_bcks)
         tampil_colored_field("Keterangan Akhir", row.get("Keterangan Akhir", "-"))
         tampil_colored_field("Status Regulatif", status_regulatif, bg=bg_status)
@@ -661,11 +682,38 @@ def page_detail():
     with col_right:
         tampil_colored_field("Nama Sekolah", row.get("Nama Sekolah", "-"))
         tampil_colored_field("Jenjang", row.get("Jenjang", "-"))
+        tampil_colored_field("Tahun Pengangkatan", row.get("Tahun Pengangkatan", "-"))
+        tampil_colored_field("Tahun Berjalan", row.get("Tahun Berjalan", "-"))
         tampil_colored_field("Masa Periode Sesuai KSPSTK", row.get("Masa Periode Sesuai KSPSTK", "-"))
         tampil_colored_field("Keterangan Jabatan", ket_jabatan, bg=bg_jabatan)
 
-        pengganti = perubahan_kepsek.get(nama, "")
-        tampil_colored_field("Calon Pengganti", pengganti if pengganti else "-")
+    # =========================================================
+    # ✅ TAMBAHAN BARU: TAMPILKAN KOLOM PERMENDIKDASMEN + RIWAYAT DAPODIK
+    # =========================================================
+    st.divider()
+    st.markdown("## 📌 Data Tambahan Sesuai Tabel Excel")
+
+    tampil_colored_field(
+        "Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode",
+        row.get("Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode ( 1 Periode 4 Tahun )", "-"),
+        bg="#e2e3ff"
+    )
+
+    tampil_colored_field(
+        "Riwayat Dapodik",
+        row.get("Riwayat Dapodik", "-"),
+        bg="#f1f1f1"
+    )
+
+    pengganti_excel = row.get("Calon Pengganti jika Sudah Harus di Berhentikan", "-")
+    pengganti = perubahan_kepsek.get(nama, "")
+
+    st.markdown("## 👤 Calon Pengganti Kepala Sekolah")
+
+    if pengganti:
+        tampil_colored_field("Calon Pengganti (Yang Dipilih Operator)", pengganti, bg="#d1e7dd")
+    else:
+        tampil_colored_field("Calon Pengganti (Excel)", pengganti_excel, bg="#fff3cd")
 
     st.divider()
 
@@ -880,4 +928,3 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
