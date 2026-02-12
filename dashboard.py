@@ -733,15 +733,10 @@ def page_detail():
     )
 
     # =========================================================
-    # ✅ FIX BARU: AMBIL RIWAYAT DAPODIK DARI KOLOM YANG BENAR
+    # ✅ FIX BARU: RIWAYAT DAPODIK JANGAN SAMPAI NAN
     # =========================================================
-    kol_riwayat = cari_kolom_riwayat_dapodik(df_ks)
-    
-    if kol_riwayat:
-        riwayat_dapodik = bersihkan(row.get(kol_riwayat, "-"))
-    else:
-        riwayat_dapodik = bersihkan(row.get("Riwayat Dapodik", "-"))
-    
+    riwayat_dapodik = bersihkan(row.get("Riwayat Dapodik", "-"))
+
     tampil_colored_field(
         "Riwayat Dapodik",
         riwayat_dapodik,
@@ -971,5 +966,3 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
-
-
