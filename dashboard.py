@@ -694,54 +694,53 @@ def page_sekolah():
     cols = st.columns(4)
     idx = 0
 
-for _, row in df_cab.iterrows():
-    nama_sekolah = str(row.get("Nama Sekolah", "-"))
-    status = map_status(row)
+    for _, row in df_cab.iterrows():
+        nama_sekolah = str(row.get("Nama Sekolah", "-"))
+        status = map_status(row)
 
-    if status == "Aktif Periode Ke 1":
-        warna = "🟦"
-    elif status == "Aktif Periode Ke 2":
-        warna = "🟨"
-    elif status == "Lebih dari 2 Periode":
-        warna = "🟥"
-    elif status == "Plt":
-        warna = "🟩"
-    else:
-        warna = "⬜"
+        if status == "Aktif Periode Ke 1":
+            warna = "🟦"
+        elif status == "Aktif Periode Ke 2":
+            warna = "🟨"
+        elif status == "Lebih dari 2 Periode":
+            warna = "🟥"
+        elif status == "Plt":
+            warna = "🟩"
+        else:
+            warna = "⬜"
 
-    with cols[idx % 4]:
-        if st.button(f"{warna} {nama_sekolah}", key=f"btn_sekolah_{idx}", use_container_width=True):
-            st.session_state.selected_sekolah = nama_sekolah
-            st.session_state.page = "detail"
-            st.rerun()
+        with cols[idx % 4]:
+            if st.button(f"{warna} {nama_sekolah}", key=f"btn_sekolah_{idx}", use_container_width=True):
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
 
-    idx += 1
+        idx += 1
 
+    # =========================================================
+    # ✅ REKAP CABANG DINAS (DITAMPILKAN DI AKHIR LIST SEKOLAH)
+    # =========================================================
+    st.divider()
+    st.markdown(f"## 📌 Rekap Status Kepala Sekolah — {st.session_state.selected_cabdin}")
 
-# =========================================================
-# ✅ REKAP CABANG DINAS (DITAMPILKAN DI AKHIR LIST SEKOLAH)
-# =========================================================
-st.divider()
-st.markdown(f"## 📌 Rekap Status Kepala Sekolah — {st.session_state.selected_cabdin}")
+    df_cab_rekap = df_cab.copy()
+    df_cab_rekap["Status Regulatif"] = df_cab_rekap.apply(map_status, axis=1)
 
-df_cab_rekap = df_cab.copy()
-df_cab_rekap["Status Regulatif"] = df_cab_rekap.apply(map_status, axis=1)
+    jumlah_p1 = int((df_cab_rekap["Status Regulatif"] == "Aktif Periode Ke 1").sum())
+    jumlah_p2 = int((df_cab_rekap["Status Regulatif"] == "Aktif Periode Ke 2").sum())
+    jumlah_lebih2 = int((df_cab_rekap["Status Regulatif"] == "Lebih dari 2 Periode").sum())
+    jumlah_plt = int((df_cab_rekap["Status Regulatif"] == "Plt").sum())
 
-jumlah_p1 = int((df_cab_rekap["Status Regulatif"] == "Aktif Periode Ke 1").sum())
-jumlah_p2 = int((df_cab_rekap["Status Regulatif"] == "Aktif Periode Ke 2").sum())
-jumlah_lebih2 = int((df_cab_rekap["Status Regulatif"] == "Lebih dari 2 Periode").sum())
-jumlah_plt = int((df_cab_rekap["Status Regulatif"] == "Plt").sum())
+    total_bisa_diberhentikan = jumlah_p2 + jumlah_lebih2 + jumlah_plt
 
-total_bisa_diberhentikan = jumlah_p2 + jumlah_lebih2 + jumlah_plt
+    colr1, colr2, colr3, colr4, colr5 = st.columns(5)
+    colr1.metric("Aktif Periode Ke 1", jumlah_p1)
+    colr2.metric("Aktif Periode Ke 2", jumlah_p2)
+    colr3.metric("Lebih 2 Periode", jumlah_lebih2)
+    colr4.metric("Kasek Plt", jumlah_plt)
+    colr5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
 
-colr1, colr2, colr3, colr4, colr5 = st.columns(5)
-colr1.metric("Aktif Periode Ke 1", jumlah_p1)
-colr2.metric("Aktif Periode Ke 2", jumlah_p2)
-colr3.metric("Lebih 2 Periode", jumlah_lebih2)
-colr4.metric("Kasek Plt", jumlah_plt)
-colr5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
-
-st.divider()
+    st.divider()
 
 # =========================================================
 # FIELD WARNA
@@ -1080,6 +1079,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
