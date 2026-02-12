@@ -788,7 +788,21 @@ def page_sekolah():
         "Plt"
     ])].copy()
 
-    if df_bisa.empty:
+ if df_bisa.empty:
+    st.warning("⚠️ Tidak ada Kepala Sekolah yang bisa diberhentikan pada Cabang Dinas ini.")
+else:
+    df_bisa["Calon Pengganti"] = df_bisa["Nama Sekolah"].map(perubahan_kepsek).fillna("-")
+
+    tampil = df_bisa[[
+        "Nama Sekolah",
+        "Nama Kepala Sekolah",
+        "Status Regulatif",
+        "Ket Sertifikat BCKS",
+        "Calon Pengganti"
+    ]].copy()
+
+    st.dataframe(tampil, use_container_width=True, hide_index=True)
+
 
 
 # =========================================================
@@ -1128,6 +1142,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
