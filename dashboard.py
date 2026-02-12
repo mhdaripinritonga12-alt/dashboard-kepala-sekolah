@@ -367,17 +367,25 @@ def map_status(row):
     masa = str(row.get("Masa Periode Sesuai KSPSTK", "")).strip().lower()
     ket_akhir = str(row.get("Keterangan Akhir", "")).strip().lower()
     jabatan = str(row.get("Keterangan Jabatan", "")).strip().lower()
+    status_excel = str(row.get("Status", "")).strip().lower()
 
-    if "plt" in masa or "plt" in jabatan:
+    # =========================================================
+    # ✅ FIX PLT: cek dari semua sumber (masa, jabatan, status)
+    # =========================================================
+    if "plt" in masa or "plt" in jabatan or "plt" in status_excel:
         return "Plt"
+
     if "periode 1" in masa or "periode 1" in ket_akhir:
         return "Aktif Periode Ke 1"
+
     if "periode 2" in masa or "periode 2" in ket_akhir:
         return "Aktif Periode Ke 2"
+
     if "lebih dari 2" in masa or ">2" in masa or "lebih dari 2" in ket_akhir or ">2" in ket_akhir:
         return "Lebih dari 2 Periode"
 
     return "Aktif Periode Ke 1"
+
 
 # =========================================================
 # CSS CARD SEKOLAH SERAGAM
@@ -1016,6 +1024,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
