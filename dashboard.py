@@ -483,27 +483,6 @@ def apply_filter(df):
     return df
 
 # =========================================================
-# PENCARIAN SIMPEG
-# =========================================================
-with st.expander("🔍 Pencarian Guru (SIMPEG)", expanded=False):
-    keyword = st.text_input("Ketik Nama Guru atau NIP", placeholder="contoh: Mhd Aripin Ritonga / 1994")
-
-    if keyword:
-        hasil = df_guru[
-            df_guru.astype(str)
-            .apply(lambda col: col.str.contains(keyword, case=False, na=False))
-            .any(axis=1)
-        ]
-
-        if hasil.empty:
-            st.error("❌ Guru tidak ditemukan di data SIMPEG")
-        else:
-            st.success(f"✅ Ditemukan {len(hasil)} data guru")
-            st.dataframe(hasil, use_container_width=True)
-
-st.divider()
-
-# =========================================================
 # FUNGSI WARNA OTOMATIS
 # =========================================================
 def get_warna_jabatan(value):
@@ -618,7 +597,31 @@ def page_cabdin():
     colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
 
     st.divider()
+    # =========================================================
+# 🔍 PENCARIAN GURU SIMPEG (HANYA DI DASHBOARD UTAMA)
+# =========================================================
+st.markdown("## 🔍 Pencarian Guru (SIMPEG)")
 
+keyword = st.text_input(
+    "Ketik Nama Guru atau NIP",
+    placeholder="contoh: Mhd Aripin Ritonga / 1994",
+    key="simpeg_search_dashboard"
+)
+
+if keyword:
+    hasil = df_guru[
+        df_guru.astype(str)
+        .apply(lambda col: col.str.contains(keyword, case=False, na=False))
+        .any(axis=1)
+    ]
+
+    if hasil.empty:
+        st.error("❌ Guru tidak ditemukan di data SIMPEG")
+    else:
+        st.success(f"✅ Ditemukan {len(hasil)} data guru")
+        st.dataframe(hasil, use_container_width=True)
+
+st.divider()
     st.subheader("🏢 Cabang Dinas Pendidikan Wilayah")
 
     df_view = apply_filter(df_ks)
@@ -1050,6 +1053,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
