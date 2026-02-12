@@ -100,6 +100,25 @@ df_ks, df_guru = load_data()
 df_ks.columns = df_ks.columns.astype(str).str.strip()
 df_guru.columns = df_guru.columns.astype(str).str.strip()
 
+# =========================================================
+# ✅ TAMBAHAN FIX BARU (BERSIHKAN KOLOM DARI ENTER/TAB)
+# =========================================================
+df_ks.columns = (
+    df_ks.columns.astype(str)
+    .str.replace("\n", " ", regex=False)
+    .str.replace("\r", " ", regex=False)
+    .str.replace("\t", " ", regex=False)
+    .str.strip()
+)
+
+df_guru.columns = (
+    df_guru.columns.astype(str)
+    .str.replace("\n", " ", regex=False)
+    .str.replace("\r", " ", regex=False)
+    .str.replace("\t", " ", regex=False)
+    .str.strip()
+)
+
 rename_map_ks = {
     "NAMA SEKOLAH": "Nama Sekolah",
     "Nama Sekolah ": "Nama Sekolah",
@@ -121,6 +140,14 @@ rename_map_ks = {
 
     "Masa Periode Sesuai KSPSTK ": "Masa Periode Sesuai KSPSTK",
     "Masa Periode Sisuai KSPSTK": "Masa Periode Sesuai KSPSTK",
+
+    # =========================================================
+    # ✅ TAMBAHAN FIX BARU (RIWAYAT DAPODIK)
+    # =========================================================
+    "RIWAYAT DAPODIK": "Riwayat Dapodik",
+    "Riwayat Dapodik ": "Riwayat Dapodik",
+    "Riwayat dapodik": "Riwayat Dapodik",
+    "Riwayat_Dapodik": "Riwayat Dapodik",
 }
 
 rename_map_guru = {
@@ -137,6 +164,12 @@ rename_map_guru = {
 
 df_ks.rename(columns=rename_map_ks, inplace=True)
 df_guru.rename(columns=rename_map_guru, inplace=True)
+
+# =========================================================
+# ✅ TAMBAHAN FIX BARU (ISI NaN JADI STRING KOSONG)
+# =========================================================
+df_ks = df_ks.fillna("")
+df_guru = df_guru.fillna("")
 
 df_ks = df_ks.loc[:, ~df_ks.columns.duplicated()]
 df_guru = df_guru.loc[:, ~df_guru.columns.duplicated()]
@@ -699,9 +732,14 @@ def page_detail():
         bg="#e2e3ff"
     )
 
+    # =========================================================
+    # ✅ FIX BARU: RIWAYAT DAPODIK JANGAN SAMPAI NAN
+    # =========================================================
+    riwayat_dapodik = bersihkan(row.get("Riwayat Dapodik", "-"))
+
     tampil_colored_field(
         "Riwayat Dapodik",
-        row.get("Riwayat Dapodik", "-"),
+        riwayat_dapodik,
         bg="#f1f1f1"
     )
 
