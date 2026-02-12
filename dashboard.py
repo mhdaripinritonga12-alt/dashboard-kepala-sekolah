@@ -755,7 +755,7 @@ def page_detail():
     # ✅ TAMBAHAN BARU: TAMPILKAN KOLOM PERMENDIKDASMEN + RIWAYAT DAPODIK
     # =========================================================
     st.divider()
-    st.markdown("## 📌 Data Tambahan Sesuai Tabel Excel")
+    st.markdown("## 📌 Validasi SIM KSPSTK")
 
     tampil_colored_field(
         "Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode",
@@ -998,5 +998,6 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
