@@ -163,6 +163,7 @@ rename_map_guru = {
 }
 
 df_ks.rename(columns=rename_map_ks, inplace=True)
+df_ks.columns = df_ks.columns.astype(str).str.strip()
 df_guru.rename(columns=rename_map_guru, inplace=True)
 
 # =========================================================
@@ -1015,6 +1016,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
