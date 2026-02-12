@@ -258,6 +258,31 @@ def cari_kolom(df, kandidat):
     return None
 
 # =========================================================
+# ✅ TAMBAHAN FIX FINAL: DETEKSI KOLOM RIWAYAT DAPODIK OTOMATIS
+# =========================================================
+def cari_kolom_riwayat_dapodik(df):
+    for col in df.columns:
+        nama_col = str(col).upper().strip()
+        if "RIWAYAT" in nama_col and "DAPODIK" in nama_col:
+            return col
+    return None
+
+# =========================================================
+# ✅ TAMBAHAN FIX FORMAT RIWAYAT DAPODIK AGAR RAPI
+# =========================================================
+def format_riwayat_dapodik(text):
+    if text is None:
+        return "-"
+
+    text = str(text).strip()
+
+    if text.lower() == "nan" or text == "":
+        return "-"
+
+    text = text.replace("---", "\n")
+    return text.strip()
+
+# =========================================================
 # BERSIHKAN NILAI (FIX HTML TAG)
 # =========================================================
 import re
@@ -268,9 +293,7 @@ def bersihkan(teks):
 
     teks = str(teks)
 
-    # hapus semua tag HTML lengkap (paling aman)
     teks = re.sub(r"<[^>]*>", "", teks)
-
     teks = teks.replace("\xa0", " ").strip()
 
     if teks.strip().lower() == "nan" or teks.strip() == "":
@@ -733,13 +756,20 @@ def page_detail():
     )
 
     # =========================================================
-    # ✅ FIX BARU: RIWAYAT DAPODIK JANGAN SAMPAI NAN
+    # ✅ FIX FINAL: RIWAYAT DAPODIK PASTI TAMPIL
     # =========================================================
-    riwayat_dapodik = bersihkan(row.get("Riwayat Dapodik", "-"))
+    kol_riwayat = cari_kolom_riwayat_dapodik(df_ks)
+
+    if kol_riwayat:
+        riwayat_dapodik = bersihkan(row.get(kol_riwayat, "-"))
+    else:
+        riwayat_dapodik = bersihkan(row.get("Riwayat Dapodik", "-"))
+
+    riwayat_dapodik = format_riwayat_dapodik(riwayat_dapodik)
 
     tampil_colored_field(
         "Riwayat Dapodik",
-        riwayat_dapodik,
+        riwayat_dapodik.replace("\n", "<br>"),
         bg="#f1f1f1"
     )
 
@@ -798,9 +828,6 @@ def page_detail():
             cabdis = bersihkan(calon_row.get(kol_cabdis, "-")) if kol_cabdis else "-"
             alamat = bersihkan(calon_row.get(kol_alamat, "-")) if kol_alamat else "-"
 
-            # =========================================================
-            # FIX CABDIS OTOMATIS JIKA KOSONG DI SIMPEG
-            # =========================================================
             if cabdis == "-" or cabdis.strip() == "":
                 cabdis = deteksi_cabdis_dari_unor(unor)
 
@@ -846,9 +873,6 @@ def page_detail():
 
             st.markdown(html_card, unsafe_allow_html=True)
 
-    # ============================================
-    # BUTTON SIMPAN / RESET
-    # ============================================
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
