@@ -79,17 +79,21 @@ def load_data():
 
     df_list = []
     for sh in cabdis_sheets:
-        df_temp = pd.read_excel(DATA_FILE, sheet_name=sh)
+        df_temp = pd.read_excel(DATA_FILE, sheet_name=sh, header=0, dtype=str)
         df_temp["Cabang Dinas"] = sh.replace("_", " ")
         df_list.append(df_temp)
 
     df_ks = pd.concat(df_list, ignore_index=True)
+    # =========================================================
+    # ✅ FIX: HAPUS KOLOM UNNAMED (BIASANYA AKIBAT FORMAT EXCEL)
+    # =========================================================
+    df_ks = df_ks.loc[:, ~df_ks.columns.astype(str).str.contains("^Unnamed", case=False)]
 
     if "GURU_SIMPEG" not in xls.sheet_names:
         st.error("❌ Sheet GURU_SIMPEG tidak ditemukan di Excel")
         st.stop()
 
-    df_guru = pd.read_excel(DATA_FILE, sheet_name="GURU_SIMPEG")
+    df_guru = pd.read_excel(DATA_FILE, sheet_name="GURU_SIMPEG", header=0, dtype=str)
     return df_ks, df_guru
 
 df_ks, df_guru = load_data()
@@ -165,6 +169,13 @@ rename_map_guru = {
 df_ks.rename(columns=rename_map_ks, inplace=True)
 df_ks.columns = df_ks.columns.astype(str).str.strip()
 df_guru.rename(columns=rename_map_guru, inplace=True)
+
+# =========================================================
+# ✅ FIX: PAKSA RIWAYAT DAPODIK JADI STRING
+# =========================================================
+if "Riwayat Dapodik" in df_ks.columns:
+    df_ks["Riwayat Dapodik"] = df_ks["Riwayat Dapodik"].astype(str).fillna("").str.strip()
+
 
 # =========================================================
 # ✅ TAMBAHAN FIX BARU (ISI NaN JADI STRING KOSONG)
@@ -1016,6 +1027,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
