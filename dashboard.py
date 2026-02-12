@@ -694,7 +694,7 @@ def page_sekolah():
     cols = st.columns(4)
     idx = 0
 
-    for _, row in df_cab.iterrows():
+for _, row in df_cab.iterrows():
     nama_sekolah = str(row.get("Nama Sekolah", "-"))
     status = map_status(row)
 
@@ -1080,6 +1080,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
