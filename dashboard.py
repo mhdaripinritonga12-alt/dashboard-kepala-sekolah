@@ -371,11 +371,12 @@ def map_status(row):
 
     gabung = f"{masa} {ket_akhir} {jabatan} {status_excel}"
 
-    # =========================================================
-    # ✅ FIX PLT SUPER KUAT (HAPUS TITIK/SPASI)
-    # =========================================================
-    cek = re.sub(r"[^a-z0-9]", "", gabung)   # hapus spasi, titik, simbol
+    # hapus semua simbol, titik, spasi
+    cek = re.sub(r"[^a-z0-9]", "", gabung)
 
+    # =========================================================
+    # FIX PLT DETEKSI SUPER KUAT
+    # =========================================================
     if "plt" in cek or "pelaksanatugas" in cek:
         return "Plt"
 
@@ -385,10 +386,11 @@ def map_status(row):
     if "periode2" in cek:
         return "Aktif Periode Ke 2"
 
-    if "lebihdari2" in cek or "lebih2" in cek or "lebihdaridua" in cek:
+    if "lebihdari2" in cek or "lebihdaridua" in cek or "lebih2" in cek:
         return "Lebih dari 2 Periode"
 
     return "Aktif Periode Ke 1"
+
 
 
 # =========================================================
@@ -1028,6 +1030,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
