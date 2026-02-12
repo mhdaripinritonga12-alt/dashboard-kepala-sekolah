@@ -719,6 +719,15 @@ def page_detail():
         st.stop()
 
     row = row_detail.iloc[0]
+    # =========================================================
+    # ✅ FIX FINAL: PILIH BARIS TERBAIK (RIWAYAT DAPODIK TIDAK KOSONG)
+    # =========================================================
+    if "Riwayat Dapodik" in row_detail.columns:
+        kandidat = row_detail[row_detail["Riwayat Dapodik"].astype(str).str.strip() != ""]
+        kandidat = kandidat[kandidat["Riwayat Dapodik"].astype(str).str.lower().str.strip() != "nan"]
+
+        if not kandidat.empty:
+            row = kandidat.iloc[0]
 
     st.divider()
     st.markdown("## 📝 Data Lengkap (Database)")
@@ -1006,6 +1015,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
