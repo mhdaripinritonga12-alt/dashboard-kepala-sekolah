@@ -780,17 +780,6 @@ def page_detail():
         tampil_colored_field("Masa Periode Sesuai KSPSTK", row.get("Masa Periode Sesuai KSPSTK", "-"))
         tampil_colored_field("Keterangan Jabatan", ket_jabatan, bg=bg_jabatan)
 
-    # =========================================================
-    # ✅ TAMBAHAN BARU: TAMPILKAN KOLOM PERMENDIKDASMEN + RIWAYAT DAPODIK
-    # =========================================================
-    st.divider()
-    st.markdown("## 📌 Validasi SIM KSPSTK")
-
-    tampil_colored_field(
-        "Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode",
-        row.get("Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode ( 1 Periode 4 Tahun )", "-"),
-        bg="#e2e3ff"
-    )
 
     # =========================================================
     # ✅ FIX FINAL: RIWAYAT DAPODIK PASTI TAMPIL
@@ -1027,6 +1016,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
