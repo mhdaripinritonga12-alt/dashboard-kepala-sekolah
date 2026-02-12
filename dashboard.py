@@ -97,6 +97,17 @@ def load_data():
     return df_ks, df_guru
 
 df_ks, df_guru = load_data()
+# =========================================================
+# ✅ DEBUG PLT: CEK APAKAH DATA PLT MASUK KE DF_KS
+# =========================================================
+cek_plt = df_ks[
+    df_ks.astype(str)
+    .apply(lambda col: col.str.contains("plt|pelaksana tugas", case=False, na=False))
+    .any(axis=1)
+]
+
+st.sidebar.write("🔎 DEBUG JUMLAH PLT TERBACA:", len(cek_plt))
+
 
 # =========================================================
 # NORMALISASI KOLOM
@@ -1035,6 +1046,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
