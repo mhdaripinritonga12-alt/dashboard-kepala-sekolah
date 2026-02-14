@@ -988,14 +988,18 @@ def page_detail():
             kol_jabatan = cari_kolom(data_calon, ["JABATAN", "JABATAN TERAKHIR", "JABATAN FUNGSIONAL"])
             kol_jenis = cari_kolom(data_calon, ["JENIS PEGAWAI", "STATUS PEGAWAI", "KEDUDUKAN"])
             kol_nama = cari_kolom(data_calon, ["NAMA GURU", "NAMA"])
-
+            
             nip = bersihkan(calon_row.get(kol_nip, "-")) if kol_nip else "-"
             nik = bersihkan(calon_row.get(kol_nik, "-")) if kol_nik else "-"
             nohp = bersihkan(calon_row.get(kol_nohp, "-")) if kol_nohp else "-"
             jabatan = bersihkan(calon_row.get(kol_jabatan, "-")) if kol_jabatan else "-"
             jenis_pegawai = bersihkan(calon_row.get(kol_jenis, "-")) if kol_jenis else "-"
-            nama_guru = bersihkan(calon_row.get(kol_nama, "-")) if kol_nama else "-"
-
+            
+            # ✅ FIX ERROR UnboundLocalError
+            if kol_nama:
+                nama_guru = bersihkan(calon_row.get(kol_nama, "-"))
+else:
+    nama_guru = str(calon)
     html_card = f"""
     <div style="
         background: white;
@@ -1144,6 +1148,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
