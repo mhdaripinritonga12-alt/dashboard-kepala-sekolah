@@ -996,34 +996,37 @@ def page_detail():
             jenis_pegawai = bersihkan(calon_row.get(kol_jenis, "-")) if kol_jenis else "-"
             nama_guru = bersihkan(calon_row.get(kol_nama, "-")) if kol_nama else "-"
 
-            html_card = f"""
-            <div style="
-                background: white;
-                border-radius: 18px;
-                padding: 18px;
-                border-left: 8px solid #0d6efd;
-                box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-                margin-top: 10px;
-                margin-bottom: 10px;
-            ">
-                <h3 style="margin:0;">👤 {nama_guru}</h3>
-                <hr>
+html_card = f"""
+<div style="
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    border-left: 8px solid #0d6efd;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+">
+    <div style="font-size:18px; font-weight:800; margin-bottom:10px;">
+        👤 {nama_guru}
+    </div>
 
-                <p style="margin:6px 0;"><b>NIP:</b> {nip}</p>
-                <p style="margin:6px 0;"><b>NIK:</b> {nik}</p>
-                <p style="margin:6px 0;"><b>No HP:</b> {nohp}</p>
-                <p style="margin:6px 0;"><b>Jabatan:</b> {jabatan}</p>
-                <p style="margin:6px 0;"><b>Jenis Pegawai:</b> {jenis_pegawai}</p>
+    <div style="margin-bottom:8px;"><b>NIP:</b> {nip}</div>
+    <div style="margin-bottom:8px;"><b>NIK:</b> {nik}</div>
+    <div style="margin-bottom:8px;"><b>No HP:</b> {nohp}</div>
+    <div style="margin-bottom:8px;"><b>Jabatan:</b> {jabatan}</div>
+    <div style="margin-bottom:8px;"><b>Jenis Pegawai:</b> {jenis_pegawai}</div>
 
-                <hr>
-                <p style="margin:6px 0;"><b>UNOR / Unit Kerja:</b> {unor}</p>
-                <p style="margin:6px 0;"><b>Cabang Dinas:</b> {cabdis}</p>
-                <p style="margin:6px 0;"><b>Alamat:</b> {alamat}</p>
-            </div>
-            """
+    <hr style="margin:12px 0;">
 
-            st.markdown(html_card, unsafe_allow_html=True)
-
+    <div style="margin-bottom:8px;"><b>UNOR / Unit Kerja:</b> {unor}</div>
+    <div style="margin-bottom:8px;"><b>Cabang Dinas:</b> {cabdis}</div>
+    <div style="margin-bottom:8px;"><b>Alamat:</b> {alamat}</div>
+</div>
+"""
+st.markdown(html_card, unsafe_allow_html=True)
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
@@ -1141,6 +1144,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
