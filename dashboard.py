@@ -812,10 +812,9 @@ def tampil_colored_field(label, value, bg="#f1f1f1", text_color="black"):
     st.markdown(f"""
     <div style="padding:10px; border-radius:10px; background:{bg}; margin-bottom:8px;">
         <b>{label}:</b>
-        <span style="color:{text_color}; font-weight:700;"> {value}</span>
+        <div style="color:{text_color}; font-weight:700;">{value}</div>
     </div>
     """, unsafe_allow_html=True)
-
 # =========================================================
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
@@ -1142,6 +1141,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
