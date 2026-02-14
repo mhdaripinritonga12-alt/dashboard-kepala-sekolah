@@ -960,7 +960,7 @@ def page_detail():
     # ============================================
     # TAMPILKAN DATA SIMPEG CALON
     # ============================================
-        if calon != "-- Pilih Calon Pengganti --":
+    if calon != "-- Pilih Calon Pengganti --":
         st.markdown("### 📌 Data SIMPEG Calon Pengganti")
     
         data_calon = ambil_data_simpeg(calon)
@@ -1149,6 +1149,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
