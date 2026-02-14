@@ -65,6 +65,47 @@ def save_perubahan(data_dict):
     df.to_excel(DATA_SAVE, index=False)
 
 perubahan_kepsek = load_perubahan()
+# =========================================================
+# DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
+# =========================================================
+SHEET_RIWAYAT = "RIWAYAT_KASEK"
+
+def load_riwayat():
+    if not os.path.exists(DATA_FILE):
+        return pd.DataFrame()
+
+    try:
+        xls = pd.ExcelFile(DATA_FILE)
+        if SHEET_RIWAYAT not in xls.sheet_names:
+            return pd.DataFrame(columns=[
+                "Nama Sekolah", "Nama Kepsek", "NIP", "Mulai", "Selesai", "Keterangan"
+            ])
+
+        df = pd.read_excel(DATA_FILE, sheet_name=SHEET_RIWAYAT, dtype=str)
+        df = df.fillna("")
+        return df
+
+    except Exception as e:
+        st.error(f"❌ Gagal membaca sheet {SHEET_RIWAYAT}: {e}")
+        return pd.DataFrame()
+
+def simpan_riwayat_baru(nama_sekolah, nama_kepsek, nip, mulai, selesai, ket=""):
+    df_riwayat = load_riwayat()
+
+    data_baru = {
+        "Nama Sekolah": nama_sekolah,
+        "Nama Kepsek": nama_kepsek,
+        "NIP": nip,
+        "Mulai": mulai,
+        "Selesai": selesai,
+        "Keterangan": ket
+    }
+
+    df_riwayat = pd.concat([df_riwayat, pd.DataFrame([data_baru])], ignore_index=True)
+
+    # simpan kembali ke excel (rewrite file)
+    with pd.ExcelWriter(DATA_FILE, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
+        df_riwayat.to_excel(writer, sheet_name=SHEET_RIWAYAT, index=False)
 
 # =========================================================
 # LOAD DATA UTAMA
@@ -1098,6 +1139,51 @@ def page_rekap():
     ]].copy()
 
     st.dataframe(tampil, use_container_width=True, hide_index=True)
+# =========================================================
+# HALAMAN UPDATE RIWAYAT KEPSEK (UPDATE data KASEK)
+# =========================================================
+def page_update():
+    st.markdown("## 📝 Update Riwayat Kepala Sekolah")
+
+    if st.session_state.selected_sekolah is None:
+        st.warning("⚠️ Pilih sekolah dulu dari menu sekolah.")
+        st.stop()
+
+    nama_sekolah = st.session_state.selected_sekolah
+
+    st.info(f"🏫 Sekolah: **{nama_sekolah}**")
+
+    nama_kepsek = st.text_input("Nama Kepala Sekolah")
+    nip = st.text_input("NIP Kepala Sekolah")
+    mulai = st.text_input("Mulai Menjabat (contoh: 2019 atau 01-01-2019)")
+    selesai = st.text_input("Selesai Menjabat (kosongkan jika masih menjabat)")
+    ket = st.text_area("Keterangan (opsional)")
+
+    if st.button("💾 Simpan Riwayat", use_container_width=True):
+        if nama_kepsek.strip() == "" or mulai.strip() == "":
+            st.error("❌ Nama Kepsek dan Mulai Menjabat wajib diisi!")
+        else:
+            simpan_riwayat_baru(
+                nama_sekolah=nama_sekolah,
+                nama_kepsek=nama_kepsek,
+                nip=nip,
+                mulai=mulai,
+                selesai=selesai,
+                ket=ket
+            )
+            st.success("✅ Riwayat jabatan berhasil disimpan ke Database!")
+            st.rerun()
+
+    st.divider()
+    st.markdown("### 📌 Riwayat Jabatan Tersimpan")
+
+    df_riwayat = load_riwayat()
+    df_view = df_riwayat[df_riwayat["Nama Sekolah"].astype(str).str.strip() == nama_sekolah].copy()
+
+    if df_view.empty:
+        st.warning("⚠️ Belum ada riwayat jabatan.")
+    else:
+        st.dataframe(df_view, use_container_width=True)
 
 # =========================================================
 # ROUTING UTAMA
@@ -1113,6 +1199,9 @@ elif st.session_state.page == "detail":
 
 elif st.session_state.page == "rekap":
     page_rekap()
+
+elif st.session_state.page == "update":
+    page_update()
 
 # =========================================================
 # FOOTER
@@ -1154,6 +1243,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
