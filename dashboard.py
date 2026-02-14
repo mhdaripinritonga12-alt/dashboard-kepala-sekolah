@@ -973,7 +973,11 @@ def page_detail():
             calon_row = calon_row.apply(lambda x: bersihkan(x))
     
             kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
-            kol_cabdis = cari_kolom(data_calon, ["CABANG DINAS", "CABDIS", "WILAYAH", "KCD"])
+            kol_cabdis = cari_kolom(data_calon, [
+                "CABANG DINAS", "CABDIS", "WILAYAH", "KCD",
+                "CABDIN", "CABDINAS", "CABANG_DINAS", "CABANGDINAS",
+                "KANTOR CABANG", "CABANG"
+            ])
             kol_alamat = cari_kolom(data_calon, ["ALAMAT", "JALAN", "DOMISILI", "TEMPAT TINGGAL", "ALAMAT RUMAH"])
     
             unor = bersihkan(calon_row.get(kol_unor, "-")) if kol_unor else "-"
@@ -1150,6 +1154,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
