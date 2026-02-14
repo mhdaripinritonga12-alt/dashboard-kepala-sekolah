@@ -997,9 +997,9 @@ def page_detail():
             
             # ✅ FIX ERROR UnboundLocalError
             if kol_nama:
-            nama_guru = bersihkan(calon_row.get(kol_nama, "-"))
-else:
-    nama_guru = str(calon)
+                nama_guru = bersihkan(calon_row.get(kol_nama, "-"))
+            else:
+            nama_guru = str(calon)
     html_card = f"""
     <div style="
         background: white;
@@ -1148,6 +1148,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
