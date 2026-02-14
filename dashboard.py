@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import re   # ✅ TAMBAHAN (UNTUK HAPUS HTML TAG)
+import streamlit.components.v1 as components
 
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -1031,7 +1032,7 @@ def page_detail():
     </div>
     """
     
-            st.markdown(html_card, unsafe_allow_html=True)    
+            components.html(html_card, height=450, scrolling=True)  
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
@@ -1149,6 +1150,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
