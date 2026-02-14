@@ -960,78 +960,78 @@ def page_detail():
     # ============================================
     # TAMPILKAN DATA SIMPEG CALON
     # ============================================
-    if calon != "-- Pilih Calon Pengganti --":
-    st.markdown("### 📌 Data SIMPEG Calon Pengganti")
-
-    data_calon = ambil_data_simpeg(calon)
-
-    if data_calon.empty:
-        st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
-    else:
-        calon_row = data_calon.iloc[0]
-        calon_row = calon_row.apply(lambda x: bersihkan(x))
-
-        kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
-        kol_cabdis = cari_kolom(data_calon, ["CABANG DINAS", "CABDIS", "WILAYAH", "KCD"])
-        kol_alamat = cari_kolom(data_calon, ["ALAMAT", "JALAN", "DOMISILI", "TEMPAT TINGGAL", "ALAMAT RUMAH"])
-
-        unor = bersihkan(calon_row.get(kol_unor, "-")) if kol_unor else "-"
-        cabdis = bersihkan(calon_row.get(kol_cabdis, "-")) if kol_cabdis else "-"
-        alamat = bersihkan(calon_row.get(kol_alamat, "-")) if kol_alamat else "-"
-
-        if cabdis == "-" or cabdis.strip() == "":
-            cabdis = deteksi_cabdis_dari_unor(unor)
-
-        kol_nip = cari_kolom(data_calon, ["NIP"])
-        kol_nik = cari_kolom(data_calon, ["NIK"])
-        kol_nohp = cari_kolom(data_calon, ["NO HP", "NO. HP", "HP", "HANDPHONE", "TELP", "TELEPON"])
-        kol_jabatan = cari_kolom(data_calon, ["JABATAN", "JABATAN TERAKHIR", "JABATAN FUNGSIONAL"])
-        kol_jenis = cari_kolom(data_calon, ["JENIS PEGAWAI", "STATUS PEGAWAI", "KEDUDUKAN"])
-        kol_nama = cari_kolom(data_calon, ["NAMA GURU", "NAMA"])
-
-        nip = bersihkan(calon_row.get(kol_nip, "-")) if kol_nip else "-"
-        nik = bersihkan(calon_row.get(kol_nik, "-")) if kol_nik else "-"
-        nohp = bersihkan(calon_row.get(kol_nohp, "-")) if kol_nohp else "-"
-        jabatan = bersihkan(calon_row.get(kol_jabatan, "-")) if kol_jabatan else "-"
-        jenis_pegawai = bersihkan(calon_row.get(kol_jenis, "-")) if kol_jenis else "-"
-
-        if kol_nama:
-            nama_guru = bersihkan(calon_row.get(kol_nama, "-"))
+        if calon != "-- Pilih Calon Pengganti --":
+        st.markdown("### 📌 Data SIMPEG Calon Pengganti")
+    
+        data_calon = ambil_data_simpeg(calon)
+    
+        if data_calon.empty:
+            st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
         else:
-            nama_guru = str(calon)
-
-        html_card = f"""
-<div style="
-    background: white;
-    border-radius: 16px;
-    padding: 16px;
-    border-left: 8px solid #0d6efd;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-    margin-top: 10px;
-    margin-bottom: 10px;
-    line-height: 1.6;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-">
-    <div style="font-size:18px; font-weight:800; margin-bottom:10px;">
-        👤 {nama_guru}
+            calon_row = data_calon.iloc[0]
+            calon_row = calon_row.apply(lambda x: bersihkan(x))
+    
+            kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
+            kol_cabdis = cari_kolom(data_calon, ["CABANG DINAS", "CABDIS", "WILAYAH", "KCD"])
+            kol_alamat = cari_kolom(data_calon, ["ALAMAT", "JALAN", "DOMISILI", "TEMPAT TINGGAL", "ALAMAT RUMAH"])
+    
+            unor = bersihkan(calon_row.get(kol_unor, "-")) if kol_unor else "-"
+            cabdis = bersihkan(calon_row.get(kol_cabdis, "-")) if kol_cabdis else "-"
+            alamat = bersihkan(calon_row.get(kol_alamat, "-")) if kol_alamat else "-"
+    
+            if cabdis == "-" or cabdis.strip() == "":
+                cabdis = deteksi_cabdis_dari_unor(unor)
+    
+            kol_nip = cari_kolom(data_calon, ["NIP"])
+            kol_nik = cari_kolom(data_calon, ["NIK"])
+            kol_nohp = cari_kolom(data_calon, ["NO HP", "NO. HP", "HP", "HANDPHONE", "TELP", "TELEPON"])
+            kol_jabatan = cari_kolom(data_calon, ["JABATAN", "JABATAN TERAKHIR", "JABATAN FUNGSIONAL"])
+            kol_jenis = cari_kolom(data_calon, ["JENIS PEGAWAI", "STATUS PEGAWAI", "KEDUDUKAN"])
+            kol_nama = cari_kolom(data_calon, ["NAMA GURU", "NAMA"])
+    
+            nip = bersihkan(calon_row.get(kol_nip, "-")) if kol_nip else "-"
+            nik = bersihkan(calon_row.get(kol_nik, "-")) if kol_nik else "-"
+            nohp = bersihkan(calon_row.get(kol_nohp, "-")) if kol_nohp else "-"
+            jabatan = bersihkan(calon_row.get(kol_jabatan, "-")) if kol_jabatan else "-"
+            jenis_pegawai = bersihkan(calon_row.get(kol_jenis, "-")) if kol_jenis else "-"
+    
+            if kol_nama:
+                nama_guru = bersihkan(calon_row.get(kol_nama, "-"))
+            else:
+                nama_guru = str(calon)
+    
+            html_card = f"""
+    <div style="
+        background: white;
+        border-radius: 16px;
+        padding: 16px;
+        border-left: 8px solid #0d6efd;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        margin-top: 10px;
+        margin-bottom: 10px;
+        line-height: 1.6;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    ">
+        <div style="font-size:18px; font-weight:800; margin-bottom:10px;">
+            👤 {nama_guru}
+        </div>
+    
+        <div style="margin-bottom:8px;"><b>NIP:</b> {nip}</div>
+        <div style="margin-bottom:8px;"><b>NIK:</b> {nik}</div>
+        <div style="margin-bottom:8px;"><b>No HP:</b> {nohp}</div>
+        <div style="margin-bottom:8px;"><b>Jabatan:</b> {jabatan}</div>
+        <div style="margin-bottom:8px;"><b>Jenis Pegawai:</b> {jenis_pegawai}</div>
+    
+        <hr style="margin:12px 0;">
+    
+        <div style="margin-bottom:8px;"><b>UNOR / Unit Kerja:</b> {unor}</div>
+        <div style="margin-bottom:8px;"><b>Cabang Dinas:</b> {cabdis}</div>
+        <div style="margin-bottom:8px;"><b>Alamat:</b> {alamat}</div>
     </div>
-
-    <div style="margin-bottom:8px;"><b>NIP:</b> {nip}</div>
-    <div style="margin-bottom:8px;"><b>NIK:</b> {nik}</div>
-    <div style="margin-bottom:8px;"><b>No HP:</b> {nohp}</div>
-    <div style="margin-bottom:8px;"><b>Jabatan:</b> {jabatan}</div>
-    <div style="margin-bottom:8px;"><b>Jenis Pegawai:</b> {jenis_pegawai}</div>
-
-    <hr style="margin:12px 0;">
-
-    <div style="margin-bottom:8px;"><b>UNOR / Unit Kerja:</b> {unor}</div>
-    <div style="margin-bottom:8px;"><b>Cabang Dinas:</b> {cabdis}</div>
-    <div style="margin-bottom:8px;"><b>Alamat:</b> {alamat}</div>
-</div>
-"""
-
-        st.markdown(html_card, unsafe_allow_html=True)    
+    """
+    
+            st.markdown(html_card, unsafe_allow_html=True)    
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
@@ -1149,6 +1149,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
