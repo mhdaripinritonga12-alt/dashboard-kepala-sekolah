@@ -700,7 +700,12 @@ def page_cabdin():
     col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
 
     with col1:
-        st.markdown("## 📊 SMART.KS")
+        logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+
+        if os.path.exists(logo_path):
+            st.image(logo_path, width=220)
+        else:
+            st.markdown("## 📊 SMART.KS")
 
     with col2:
         if st.button("🔄 Refresh SIMPEG", use_container_width=True):
@@ -1363,6 +1368,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
