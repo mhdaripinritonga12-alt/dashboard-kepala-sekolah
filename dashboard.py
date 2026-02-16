@@ -720,7 +720,7 @@ def page_cabdin():
 
         if os.path.exists(logo_path):
             st.markdown("<div class='logo-dashboard'>", unsafe_allow_html=True)
-            st.image(logo_path, width=220)
+            st.image(logo_path, width=120)
             st.markdown("</div>", unsafe_allow_html=True)
         else:
             st.markdown("## 📊 SMART.KS")
@@ -1386,6 +1386,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
