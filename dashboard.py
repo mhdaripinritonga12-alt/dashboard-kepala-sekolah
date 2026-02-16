@@ -1112,20 +1112,22 @@ def page_detail():
                 st.success(f"✅ Diganti dengan: {calon}")
                 st.rerun()
 
-    with colbtn2:
-        if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
-            if nama in perubahan_kepsek:
+with colbtn2:
+    if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
+
+        if nama in perubahan_kepsek:
             del perubahan_kepsek[nama]
             save_perubahan(perubahan_kepsek)
 
             # reload ulang dari file
             perubahan_kepsek.update(load_perubahan())
 
-            if key_select in st.session_state:
-                del st.session_state[key_select]
+        if key_select in st.session_state:
+            del st.session_state[key_select]
 
-            st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
-            st.rerun()
+        st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
+        st.rerun()
+
 
 # =========================================================
 # HALAMAN REKAP PROVINSI
@@ -1276,6 +1278,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
