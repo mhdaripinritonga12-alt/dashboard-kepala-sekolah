@@ -1099,27 +1099,33 @@ def page_detail():
     </div>
     """
     
-            components.html(html_card, height=450, scrolling=True)  
-    colbtn1, colbtn2 = st.columns(2)
+components.html(html_card, height=450, scrolling=True)
 
-    with colbtn1:
-        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-            if calon == "-- Pilih Calon Pengganti --":
-                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-            else:
-                perubahan_kepsek[nama] = calon
-                save_perubahan(perubahan_kepsek)
-                st.success(f"✅ Diganti dengan: {calon}")
-                st.rerun()
+colbtn1, colbtn2 = st.columns(2)
+
+with colbtn1:
+    if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+        if calon == "-- Pilih Calon Pengganti --":
+            st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+        else:
+            perubahan_kepsek[nama] = calon
+            save_perubahan(perubahan_kepsek)
+
+            # reload ulang dari file (biar aman)
+            perubahan_kepsek.clear()
+            perubahan_kepsek.update(load_perubahan())
+
+            st.success(f"✅ Diganti dengan: {calon}")
+            st.rerun()
 
 with colbtn2:
     if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
-
         if nama in perubahan_kepsek:
             del perubahan_kepsek[nama]
             save_perubahan(perubahan_kepsek)
 
             # reload ulang dari file
+            perubahan_kepsek.clear()
             perubahan_kepsek.update(load_perubahan())
 
         if key_select in st.session_state:
@@ -1278,6 +1284,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("Dashboard Kepala Sekolah • MHD. ARIPIN RITONGA, S.Kom")
+
 
 
 
