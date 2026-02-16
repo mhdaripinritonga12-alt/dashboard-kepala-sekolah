@@ -484,12 +484,12 @@ if not st.session_state.login:
     col_logo1, col_logo2, col_logo3 = st.columns([3, 2, 3])
 
     with col_logo2:
-        logo_path = os.path.join(os.path.dirname(__file__), "logo", "logo.png")
+        logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
 
         if os.path.exists(logo_path):
             st.image(logo_path, width=230)
         else:
-            st.warning("⚠️ Logo tidak ditemukan: logo/logo.png")
+            st.warning("⚠️ Logo tidak ditemukan: logo.png")
 
     # ==========================
     # JUDUL LOGIN
@@ -1266,6 +1266,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
