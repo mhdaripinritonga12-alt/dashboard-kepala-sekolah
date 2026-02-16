@@ -1255,19 +1255,25 @@ def page_update():
 # ROUTING UTAMA
 # =========================================================
 if st.session_state.page == "cabdin":
+    set_bg("cabdis.jpg")
     page_cabdin()
 
 elif st.session_state.page == "sekolah":
+    set_bg("dashboard.jpg")
     page_sekolah()
 
 elif st.session_state.page == "detail":
+    set_bg("dashboard.jpg")
     page_detail()
 
 elif st.session_state.page == "rekap":
+    set_bg("dashboard.jpg")
     page_rekap()
 
 elif st.session_state.page == "update":
+    set_bg("dashboard.jpg")
     page_update()
+
 
 # =========================================================
 # FOOTER
@@ -1309,6 +1315,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
