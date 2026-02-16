@@ -527,16 +527,16 @@ if not st.session_state.login:
     col1, col2, col3 = st.columns([2, 3, 2])
 
     with col2:
-st.markdown("""
-<style>
-/* Label Username & Password jadi putih */
-div[data-testid="stTextInput"] label {
-    color: white !important;
-    font-weight: 700 !important;
-    font-size: 16px !important;
-}
-</style>
-""", unsafe_allow_html=True)
+        st.markdown("""
+        <style>
+        /* Label Username & Password jadi putih */
+        div[data-testid="stTextInput"] label {
+            color: white !important;
+            font-weight: 700 !important;
+            font-size: 16px !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
         username = st.text_input("👤 Username")
         password = st.text_input("🔑 Password", type="password")
@@ -1302,6 +1302,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
