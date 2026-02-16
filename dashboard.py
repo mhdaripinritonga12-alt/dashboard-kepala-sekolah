@@ -494,7 +494,7 @@ st.markdown("""
     font-weight: 800;
     margin-top: -15px;
     margin-bottom: 20px;
-    color: #333;
+    color: #E0FFFF;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1291,6 +1291,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
