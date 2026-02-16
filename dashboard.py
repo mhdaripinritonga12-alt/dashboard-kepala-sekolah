@@ -475,7 +475,7 @@ div[data-testid="stButton"] > button {
 # LOGIN PAGE
 # =========================================================
 if not st.session_state.login:
-    st.markdown("## 🔐 Login SMART")
+    st.markdown("## 🔐 SMART")
 
     col1, col2, col3 = st.columns([2, 3, 2])
     with col2:
@@ -1243,6 +1243,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
