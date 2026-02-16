@@ -523,12 +523,28 @@ st.markdown("""
     padding-top: 30px !important;
 }
 
+/* wrapper logo + judul biar center sempurna */
+.login-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.login-wrapper img {
+    width: 200px;
+    margin-bottom: -15px; /* jarak logo ke tulisan rapat */
+}
+
 .login-title {
     text-align: center;
     font-size: 42px;
     font-weight: 800;
-    margin-top: -15px;
-    margin-bottom: 20px;
+    margin: 0px;
+    padding: 0px;
     color: #E0FFFF;
 }
 </style>
@@ -539,22 +555,25 @@ if not st.session_state.login:
     st.markdown("<br>", unsafe_allow_html=True)
 
     # ==========================
-    # LOGO TENGAH
+    # LOGO + JUDUL (RATA TENGAH FIX)
     # ==========================
-    col_logo1, col_logo2, col_logo3 = st.columns([3, 2, 3])
+    logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
 
-    with col_logo2:
-        logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+    if os.path.exists(logo_path):
+        import base64
+        with open(logo_path, "rb") as f:
+            data = base64.b64encode(f.read()).decode()
 
-        if os.path.exists(logo_path):
-            st.image(logo_path, width=200)
-        else:
-            st.warning("⚠️ Logo tidak ditemukan: logo.png")
+        st.markdown(f"""
+        <div class="login-wrapper">
+            <img src="data:image/png;base64,{data}">
+            <div class="login-title">Login SMART</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # ==========================
-    # JUDUL LOGIN (RAPAT)
-    # ==========================
-    st.markdown("<div class='login-title'>Login SMART</div>", unsafe_allow_html=True)
+    else:
+        st.warning("⚠️ Logo tidak ditemukan: logo.png")
+        st.markdown("<div class='login-title'>Login SMART</div>", unsafe_allow_html=True)
 
     # ==========================
     # FORM LOGIN
@@ -588,6 +607,7 @@ if not st.session_state.login:
     st.stop()
 
 st.caption(f"👤 Login sebagai: **{st.session_state.role}**")
+
 
 # =========================================================
 # SIDEBAR FILTER
@@ -1343,6 +1363,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
