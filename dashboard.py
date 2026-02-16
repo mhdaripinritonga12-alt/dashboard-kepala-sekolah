@@ -476,75 +476,54 @@ import os
 import streamlit as st
 
 # =========================================================
-# LOGIN PAGE STYLE
+# LOGIN PAGE
 # =========================================================
 st.markdown("""
 <style>
 .stApp {
-    background-color: #3FE0D0;
+    background-color: #f2f2f2;
 }
 
-/* paksa jarak antar elemen lebih rapat */
 .block-container {
     padding-top: 20px !important;
 }
 
-/* logo rapat ke bawah */
-.logo-smart {
-    text-align: center;
-    margin-bottom: -35px;
-}
-
-.logo-smart img {
-    width: 170px;
-}
-
-/* judul login rapat */
 .login-title {
     text-align: center;
     font-size: 42px;
     font-weight: 800;
-    margin-top: 0px;
+    margin-top: -15px;
     margin-bottom: 20px;
     color: #333;
 }
 </style>
 """, unsafe_allow_html=True)
 
-
-# =========================================================
-# FUNGSI LOGO BASE64 (AGAR HTML BISA TAMPIL)
-# =========================================================
-def tampilkan_logo_html(path_logo):
-    with open(path_logo, "rb") as f:
-        data = base64.b64encode(f.read()).decode()
-
-    st.markdown(f"""
-    <div class="logo-smart">
-        <img src="data:image/png;base64,{data}">
-    </div>
-    """, unsafe_allow_html=True)
-
-
-# =========================================================
-# LOGIN PAGE
-# =========================================================
 if not st.session_state.login:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # path logo (logo.png harus sejajar dengan dashboard.py)
-    logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+    # ==========================
+    # LOGO TENGAH
+    # ==========================
+    col_logo1, col_logo2, col_logo3 = st.columns([3, 2, 3])
 
-    if os.path.exists(logo_path):
-        tampilkan_logo_html(logo_path)
-    else:
-        st.warning("⚠️ Logo tidak ditemukan: logo.png")
+    with col_logo2:
+        logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
 
-    # JUDUL LOGIN (cukup 1 kali)
+        if os.path.exists(logo_path):
+            st.image(logo_path, width=170)
+        else:
+            st.warning("⚠️ Logo tidak ditemukan: logo.png")
+
+    # ==========================
+    # JUDUL LOGIN (RAPAT)
+    # ==========================
     st.markdown("<div class='login-title'>Login SMART</div>", unsafe_allow_html=True)
 
+    # ==========================
     # FORM LOGIN
+    # ==========================
     col1, col2, col3 = st.columns([2, 3, 2])
 
     with col2:
