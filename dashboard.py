@@ -775,7 +775,7 @@ def page_cabdin():
 
     keyword = st.text_input(
         "Ketik Nama Guru atau NIP",
-        placeholder="contoh: Mhd Aripin Ritonga / 1994",
+        placeholder="contoh: Mhd Aripin Ritonga / 19940816082025041003",
         key="simpeg_search_dashboard"
     )
 
@@ -1379,6 +1379,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
