@@ -481,7 +481,7 @@ import streamlit as st
 st.markdown("""
 <style>
 .stApp {
-    background-color: #f2f2f2;
+    background-color: #1034A6;
 }
 
 .block-container {
@@ -1291,6 +1291,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
