@@ -476,31 +476,32 @@ div[data-testid="stButton"] > button {
 # =========================================================
 st.markdown("""
 <style>
-/* Background seluruh halaman */
 .stApp {
     background-color: #f2f2f2;
 }
 
-/* Biar login box lebih fokus */
-div[data-testid="stVerticalBlock"] {
-    padding-top: 10px;
+/* paksa jarak antar elemen lebih rapat */
+.block-container {
+    padding-top: 20px !important;
 }
 
-/* Logo agar rapat */
-.login-logo img {
-    margin-bottom: -25px !important;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+/* logo rapat ke bawah */
+.logo-smart {
+    text-align: center;
+    margin-bottom: -35px;
 }
 
-/* Judul login rapat */
+.logo-smart img {
+    width: 170px;
+}
+
+/* judul login rapat */
 .login-title {
-    margin-top: -15px !important;
-    margin-bottom: 15px !important;
     text-align: center;
     font-size: 42px;
     font-weight: 800;
+    margin-top: 0px;
+    margin-bottom: 20px;
     color: #333;
 }
 </style>
@@ -513,19 +514,24 @@ if not st.session_state.login:
     # ==========================
     # TAMPILKAN LOGO DI TENGAH
     # ==========================
-    col_logo1, col_logo2, col_logo3 = st.columns([3, 2, 3])
+if not st.session_state.login:
 
-    with col_logo2:
-        logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+    st.markdown("<br>", unsafe_allow_html=True)
 
-            if os.path.exists(logo_path):
-            st.markdown("<div class='login-logo'>", unsafe_allow_html=True)
-            st.image(logo_path, width=230)
-            st.markdown("</div>", unsafe_allow_html=True)
-        else:
-            st.warning("⚠️ Logo tidak ditemukan: logo.png")
+    # path logo
+    logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+
+    if os.path.exists(logo_path):
+        st.markdown(f"""
+        <div class="logo-smart">
+            <img src="app/static/logo.png">
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.warning("⚠️ Logo tidak ditemukan: logo.png")
 
     st.markdown("<div class='login-title'>Login SMART</div>", unsafe_allow_html=True)
+
 
 
     # ==========================
@@ -1303,6 +1309,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
