@@ -512,7 +512,7 @@ if not st.session_state.login:
         logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
 
         if os.path.exists(logo_path):
-            st.image(logo_path, width=170)
+            st.image(logo_path, width=200)
         else:
             st.warning("⚠️ Logo tidak ditemukan: logo.png")
 
@@ -1291,6 +1291,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
