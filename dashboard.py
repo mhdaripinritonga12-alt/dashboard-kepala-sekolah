@@ -528,7 +528,10 @@ if not st.session_state.login:
 
     with col2:
         username = st.text_input("👤 Username")
-        password = st.text_input("🔑 Password", type="password") color: #E0FFFF;
+        password = st.text_input("🔑 Password", type="password")
+    .col2-title {
+    color: #E0FFFF;
+}
 
         if st.button("🔓 Login", use_container_width=True):
             if username in USERS and USERS[username]["password"] == password:
@@ -1291,6 +1294,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
