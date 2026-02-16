@@ -480,7 +480,7 @@ if not st.session_state.login:
     with col_logo:
         import os
 
-logo_path = os.path.join(os.path.dirname(__file__), "logo1.png")
+logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
 
 if os.path.exists(logo_path):
     st.image(logo_path, width=230)
@@ -1255,6 +1255,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
