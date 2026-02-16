@@ -485,7 +485,7 @@ st.markdown("""
 }
 
 .block-container {
-    padding-top: 20px !important;
+    padding-top: 30px !important;
 }
 
 .login-title {
@@ -1291,6 +1291,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
