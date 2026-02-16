@@ -721,7 +721,7 @@ def page_sekolah():
             st.rerun()
 
     with col_b:
-        st.subheader(f"🏫 Daftar Sekolah — {st.session_state.selected_cabdin}")
+        st.subheader(f"🏫 {st.session_state.selected_cabdin}")
 
     with col_c:
         if st.button("⬅️", key="back_sekolah"):
@@ -774,7 +774,7 @@ def page_sekolah():
             st.rerun()
 
     with col_b:
-        st.subheader(f"🏫 Daftar Sekolah — {st.session_state.selected_cabdin}")
+        st.subheader(f"🏫 {st.session_state.selected_cabdin}")
 
     with col_c:
         if st.button("⬅️", key="back_sekolah"):
@@ -1266,6 +1266,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
