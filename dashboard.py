@@ -11,7 +11,7 @@ from io import BytesIO
 # =========================================================
 # KONFIGURASI APP
 # =========================================================
-st.set_page_config(page_title="Dashboard Kepala Sekolah", layout="wide")
+st.set_page_config(page_title="SMART.KS", layout="wide")
 
 DATA_SAVE = "perubahan_kepsek.xlsx"
 DATA_FILE = "data_kepala_sekolah.xlsx"
@@ -609,7 +609,7 @@ def page_cabdin():
     col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
 
     with col1:
-        st.markdown("## 📊 Dashboard Kepala Sekolah")
+        st.markdown("## 📊 SMART.KS")
 
     with col2:
         if st.button("🔄 Refresh SIMPEG", use_container_width=True):
@@ -1266,6 +1266,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
