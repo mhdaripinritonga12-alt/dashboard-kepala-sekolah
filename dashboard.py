@@ -687,7 +687,7 @@ def page_cabdin():
 
     st.divider()
 
-    st.subheader("🏢 Cabang Dinas Pendidikan Wilayah")
+    st.subheader("🏢 DAFTAR CABANG DINAS PENDIDIKAN")
 
     df_view = apply_filter(df_ks)
     cabdin_list = urutkan_cabdin(df_view["Cabang Dinas"].dropna().unique())
@@ -1266,6 +1266,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
