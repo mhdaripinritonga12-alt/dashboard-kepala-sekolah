@@ -764,7 +764,7 @@ def page_cabdin():
 
     total_bisa_diberhentikan = jumlah_p2 + jumlah_lebih2 + jumlah_plt
 
-    st.markdown("## 📌 Rekap Status Kepala Sekolah (Provinsi)")
+    st.markdown("## 📌 REKAP DATA DINAS PENDIDIKAN")
 
     colx1, colx2, colx3, colx4, colx5 = st.columns(5)
     colx1.metric("Aktif Periode Ke 1", jumlah_p1)
@@ -1386,6 +1386,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
