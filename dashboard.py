@@ -471,8 +471,12 @@ div[data-testid="stButton"] > button {
 </style>
 """, unsafe_allow_html=True)
 
+import base64
+import os
+import streamlit as st
+
 # =========================================================
-# LOGIN PAGE
+# LOGIN PAGE STYLE
 # =========================================================
 st.markdown("""
 <style>
@@ -507,41 +511,40 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
+# =========================================================
+# FUNGSI LOGO BASE64 (AGAR HTML BISA TAMPIL)
+# =========================================================
+def tampilkan_logo_html(path_logo):
+    with open(path_logo, "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+
+    st.markdown(f"""
+    <div class="logo-smart">
+        <img src="data:image/png;base64,{data}">
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# =========================================================
+# LOGIN PAGE
+# =========================================================
 if not st.session_state.login:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ==========================
-    # TAMPILKAN LOGO DI TENGAH
-    # ==========================
-if not st.session_state.login:
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # path logo
+    # path logo (logo.png harus sejajar dengan dashboard.py)
     logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
 
     if os.path.exists(logo_path):
-        st.markdown(f"""
-        <div class="logo-smart">
-            <img src="app/static/logo.png">
-        </div>
-        """, unsafe_allow_html=True)
+        tampilkan_logo_html(logo_path)
     else:
         st.warning("⚠️ Logo tidak ditemukan: logo.png")
 
+    # JUDUL LOGIN (cukup 1 kali)
     st.markdown("<div class='login-title'>Login SMART</div>", unsafe_allow_html=True)
 
-
-
-    # ==========================
-    # JUDUL LOGIN
-    # ==========================
-    st.markdown("<h2 style='text-align:center;'>Login SMART</h2>", unsafe_allow_html=True)
-
-    # ==========================
     # FORM LOGIN
-    # ==========================
     col1, col2, col3 = st.columns([2, 3, 2])
 
     with col2:
@@ -1309,6 +1312,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
