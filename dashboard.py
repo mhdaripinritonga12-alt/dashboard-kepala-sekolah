@@ -476,21 +476,31 @@ div[data-testid="stButton"] > button {
 # =========================================================
 if not st.session_state.login:
 
-    col_logo = st.columns(1)[0]
-    with col_logo:
-        import os
+    st.markdown("<br>", unsafe_allow_html=True)
 
-logo_path = os.path.join(os.path.dirname(__file__), "logo", "logo.png")
-st.image(logo_path, width=230)
+    # ==========================
+    # TAMPILKAN LOGO DI TENGAH
+    # ==========================
+    col_logo1, col_logo2, col_logo3 = st.columns([3, 2, 3])
 
-if os.path.exists(logo_path):
-    st.image(logo_path, width=230)
-else:
-    st.warning("⚠️ Logo tidak ditemukan: logo.png")
+    with col_logo2:
+        logo_path = os.path.join(os.path.dirname(__file__), "logo", "logo.png")
 
+        if os.path.exists(logo_path):
+            st.image(logo_path, width=230)
+        else:
+            st.warning("⚠️ Logo tidak ditemukan: logo/logo.png")
+
+    # ==========================
+    # JUDUL LOGIN
+    # ==========================
     st.markdown("<h2 style='text-align:center;'>Login SMART</h2>", unsafe_allow_html=True)
 
+    # ==========================
+    # FORM LOGIN
+    # ==========================
     col1, col2, col3 = st.columns([2, 3, 2])
+
     with col2:
         username = st.text_input("👤 Username")
         password = st.text_input("🔑 Password", type="password")
@@ -1256,6 +1266,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
