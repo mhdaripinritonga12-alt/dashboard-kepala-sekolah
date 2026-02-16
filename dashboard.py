@@ -62,23 +62,9 @@ def load_perubahan():
 
 def save_perubahan(data_dict):
     df = pd.DataFrame([{"Nama Sekolah": k, "Calon Pengganti": v} for k, v in data_dict.items()])
-
-    # pastikan folder ada (jika suatu saat pakai folder)
     df.to_excel(DATA_SAVE, index=False)
 
-    # pastikan benar-benar tersimpan
-    if os.path.exists(DATA_SAVE):
-        os.utime(DATA_SAVE, None)
-
-perubahan_kepsek[nama] = calon
-save_perubahan(perubahan_kepsek)
-
-# reload ulang dari file (biar fix tidak hilang)
-perubahan_kepsek.update(load_perubahan())
-
-st.success(f"✅ Diganti dengan: {calon}")
-st.rerun()
-
+perubahan_kepsek = load_perubahan()
 # =========================================================
 # DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
 # =========================================================
@@ -857,15 +843,7 @@ def page_sekolah():
             "Calon Pengganti"
         ]].copy()
 
-    styled = tampil.style.apply(highlight_pengganti, axis=1)
-    st.dataframe(styled, use_container_width=True, hide_index=True)    
-def highlight_pengganti(row):
-    calon = str(row.get("Calon Pengganti", "")).strip()
-
-    if calon != "-" and calon != "" and calon.lower() != "nan":
-        return ["background-color: #cfe2ff"] * len(row)  # biru muda
-    return [""] * len(row)
-
+        st.dataframe(tampil, use_container_width=True, hide_index=True)
 
     st.divider()
 
@@ -1115,11 +1093,8 @@ def page_detail():
     with colbtn2:
         if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
             if nama in perubahan_kepsek:
-            del perubahan_kepsek[nama]
-            save_perubahan(perubahan_kepsek)
-
-            # reload ulang dari file
-            perubahan_kepsek.update(load_perubahan())
+                del perubahan_kepsek[nama]
+                save_perubahan(perubahan_kepsek)
 
             if key_select in st.session_state:
                 del st.session_state[key_select]
@@ -1163,15 +1138,7 @@ def page_rekap():
         "Calon Pengganti"
     ]].copy()
 
-    styled = tampil.style.apply(highlight_pengganti, axis=1)
-    st.dataframe(styled, use_container_width=True, hide_index=True)
-def highlight_pengganti(row):
-    calon = str(row.get("Calon Pengganti", "")).strip()
-
-    if calon != "-" and calon != "" and calon.lower() != "nan":
-        return ["background-color: #cfe2ff"] * len(row)  # biru muda
-    return [""] * len(row)
-
+    st.dataframe(tampil, use_container_width=True, hide_index=True)
 # =========================================================
 # HALAMAN UPDATE RIWAYAT KEPSEK (UPDATE data KASEK)
 # =========================================================
@@ -1275,4 +1242,6 @@ st.info("""
 st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesuai Permendikdasmen No. 7 Tahun 2025.")
 
 st.divider()
-st.caption("SMART (Sistem managemn Administrasi Riwayat Tugas) • MHD. ARIPIN RITONGA, S.Kom")
+st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
+
