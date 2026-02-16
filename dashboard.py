@@ -3,15 +3,43 @@ import pandas as pd
 import os
 import re   # ✅ TAMBAHAN (UNTUK HAPUS HTML TAG)
 import streamlit.components.v1 as components
+import base64
 
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
 
+
+# =========================================================
+# FUNGSI BACKGROUND (TARUH DI SINI)
+# =========================================================
+def set_bg(image_name):
+    path = os.path.join(os.path.dirname(__file__), image_name)
+
+    if not os.path.exists(path):
+        st.warning(f"⚠️ Background tidak ditemukan: {image_name}")
+        return
+
+    with open(path, "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+
+    st.markdown(f"""
+    <style>
+    .stApp {{
+        background-image: url("data:image/jpg;base64,{data}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+
 # =========================================================
 # KONFIGURASI APP
 # =========================================================
-st.set_page_config(page_title="SMART.KS", layout="wide")
+st.set_page_config(page_title="Dashboard Kepala Sekolah", layout="wide")
 
 DATA_SAVE = "perubahan_kepsek.xlsx"
 DATA_FILE = "data_kepala_sekolah.xlsx"
@@ -1315,6 +1343,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
