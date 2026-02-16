@@ -474,6 +474,38 @@ div[data-testid="stButton"] > button {
 # =========================================================
 # LOGIN PAGE
 # =========================================================
+st.markdown("""
+<style>
+/* Background seluruh halaman */
+.stApp {
+    background-color: #f2f2f2;
+}
+
+/* Biar login box lebih fokus */
+div[data-testid="stVerticalBlock"] {
+    padding-top: 10px;
+}
+
+/* Logo agar rapat */
+.login-logo img {
+    margin-bottom: -25px !important;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Judul login rapat */
+.login-title {
+    margin-top: -15px !important;
+    margin-bottom: 15px !important;
+    text-align: center;
+    font-size: 42px;
+    font-weight: 800;
+    color: #333;
+}
+</style>
+""", unsafe_allow_html=True)
+
 if not st.session_state.login:
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -486,10 +518,15 @@ if not st.session_state.login:
     with col_logo2:
         logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
 
-        if os.path.exists(logo_path):
+            if os.path.exists(logo_path):
+            st.markdown("<div class='login-logo'>", unsafe_allow_html=True)
             st.image(logo_path, width=230)
+            st.markdown("</div>", unsafe_allow_html=True)
         else:
             st.warning("⚠️ Logo tidak ditemukan: logo.png")
+
+    st.markdown("<div class='login-title'>Login SMART</div>", unsafe_allow_html=True)
+
 
     # ==========================
     # JUDUL LOGIN
@@ -1266,6 +1303,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
