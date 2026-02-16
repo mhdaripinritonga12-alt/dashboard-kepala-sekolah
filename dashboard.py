@@ -478,7 +478,14 @@ if not st.session_state.login:
 
     col_logo = st.columns(1)[0]
     with col_logo:
-        st.image("logo1.png", width=230)
+        import os
+
+logo_path = os.path.join(os.path.dirname(__file__), "logo1.png")
+
+if os.path.exists(logo_path):
+    st.image(logo_path, width=230)
+else:
+    st.warning("⚠️ Logo tidak ditemukan: logo.png")
 
     st.markdown("<h2 style='text-align:center;'>Login SMART</h2>", unsafe_allow_html=True)
 
@@ -1248,6 +1255,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
