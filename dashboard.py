@@ -745,7 +745,7 @@ def page_sekolah():
     jumlah_plt = int((df_cab["Status Regulatif"] == "Plt").sum())
     total_bisa = jumlah_p2 + jumlah_lebih2 + jumlah_plt
 
-    st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
+    st.markdown("### 📌 Rekap pada Cabang Dinas")
 
     col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric("Aktif Periode Ke 1", jumlah_p1)
@@ -798,7 +798,7 @@ def page_sekolah():
     jumlah_plt = int((df_cab["Status Regulatif"] == "Plt").sum())
     total_bisa = jumlah_p2 + jumlah_lebih2 + jumlah_plt
 
-    st.markdown("### 📌 Rekap Status Kepala Sekolah Cabang Dinas Ini")
+    st.markdown("### 📌 Rekap Pada Cabang Dinas")
 
     col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric("Aktif Periode Ke 1", jumlah_p1)
@@ -1266,6 +1266,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
