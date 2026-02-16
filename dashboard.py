@@ -699,29 +699,22 @@ def tampil_pasal_permendikdasmen(status, ket_bcks):
 def page_cabdin():
     st.markdown("""
     <style>
-    /* Biar logo sejajar tengah dengan tombol */
+    /* samakan posisi vertikal semua isi kolom */
     div[data-testid="column"] {
         display: flex;
-        align-items: center;
-    }
-
-    /* Logo jangan jatuh ke bawah */
-    .logo-dashboard img {
-        display: block;
-        margin-top: -10px;
+        flex-direction: column;
+        justify-content: center;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    col1, col2, col3, col4, col5 = st.columns([5, 2, 2, 2, 2])
+    col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 2, 2])
 
     with col1:
         logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
 
         if os.path.exists(logo_path):
-            st.markdown("<div class='logo-dashboard'>", unsafe_allow_html=True)
             st.image(logo_path, width=120)
-            st.markdown("</div>", unsafe_allow_html=True)
         else:
             st.markdown("## 📊 SMART.KS")
 
@@ -1386,6 +1379,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
