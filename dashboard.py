@@ -474,6 +474,13 @@ div[data-testid="stButton"] > button {
 import base64
 import os
 import streamlit as st
+# =========================================================
+# BACKGROUND LOGIN / DASHBOARD / CABDIS
+# =========================================================
+if not st.session_state.login:
+    set_bg("login.jpg")
+else:
+    set_bg("dashboard.jpg")
 
 # =========================================================
 # LOGIN PAGE
@@ -1302,6 +1309,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
