@@ -143,6 +143,8 @@ def save_perubahan(data_dict):
         st.error(f"❌ Gagal simpan ke Google Sheet: {e}")
 
 perubahan_kepsek = load_perubahan()
+st.sidebar.write("DEBUG PERUBAHAN:", perubahan_kepsek)
+
 
 # =========================================================
 # DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
@@ -1430,6 +1432,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
