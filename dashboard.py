@@ -95,25 +95,16 @@ SHEET_NAME = "perubahan_kepsek"
 def konek_gsheet():
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.readonly",
-        "https://www.googleapis.com/auth/drive.file"
+        "https://www.googleapis.com/auth/drive"
     ]
 
     creds_dict = st.secrets["gcp_service_account"]
-
-    st.sidebar.write("✅ DEBUG CLIENT EMAIL:", creds_dict.get("client_email"))
-    st.sidebar.write("✅ DEBUG PROJECT ID:", creds_dict.get("project_id"))
-    st.sidebar.write("✅ DEBUG PRIVATE KEY ID:", creds_dict.get("private_key_id"))
-
     creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+
     client = gspread.authorize(creds)
+    sheet = client.open_by_key(SHEET_ID).worksheet(SHEET_NAME)
 
-    spreadsheet = client.open_by_key(SHEET_ID)
-    st.sidebar.success(f"✅ Spreadsheet kebuka: {spreadsheet.title}")
-
-    sheet = spreadsheet.worksheet(SHEET_NAME)
     return sheet
-
 
 
 def load_perubahan():
@@ -135,8 +126,7 @@ def load_perubahan():
         return dict(zip(df["Nama Sekolah"], df["Calon Pengganti"]))
 
     except Exception as e:
-        st.error("❌ ERROR GOOGLE SHEET (LOAD):")
-        st.exception(e)
+        st.warning(f"⚠️ Google Sheet gagal dibaca: {e}")
         return {}
 
 
@@ -144,56 +134,20 @@ def save_perubahan(data_dict):
     try:
         sheet = konek_gsheet()
 
-        st.write("DEBUG: MULAI SIMPAN KE GOOGLE SHEET")
-        st.write("DEBUG SHEET_ID:", SHEET_ID)
-        st.write("DEBUG SHEET_NAME:", SHEET_NAME)
-
+        # reset sheet
         sheet.clear()
         sheet.append_row(["Nama Sekolah", "Calon Pengganti"])
 
-        # SIMPAN SATU PER SATU (LEBIH AMAN)
+        # simpan data satu per satu (paling aman)
         for k, v in data_dict.items():
             sheet.append_row([k, v])
-
-        st.success("✅ Berhasil simpan ke Google Sheet!")
-
-    except Exception as e:
-        st.error("❌ ERROR GOOGLE SHEET (SAVE):")
-        st.exception(e)
-
-
-def save_perubahan(data_dict):
-    try:
-        sheet = konek_gsheet()
-
-        st.write("DEBUG: MULAI SIMPAN KE GOOGLE SHEET")
-        st.write("DEBUG SHEET_ID:", SHEET_ID)
-        st.write("DEBUG SHEET_NAME:", SHEET_NAME)
-
-        sheet.clear()
-        sheet.append_row(["Nama Sekolah", "Calon Pengganti"])
-
-        rows = [[k, v] for k, v in data_dict.items()]
-        if rows:
-            sheet.append_rows(rows)
 
     except Exception as e:
         st.error(f"❌ Gagal simpan ke Google Sheet: {e}")
 
+
+# LOAD DATA PERUBAHAN SAAT APLIKASI START
 perubahan_kepsek = load_perubahan()
-st.sidebar.write("DEBUG PERUBAHAN:", perubahan_kepsek)
-# =========================================================
-# DEBUG TEST GOOGLE SHEET (UNTUK CEK APAKAH BISA MENULIS)
-# =========================================================
-if st.sidebar.button("🧪 TEST TULIS GOOGLE SHEET"):
-    try:
-        sheet = konek_gsheet()
-        sheet.append_row(["TEST SEKOLAH", "TEST GURU"])
-        st.sidebar.success("✅ BERHASIL TULIS KE GOOGLE SHEET!")
-    except Exception as e:
-        st.sidebar.error(f"❌ GAGAL TULIS: {e}")
-
-
 
 # =========================================================
 # DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
@@ -1481,6 +1435,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
