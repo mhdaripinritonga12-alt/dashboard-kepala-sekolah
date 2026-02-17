@@ -1447,7 +1447,13 @@ st.info("""
 st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesuai Permendikdasmen No. 7 Tahun 2025.")
 
 st.divider()
-st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+st.markdown("""
+<div style="text-align:center; font-weight:800; font-size:16px;">
+© SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
+</div>
+""", unsafe_allow_html=True)
+
+
 
 
 
