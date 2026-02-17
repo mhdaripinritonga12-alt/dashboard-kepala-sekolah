@@ -92,11 +92,11 @@ SHEET_NAME = "perubahan_kepsek"
 # FUNGSI SIMPAN & LOAD PENGGANTI (PERMANEN GOOGLE SHEET)
 # =========================================================
 
-def konek_gsheet():
-    scopes = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive"
-    ]
+scopes = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive.readonly",
+    "https://www.googleapis.com/auth/drive.file"
+]
 
     creds_dict = st.secrets["gcp_service_account"]
 
@@ -1480,6 +1480,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
