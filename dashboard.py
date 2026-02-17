@@ -91,6 +91,7 @@ SHEET_NAME = "perubahan_kepsek"
 # =========================================================
 # FUNGSI SIMPAN & LOAD PENGGANTI (PERMANEN GOOGLE SHEET)
 # =========================================================
+
 def konek_gsheet():
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
@@ -98,11 +99,20 @@ def konek_gsheet():
     ]
 
     creds_dict = st.secrets["gcp_service_account"]
-    creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
 
+    st.sidebar.write("✅ DEBUG CLIENT EMAIL:", creds_dict.get("client_email"))
+    st.sidebar.write("✅ DEBUG PROJECT ID:", creds_dict.get("project_id"))
+    st.sidebar.write("✅ DEBUG PRIVATE KEY ID:", creds_dict.get("private_key_id"))
+
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
     client = gspread.authorize(creds)
-    sheet = client.open_by_key(SHEET_ID).worksheet(SHEET_NAME)
+
+    spreadsheet = client.open_by_key(SHEET_ID)
+    st.sidebar.success(f"✅ Spreadsheet kebuka: {spreadsheet.title}")
+
+    sheet = spreadsheet.worksheet(SHEET_NAME)
     return sheet
+
 
 
 def load_perubahan():
@@ -1470,6 +1480,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
