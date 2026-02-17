@@ -228,9 +228,6 @@ cek_plt = df_ks[
     .any(axis=1)
 ]
 
-st.sidebar.write("🔎 DEBUG JUMLAH PLT TERBACA:", len(cek_plt))
-
-
 # =========================================================
 # NORMALISASI KOLOM
 # =========================================================
@@ -1431,6 +1428,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
