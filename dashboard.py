@@ -77,10 +77,6 @@ USERS = {
     "kadis": {"password": "kadis123", "role": "Kadis"},
     "viewer": {"password": "viewer123", "role": "View"},
 }
-if st.sidebar.button("TEST SIMPAN GOOGLE SHEET"):
-    perubahan_kepsek["TEST SEKOLAH"] = "TEST GURU"
-    save_perubahan(perubahan_kepsek)
-    st.sidebar.success("TEST DISIMPAN, cek Google Sheet!")
 
 # =========================================================
 # GOOGLE SHEET CONFIG (SIMPAN PERMANEN)
@@ -1435,6 +1431,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
