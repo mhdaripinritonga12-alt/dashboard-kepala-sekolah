@@ -1293,7 +1293,7 @@ def page_detail():
         if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
             if nama in perubahan_kepsek:
                 del perubahan_kepsek[nama]
-                save_perubahan(perubahan_kepsek)
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
 
             if key_select in st.session_state:
                 del st.session_state[key_select]
@@ -1448,6 +1448,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
