@@ -633,12 +633,12 @@ if not st.session_state.login:
         with open(logo_path, "rb") as f:
             data = base64.b64encode(f.read()).decode()
 
-        st.markdown(f"""
+st.markdown(f"""
 <style>
 .login-subtitle{{
-    font-size:16px;
-    font-weight:700;
-    margin-top:6px;
+    font-size:22px;
+    font-weight:800;
+    margin-top:2px;
     color:#ffffff;
 }}
 </style>
@@ -649,10 +649,6 @@ if not st.session_state.login:
     <div class="login-subtitle">Kepala Sekolah</div>
 </div>
 """, unsafe_allow_html=True)
-
-    else:
-        st.warning("⚠️ Logo tidak ditemukan: logo.png")
-        st.markdown("<div class='login-title'>Login SMART</div>", unsafe_allow_html=True)
 
     # ==========================
     # FORM LOGIN
@@ -1462,4 +1458,5 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
