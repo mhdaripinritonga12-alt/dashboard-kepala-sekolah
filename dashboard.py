@@ -127,23 +127,35 @@ def load_perubahan():
         return {}
 
 
-def save_perubahan(data_dict):
+def save_perubahan(data_dict, df_kepsek):
     try:
         sheet = konek_gsheet()
 
         sheet.clear()
-        sheet.append_row(["Sekolah Tujuan", "Calon Pengganti"])
+        sheet.append_row(["Sekolah Tujuan", "Kepsek Lama", "Calon Pengganti", "Sekolah Asal"])
 
         rows = []
         for sekolah_tujuan, calon_pengganti in data_dict.items():
-            rows.append([sekolah_tujuan, calon_pengganti])
+
+            # cari data kepsek lama + sekolah asal dari df_kepsek
+            data_row = df_kepsek[df_kepsek["Nama Sekolah"].str.strip() == sekolah_tujuan.strip()]
+
+            if not data_row.empty:
+                kepsek_lama = str(data_row.iloc[0]["Nama Kepala Sekolah"])
+                sekolah_asal = str(data_row.iloc[0].get("Sekolah Asal", "-"))
+            else:
+                kepsek_lama = "-"
+                sekolah_asal = "-"
+
+            rows.append([sekolah_tujuan, kepsek_lama, calon_pengganti, sekolah_asal])
 
         if rows:
             sheet.append_rows(rows)
 
+        st.success("✅ Data lengkap berhasil disimpan ke Google Sheet!")
+
     except Exception as e:
         st.error(f"❌ Gagal simpan ke Google Sheet: {e}")
-
 
 # LOAD DATA PERUBAHAN SAAT APLIKASI START
 perubahan_kepsek = load_perubahan()
@@ -1431,6 +1443,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
