@@ -567,7 +567,7 @@ if not st.session_state.login:
         st.markdown(f"""
         <div class="login-wrapper">
             <img src="data:image/png;base64,{data}">
-            <div class="login-title">Login SMART</div>
+            <div class="login-title">Sistem Monitoring dan Analisis Riwayat Tugas</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1379,6 +1379,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
