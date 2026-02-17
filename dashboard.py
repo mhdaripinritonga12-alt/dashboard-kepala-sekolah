@@ -634,11 +634,21 @@ if not st.session_state.login:
             data = base64.b64encode(f.read()).decode()
 
         st.markdown(f"""
-        <div class="login-wrapper">
-            <img src="data:image/png;base64,{data}">
-            <div class="login-title">Sistem Monitoring dan Analisis Riwayat Tugas</div>
-        </div>
-        """, unsafe_allow_html=True)
+<style>
+.login-subtitle{{
+    font-size:16px;
+    font-weight:700;
+    margin-top:6px;
+    color:#ffffff;
+}}
+</style>
+
+<div class="login-wrapper">
+    <img src="data:image/png;base64,{data}">
+    <div class="login-title">Sistem Monitoring dan Analisis Riwayat Tugas</div>
+    <div class="login-subtitle">Kepala Sekolah</div>
+</div>
+""", unsafe_allow_html=True)
 
     else:
         st.warning("⚠️ Logo tidak ditemukan: logo.png")
@@ -1452,3 +1462,4 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
