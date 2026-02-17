@@ -124,8 +124,31 @@ def load_perubahan():
         return dict(zip(df["Nama Sekolah"], df["Calon Pengganti"]))
 
     except Exception as e:
-        st.warning(f"⚠️ Google Sheet gagal dibaca: {e}")
+        st.error("❌ ERROR GOOGLE SHEET (LOAD):")
+        st.exception(e)
         return {}
+
+
+def save_perubahan(data_dict):
+    try:
+        sheet = konek_gsheet()
+
+        st.write("DEBUG: MULAI SIMPAN KE GOOGLE SHEET")
+        st.write("DEBUG SHEET_ID:", SHEET_ID)
+        st.write("DEBUG SHEET_NAME:", SHEET_NAME)
+
+        sheet.clear()
+        sheet.append_row(["Nama Sekolah", "Calon Pengganti"])
+
+        # SIMPAN SATU PER SATU (LEBIH AMAN)
+        for k, v in data_dict.items():
+            sheet.append_row([k, v])
+
+        st.success("✅ Berhasil simpan ke Google Sheet!")
+
+    except Exception as e:
+        st.error("❌ ERROR GOOGLE SHEET (SAVE):")
+        st.exception(e)
 
 
 def save_perubahan(data_dict):
@@ -1447,6 +1470,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
