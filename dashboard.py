@@ -126,8 +126,7 @@ def load_perubahan():
         st.exception(e)
         return {}
 
-
-def save_perubahan(data_dict, df_kepsek):
+def save_perubahan(data_dict, df_ks, df_guru):
     try:
         sheet = konek_gsheet()
 
@@ -137,22 +136,28 @@ def save_perubahan(data_dict, df_kepsek):
         rows = []
         for sekolah_tujuan, calon_pengganti in data_dict.items():
 
-            # cari data kepsek lama + sekolah asal dari df_kepsek
-            data_row = df_kepsek[df_kepsek["Nama Sekolah"].str.strip() == sekolah_tujuan.strip()]
-
+            # Kepsek lama dari df_ks
+            data_row = df_ks[df_ks["Nama Sekolah"].astype(str).str.strip() == str(sekolah_tujuan).strip()]
+            kepsek_lama = "-"
             if not data_row.empty:
-                kepsek_lama = str(data_row.iloc[0]["Nama Kepala Sekolah"])
-                sekolah_asal = str(data_row.iloc[0].get("Sekolah Asal", "-"))
-            else:
-                kepsek_lama = "-"
-                sekolah_asal = "-"
+                kepsek_lama = str(data_row.iloc[0].get("Nama Kepala Sekolah", "-"))
 
-            rows.append([sekolah_tujuan, kepsek_lama, calon_pengganti, sekolah_asal])
+            # Sekolah asal calon pengganti dari df_guru (SIMPEG)
+            asal = "-"
+            data_calon = df_guru[df_guru["NAMA GURU"].astype(str).str.strip() == str(calon_pengganti).strip()]
+
+            if not data_calon.empty:
+                calon_row = data_calon.iloc[0]
+
+                # ambil kolom UNOR / UNIT KERJA
+                kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
+                if kol_unor:
+                    asal = str(calon_row.get(kol_unor, "-")).strip()
+
+            rows.append([sekolah_tujuan, kepsek_lama, calon_pengganti, asal])
 
         if rows:
             sheet.append_rows(rows)
-
-        st.success("✅ Data lengkap berhasil disimpan ke Google Sheet!")
 
     except Exception as e:
         st.error(f"❌ Gagal simpan ke Google Sheet: {e}")
@@ -1280,7 +1285,7 @@ def page_detail():
                 st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
             else:
                 perubahan_kepsek[nama] = calon
-                save_perubahan(perubahan_kepsek, df_ks)
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
                 st.success(f"✅ Diganti dengan: {calon}")
                 st.rerun()
 
@@ -1443,6 +1448,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
