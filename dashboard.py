@@ -97,8 +97,7 @@ scopes = [
     "https://www.googleapis.com/auth/drive.readonly",
     "https://www.googleapis.com/auth/drive.file"
 ]
-
-    creds_dict = st.secrets["gcp_service_account"]
+creds_dict = st.secrets["gcp_service_account"]
 
     st.sidebar.write("✅ DEBUG CLIENT EMAIL:", creds_dict.get("client_email"))
     st.sidebar.write("✅ DEBUG PROJECT ID:", creds_dict.get("project_id"))
@@ -1480,6 +1479,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
