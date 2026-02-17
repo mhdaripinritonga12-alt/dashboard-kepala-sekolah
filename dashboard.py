@@ -5,6 +5,9 @@ import re   # ✅ TAMBAHAN (UNTUK HAPUS HTML TAG)
 import streamlit.components.v1 as components
 import base64
 
+import gspread
+from google.oauth2.service_account import Credentials
+
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
@@ -76,23 +79,68 @@ USERS = {
 }
 
 # =========================================================
-# FUNGSI SIMPAN & LOAD PENGGANTI
+# GOOGLE SHEET CONFIG (SIMPAN PERMANEN)
 # =========================================================
+SHEET_ID = "1LfdTvQAMxc1r97HOmL6zylzn_d_CWrmvC8V5etaMSIA"
+SHEET_NAME = "perubahan_kepsek"
+
+# =========================================================
+# FUNGSI SIMPAN & LOAD PENGGANTI (PERMANEN GOOGLE SHEET)
+# =========================================================
+def konek_gsheet():
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+
+    creds_dict = st.secrets["gcp_service_account"]
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+
+    client = gspread.authorize(creds)
+    sheet = client.open_by_key(SHEET_ID).worksheet(SHEET_NAME)
+    return sheet
+
+
 def load_perubahan():
-    if os.path.exists(DATA_SAVE):
-        try:
-            df = pd.read_excel(DATA_SAVE)
-            if {"Nama Sekolah", "Calon Pengganti"}.issubset(df.columns):
-                return dict(zip(df["Nama Sekolah"], df["Calon Pengganti"]))
-        except:
+    try:
+        sheet = konek_gsheet()
+        data = sheet.get_all_records()
+
+        if not data:
             return {}
-    return {}
+
+        df = pd.DataFrame(data)
+
+        if "Nama Sekolah" not in df.columns or "Calon Pengganti" not in df.columns:
+            return {}
+
+        df["Nama Sekolah"] = df["Nama Sekolah"].astype(str).str.strip()
+        df["Calon Pengganti"] = df["Calon Pengganti"].astype(str).str.strip()
+
+        return dict(zip(df["Nama Sekolah"], df["Calon Pengganti"]))
+
+    except Exception as e:
+        st.warning(f"⚠️ Google Sheet gagal dibaca: {e}")
+        return {}
+
 
 def save_perubahan(data_dict):
-    df = pd.DataFrame([{"Nama Sekolah": k, "Calon Pengganti": v} for k, v in data_dict.items()])
-    df.to_excel(DATA_SAVE, index=False)
+    try:
+        sheet = konek_gsheet()
+
+        sheet.clear()
+        sheet.append_row(["Nama Sekolah", "Calon Pengganti"])
+
+        rows = [[k, v] for k, v in data_dict.items()]
+        if rows:
+            sheet.append_rows(rows)
+
+    except Exception as e:
+        st.error(f"❌ Gagal simpan ke Google Sheet: {e}")
+
 
 perubahan_kepsek = load_perubahan()
+
 # =========================================================
 # DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
 # =========================================================
@@ -1379,6 +1427,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
