@@ -113,16 +113,17 @@ def load_perubahan():
 
         df = pd.DataFrame(data)
 
-        if "Nama Sekolah" not in df.columns or "Calon Pengganti" not in df.columns:
+        if "Sekolah Tujuan" not in df.columns or "Calon Pengganti" not in df.columns:
             return {}
 
-        df["Nama Sekolah"] = df["Nama Sekolah"].astype(str).str.strip()
+        df["Sekolah Tujuan"] = df["Sekolah Tujuan"].astype(str).str.strip()
         df["Calon Pengganti"] = df["Calon Pengganti"].astype(str).str.strip()
 
-        return dict(zip(df["Nama Sekolah"], df["Calon Pengganti"]))
+        return dict(zip(df["Sekolah Tujuan"], df["Calon Pengganti"]))
 
     except Exception as e:
-        st.warning(f"⚠️ Google Sheet gagal dibaca: {e}")
+        st.error("❌ ERROR GOOGLE SHEET (LOAD):")
+        st.exception(e)
         return {}
 
 
@@ -131,20 +132,17 @@ def save_perubahan(data_dict):
         sheet = konek_gsheet()
 
         sheet.clear()
-
-        # HEADER BARU
-        sheet.append_row(["Sekolah Tujuan", "Kepsek Lama", "Calon Pengganti", "Sekolah Asal"])
+        sheet.append_row(["Sekolah Tujuan", "Calon Pengganti"])
 
         rows = []
         for sekolah_tujuan, calon_pengganti in data_dict.items():
-            rows.append([sekolah_tujuan, "", calon_pengganti, ""])
+            rows.append([sekolah_tujuan, calon_pengganti])
 
         if rows:
             sheet.append_rows(rows)
 
     except Exception as e:
         st.error(f"❌ Gagal simpan ke Google Sheet: {e}")
-
 
 
 # LOAD DATA PERUBAHAN SAAT APLIKASI START
@@ -1433,6 +1431,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
