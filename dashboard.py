@@ -132,26 +132,19 @@ def save_perubahan(data_dict):
 
         sheet.clear()
 
-        # HEADER BARU GOOGLE SHEET
+        # HEADER BARU
         sheet.append_row(["Sekolah Tujuan", "Kepsek Lama", "Calon Pengganti", "Sekolah Asal"])
 
         rows = []
         for sekolah_tujuan, calon_pengganti in data_dict.items():
-
-            # ambil kepsek lama dari data utama (df_kepsek)
-            kepsek_lama = df_kepsek.loc[df_kepsek["Nama Sekolah"] == sekolah_tujuan, "Nama Kepala Sekolah"].values
-            kepsek_lama = kepsek_lama[0] if len(kepsek_lama) > 0 else ""
-
-            # sekolah asal (kalau belum ada datanya, kosong dulu)
-            sekolah_asal = ""
-
-            rows.append([sekolah_tujuan, kepsek_lama, calon_pengganti, sekolah_asal])
+            rows.append([sekolah_tujuan, "", calon_pengganti, ""])
 
         if rows:
             sheet.append_rows(rows)
 
     except Exception as e:
         st.error(f"❌ Gagal simpan ke Google Sheet: {e}")
+
 
 
 # LOAD DATA PERUBAHAN SAAT APLIKASI START
@@ -1440,6 +1433,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
