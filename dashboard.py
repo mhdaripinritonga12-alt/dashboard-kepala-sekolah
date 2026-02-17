@@ -148,6 +148,17 @@ def save_perubahan(data_dict):
 
 perubahan_kepsek = load_perubahan()
 st.sidebar.write("DEBUG PERUBAHAN:", perubahan_kepsek)
+# =========================================================
+# DEBUG TEST GOOGLE SHEET (UNTUK CEK APAKAH BISA MENULIS)
+# =========================================================
+if st.sidebar.button("🧪 TEST TULIS GOOGLE SHEET"):
+    try:
+        sheet = konek_gsheet()
+        sheet.append_row(["TEST SEKOLAH", "TEST GURU"])
+        st.sidebar.success("✅ BERHASIL TULIS KE GOOGLE SHEET!")
+    except Exception as e:
+        st.sidebar.error(f"❌ GAGAL TULIS: {e}")
+
 
 
 # =========================================================
@@ -1436,6 +1447,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
