@@ -1280,7 +1280,7 @@ def page_detail():
                 st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
             else:
                 perubahan_kepsek[nama] = calon
-                save_perubahan(perubahan_kepsek)
+                save_perubahan(perubahan_kepsek, df_ks)
                 st.success(f"✅ Diganti dengan: {calon}")
                 st.rerun()
 
@@ -1443,6 +1443,7 @@ st.success("✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesu
 
 st.divider()
 st.caption("SMART • Sistem Monitoring dan Analisis Riwayat Tugas")
+
 
 
 
