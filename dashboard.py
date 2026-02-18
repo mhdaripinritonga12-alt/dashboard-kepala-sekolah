@@ -165,6 +165,28 @@ def save_perubahan(data_dict, df_ks, df_guru):
 # LOAD DATA PERUBAHAN SAAT APLIKASI START
 perubahan_kepsek = load_perubahan()
 
+def get_kepsek_tampil(nama_sekolah, df_ks, perubahan_kepsek):
+    nama_sekolah = str(nama_sekolah).strip()
+
+    row = df_ks[df_ks["Nama Sekolah"].astype(str).str.strip() == nama_sekolah]
+
+    if row.empty:
+        kepsek_asli = "-"
+    else:
+        kepsek_asli = str(row.iloc[0].get("Nama Kepala Sekolah", "-")).strip()
+
+    # jika sekolah ini sudah dipilihkan pengganti, tampilkan penggantinya
+    if nama_sekolah in perubahan_kepsek:
+        return str(perubahan_kepsek[nama_sekolah]).strip()
+
+    # kalau kepsek_asli sudah dipakai sebagai pengganti sekolah lain -> sekolah asal jadi kosong
+    for sekolah_tujuan, calon_pengganti in perubahan_kepsek.items():
+        if str(calon_pengganti).strip().lower() == kepsek_asli.lower():
+            return "-"
+
+    return kepsek_asli
+
+
 # =========================================================
 # DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
 # =========================================================
@@ -1126,7 +1148,8 @@ def page_detail():
 
     with col_left:
         tampil_colored_field("NO", row.get("NO", "-"))
-        tampil_colored_field("Nama Kepala Sekolah", row.get("Nama Kepala Sekolah", "-"))
+        kepsek_tampil = get_kepsek_tampil(nama, df_ks, perubahan_kepsek)
+        tampil_colored_field("Nama Kepala Sekolah", kepsek_tampil)
         tampil_colored_field("Cabang Dinas", row.get("Cabang Dinas", "-"))
         tampil_colored_field("Kabupaten", row.get("Kabupaten", "-"))
         tampil_colored_field("Status", row.get("Status", "-"))
@@ -1448,6 +1471,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
