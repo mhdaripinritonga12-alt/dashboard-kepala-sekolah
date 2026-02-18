@@ -632,13 +632,19 @@ if not st.session_state.login:
         import base64
         with open(logo_path, "rb") as f:
             data = base64.b64encode(f.read()).decode()
+    
     st.markdown(f"""
     <div class="login-wrapper">
         <img src="data:image/png;base64,{data}">
-        <div class="login-title" style="margin-bottom:2px;">Sistem Monitoring dan Analisis Riwayat Tugas</div>
-        <div class="login-title" style="margin-top:0px;">Kepala Sekolah</div>
+        <div class="login-title" style="margin-bottom:2px; font-size:28px;">
+            Sistem Monitoring dan Analisis Riwayat Tugas
+        </div>
+        <div class="login-title" style="margin-top:0px; font-size:28px;">
+            Kepala Sekolah
+        </div>
     </div>
     """, unsafe_allow_html=True)
+
 
     # ==========================
     # FORM LOGIN
@@ -1448,4 +1454,5 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
