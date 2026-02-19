@@ -1501,20 +1501,14 @@ def page_rekap():
 def page_update():
 
     # ===========================
-    # AMBIL NAMA SEKOLAH LOGIN
-    # ===========================
-    if st.session_state.role == "Sekolah":
-        nama_sekolah = st.session
-
-    # ===========================
-    # HEADER + TOMBOL KEMBALI
+    # TOMBOL KEMBALI (KE DETAIL SEKOLAH)
     # ===========================
     colA, colB = st.columns([1, 6])
 
     with colA:
         if st.button("⬅️ Kembali", use_container_width=True):
 
-            # jika sekolah login, kunci sekolahnya
+            # kalau login sekolah, tetap pakai sekolah user itu
             if st.session_state.role == "Sekolah":
                 st.session_state.selected_sekolah = st.session_state.sekolah_user
 
@@ -1529,15 +1523,20 @@ def page_update():
     # ===========================
     # VALIDASI SEKOLAH
     # ===========================
+    if "selected_sekolah" not in st.session_state:
+        st.session_state.selected_sekolah = None
+
     if st.session_state.selected_sekolah is None:
-        st.warning("⚠️ Pilih sekolah dulu dari menu sekolah.")
+        st.warning("⚠️ Sekolah belum dipilih.")
         st.stop()
 
-    nama_sekolah = st.session_state.selected_sekolah
+    nama_sekolah = str(st.session_state.selected_sekolah).strip()
     st.info(f"🏫 Sekolah: **{nama_sekolah}**")
 
+    st.divider()
+
     # ===========================
-    # SESSION UNTUK LIST RIWAYAT INPUT
+    # SESSION LIST INPUT RIWAYAT
     # ===========================
     if "riwayat_inputs" not in st.session_state:
         st.session_state.riwayat_inputs = [
@@ -1545,9 +1544,9 @@ def page_update():
         ]
 
     # ===========================
-    # TOMBOL TAMBAH RIWAYAT
+    # TOMBOL TAMBAH / RESET
     # ===========================
-    col_add, col_reset = st.columns([2, 2])
+    col_add, col_reset = st.columns(2)
 
     with col_add:
         if st.button("➕ Tambah Riwayat Baru", use_container_width=True):
@@ -1569,6 +1568,7 @@ def page_update():
     # FORM INPUT MULTI RIWAYAT
     # ===========================
     for i, item in enumerate(st.session_state.riwayat_inputs):
+
         st.markdown(f"### 📌 Riwayat Ke-{i+1}")
 
         col1, col2 = st.columns(2)
@@ -1577,7 +1577,7 @@ def page_update():
             item["nama_kepsek"] = st.text_input(
                 f"Nama Kepala Sekolah (Riwayat {i+1})",
                 value=item["nama_kepsek"],
-                key=f"nama_{i}"
+                key=f"nama_kepsek_{i}"
             )
 
             item["mulai"] = st.text_input(
@@ -1607,67 +1607,71 @@ def page_update():
                 key=f"selesai_{i}"
             )
 
-        # tombol hapus riwayat tertentu
         if len(st.session_state.riwayat_inputs) > 1:
-            if st.button(f"❌ Hapus Riwayat Ke-{i+1}", key=f"hapus_{i}"):
+            if st.button(f"❌ Hapus Riwayat Ke-{i+1}", key=f"hapus_riwayat_{i}"):
                 st.session_state.riwayat_inputs.pop(i)
                 st.rerun()
 
         st.divider()
 
     # ===========================
-# SIMPAN SEMUA RIWAYAT SEKALIGUS
-# ===========================
-if st.button("💾 Simpan Semua Riwayat", key="btn_simpan_semua_riwayat", use_container_width=True):
+    # SIMPAN SEMUA RIWAYAT SEKALIGUS
+    # ===========================
+    if st.button("💾 Simpan Semua Riwayat", use_container_width=True, key="btn_simpan_semua_riwayat"):
 
-    sukses = 0
-    gagal = 0
+        sukses = 0
+        gagal = 0
 
-    for item in st.session_state.riwayat_inputs:
-        nama_kepsek = item["nama_kepsek"].strip()
-        nip = item["nip"].strip()
-        mulai = item["mulai"].strip()
-        selesai = item["selesai"].strip()
-        ket = item["ket"].strip()
+        for item in st.session_state.riwayat_inputs:
+            nama_kepsek = item["nama_kepsek"].strip()
+            nip = item["nip"].strip()
+            mulai = item["mulai"].strip()
+            selesai = item["selesai"].strip()
+            ket = item["ket"].strip()
 
-        if nama_kepsek == "" or mulai == "":
-            gagal += 1
-            continue
+            if nama_kepsek == "" or mulai == "":
+                gagal += 1
+                continue
 
-        simpan_riwayat_baru(
-            nama_sekolah=nama_sekolah,
-            nama_kepsek=nama_kepsek,
-            nip=nip,
-            mulai=mulai,
-            selesai=selesai,
-            ket=ket
-        )
-        sukses += 1
+            simpan_riwayat_baru(
+                nama_sekolah=nama_sekolah,
+                nama_kepsek=nama_kepsek,
+                nip=nip,
+                mulai=mulai,
+                selesai=selesai,
+                ket=ket
+            )
+            sukses += 1
 
-    st.success(f"✅ Berhasil simpan {sukses} riwayat.")
-    if gagal > 0:
-        st.warning(f"⚠️ {gagal} riwayat tidak disimpan karena Nama Kepsek / Mulai kosong.")
+        st.success(f"✅ Berhasil simpan {sukses} riwayat.")
+        if gagal > 0:
+            st.warning(f"⚠️ {gagal} riwayat tidak disimpan karena Nama Kepsek / Mulai kosong.")
 
-    # reset form setelah simpan
-    st.session_state.riwayat_inputs = [
-        {"nama_kepsek": "", "nip": "", "mulai": "", "selesai": "", "ket": ""}
-    ]
-    st.rerun()
+        # reset form setelah simpan
+        st.session_state.riwayat_inputs = [
+            {"nama_kepsek": "", "nip": "", "mulai": "", "selesai": "", "ket": ""}
+        ]
+        st.rerun()
 
-st.divider()
+    st.divider()
 
-# ===========================
-# TAMPILKAN RIWAYAT YANG SUDAH TERSIMPAN
-# ===========================
-st.markdown("## 📌 Riwayat Jabatan Tersimpan")
+    # ===========================
+    # TAMPILKAN RIWAYAT YANG SUDAH TERSIMPAN
+    # ===========================
+    st.markdown("## 📌 Riwayat Jabatan Tersimpan")
 
-df_riwayat = load_riwayat()
-df_view = df_riwayat[df_riwayat["Nama Sekolah"].astype(str).str.strip() == nama_sekolah].copy()
+    df_riwayat = load_riwayat()
 
-if df_view.empty:
-    st.warning("⚠️ Belum ada riwayat jabatan.")
-else:
-    st.dataframe(df_view, use_container_width=True)
+    if df_riwayat.empty:
+        st.warning("⚠️ Data riwayat masih kosong.")
+        return
+
+    df_view = df_riwayat[df_riwayat["Nama Sekolah"].astype(str).str.strip() == nama_sekolah].copy()
+
+    if df_view.empty:
+        st.warning("⚠️ Belum ada riwayat jabatan untuk sekolah ini.")
+    else:
+        st.dataframe(df_view, use_container_width=True)
 
 # =========================================================
 # ROUTING UTAMA
@@ -1743,6 +1747,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
