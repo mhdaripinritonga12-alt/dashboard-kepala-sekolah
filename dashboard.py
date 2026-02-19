@@ -67,6 +67,12 @@ if "selected_sekolah" not in st.session_state:
 
 if "filter_status" not in st.session_state:
     st.session_state.filter_status = None
+    
+if "username" not in st.session_state:
+    st.session_state.username = None
+
+if "sekolah_user" not in st.session_state:
+    st.session_state.sekolah_user = None
 
 # =========================================================
 # USER LOGIN
@@ -166,27 +172,58 @@ def save_perubahan(data_dict, df_ks, df_guru):
 perubahan_kepsek = load_perubahan()
 
 # =========================================================
-# DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
+# DATA RIWAYAT KEPALA SEKOLAH (GOOGLE SHEET PERMANEN)
 # =========================================================
 SHEET_RIWAYAT = "RIWAYAT_KASEK"
 
-def load_riwayat():
-    if not os.path.exists(DATA_FILE):
-        return pd.DataFrame()
+def konek_gsheet_riwayat():
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+
+    creds_dict = st.secrets["gcp_service_account"]
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+
+    client = gspread.authorize(creds)
+    sh = client.open_by_key(SHEET_ID)
 
     try:
-        xls = pd.ExcelFile(DATA_FILE)
-        if SHEET_RIWAYAT not in xls.sheet_names:
-            return pd.DataFrame(columns=[
-                "Nama Sekolah", "Nama Kepsek", "NIP", "Mulai", "Selesai", "Keterangan"
-            ])
+        ws = sh.worksheet(SHEET_RIWAYAT)
+    except:
+        ws = sh.add_worksheet(title=SHEET_RIWAYAT, rows=2000, cols=20)
+        ws.append_row(["Nama Sekolah", "Nama Kepsek", "NIP", "Mulai", "Selesai", "Keterangan", "Input Oleh", "Timestamp"])
 
-        df = pd.read_excel(DATA_FILE, sheet_name=SHEET_RIWAYAT, dtype=str)
-        df = df.fillna("")
+    return ws
+
+
+def load_riwayat():
+    try:
+        ws = konek_gsheet_riwayat()
+        data = ws.get_all_records()
+
+        if not data:
+            return pd.DataFrame(columns=["Nama Sekolah", "Nama Kepsek", "NIP", "Mulai", "Selesai", "Keterangan", "Input Oleh", "Timestamp"])
+
+        df = pd.DataFrame(data).fillna("")
         return df
 
     except Exception as e:
-        st.error(f"❌ Gagal membaca sheet {SHEET_RIWAYAT}: {e}")
+        st.error(f"❌ Gagal load riwayat Google Sheet: {e}")
+        return pd.DataFrame()
+
+
+def simpan_riwayat_baru(nama_sekolah, nama_kepsek, nip, mulai, selesai, ket=""):
+    try:
+        ws = konek_gsheet_riwayat()
+
+        timestamp = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
+        input_oleh = st.session_state.username if st.session_state.username else "-"
+
+        ws.append_row([nama_sekolah, nama_kepsek, nip, mulai, selesai, ket, input_oleh, timestamp])
+
+    except Exception as e:
+        st.error(f"❌ Gagal simpan riwayat ke Google Sheet: {e}")
         return pd.DataFrame()
 
 def simpan_riwayat_baru(nama_sekolah, nama_kepsek, nip, mulai, selesai, ket=""):
@@ -206,6 +243,49 @@ def simpan_riwayat_baru(nama_sekolah, nama_kepsek, nip, mulai, selesai, ket=""):
     # simpan kembali ke excel (rewrite file)
     with pd.ExcelWriter(DATA_FILE, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
         df_riwayat.to_excel(writer, sheet_name=SHEET_RIWAYAT, index=False)
+    from datetime import datetime
+
+def ambil_tahun(text):
+    if text is None:
+        return None
+
+    text = str(text).strip()
+    if text == "" or text.lower() == "nan":
+        return None
+
+    try:
+        return int(text[-4:])
+    except:
+        return None
+
+
+def hitung_masa_jabatan(df_riwayat, nama_kepsek):
+    df = df_riwayat[df_riwayat["Nama Kepsek"].astype(str).str.strip().str.lower() == str(nama_kepsek).strip().lower()].copy()
+
+    if df.empty:
+        return 0, 0
+
+    tahun_sekarang = datetime.now().year
+    total_tahun = 0
+    jumlah_periode = 0
+
+    for _, r in df.iterrows():
+        mulai = ambil_tahun(r.get("Mulai", ""))
+        selesai = ambil_tahun(r.get("Selesai", ""))
+
+        if mulai is None:
+            continue
+
+        if selesai is None:
+            selesai = tahun_sekarang
+
+        if selesai < mulai:
+            continue
+
+        total_tahun += (selesai - mulai) + 1
+        jumlah_periode += 1
+
+    return total_tahun, jumlah_periode
 
 # =========================================================
 # LOAD DATA UTAMA
@@ -239,6 +319,24 @@ def load_data():
     return df_ks, df_guru
 
 df_ks, df_guru = load_data()
+
+def buat_username_sekolah(nama):
+    return str(nama).lower().strip().replace(" ", "")
+
+# =========================================================
+# TAMBAH USER SEKOLAH OTOMATIS
+# =========================================================
+daftar_sekolah = df_ks["Nama Sekolah"].astype(str).str.strip().unique()
+
+for sekolah in daftar_sekolah:
+    if sekolah and sekolah != "-" and sekolah.lower() != "nan":
+        username = buat_username_sekolah(sekolah)
+        USERS[username] = {
+            "password": "sekolah123",
+            "role": "Sekolah",
+            "sekolah": sekolah
+        }
+
 # =========================================================
 # ✅ DEBUG PLT: CEK APAKAH DATA PLT MASUK KE DF_KS
 # =========================================================
@@ -670,8 +768,18 @@ if not st.session_state.login:
             if username in USERS and USERS[username]["password"] == password:
                 st.session_state.login = True
                 st.session_state.role = USERS[username]["role"]
+                st.session_state.username = username
+        
+                if USERS[username]["role"] == "Sekolah":
+                    st.session_state.sekolah_user = USERS[username]["sekolah"]
+                else:
+                    st.session_state.sekolah_user = None
+        
                 st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
                 st.rerun()
+            else:
+        st.error("❌ Username atau Password salah")
+
             else:
                 st.error("❌ Username atau Password salah")
 
@@ -1147,6 +1255,17 @@ def page_detail():
         tampil_colored_field("Tahun Berjalan", row.get("Tahun Berjalan", "-"))
         tampil_colored_field("Masa Periode Sesuai KSPSTK", row.get("Masa Periode Sesuai KSPSTK", "-"))
         tampil_colored_field("Keterangan Jabatan", ket_jabatan, bg=bg_jabatan)
+        st.divider()
+st.markdown("## 📌 Rekap Masa Jabatan Kepala Sekolah")
+
+df_riwayat = load_riwayat()
+nama_kepsek_asli = row.get("Nama Kepala Sekolah", "-")
+
+total_tahun, jumlah_periode = hitung_masa_jabatan(df_riwayat, nama_kepsek_asli)
+
+st.success(f"🕒 Total Masa Jabatan: **{total_tahun} Tahun**")
+st.info(f"📍 Jumlah Periode Menjabat: **{jumlah_periode} Kali**")
+
 
 
     # =========================================================
@@ -1188,6 +1307,10 @@ def page_detail():
     if is_view_only:
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
         return
+    if st.button("📝 Update Riwayat Kepala Sekolah", use_container_width=True):
+    st.session_state.page = "update"
+    st.rerun()
+
 
     # ============================================
     # SELECTBOX CALON PENGGANTI
@@ -1346,13 +1469,17 @@ def page_rekap():
 def page_update():
     st.markdown("## 📝 Update Riwayat Kepala Sekolah")
 
-    if st.session_state.selected_sekolah is None:
-        st.warning("⚠️ Pilih sekolah dulu dari menu sekolah.")
-        st.stop()
+    # kalau login sebagai sekolah → otomatis sekolahnya terkunci
+    if st.session_state.role == "Sekolah":
+        nama_sekolah = st.session_state.sekolah_user
+        st.info(f"🏫 Sekolah Anda: **{nama_sekolah}**")
+    else:
+        if st.session_state.selected_sekolah is None:
+            st.warning("⚠️ Pilih sekolah dulu dari menu sekolah.")
+            st.stop()
 
-    nama_sekolah = st.session_state.selected_sekolah
-
-    st.info(f"🏫 Sekolah: **{nama_sekolah}**")
+        nama_sekolah = st.session_state.selected_sekolah
+        st.info(f"🏫 Sekolah: **{nama_sekolah}**")
 
     nama_kepsek = st.text_input("Nama Kepala Sekolah")
     nip = st.text_input("NIP Kepala Sekolah")
@@ -1372,19 +1499,20 @@ def page_update():
                 selesai=selesai,
                 ket=ket
             )
-            st.success("✅ Riwayat jabatan berhasil disimpan ke Database!")
+            st.success("✅ Riwayat jabatan berhasil disimpan ke Google Sheet!")
             st.rerun()
 
     st.divider()
     st.markdown("### 📌 Riwayat Jabatan Tersimpan")
 
     df_riwayat = load_riwayat()
-    df_view = df_riwayat[df_riwayat["Nama Sekolah"].astype(str).str.strip() == nama_sekolah].copy()
+
+    df_view = df_riwayat[df_riwayat["Nama Sekolah"].astype(str).str.strip() == str(nama_sekolah).strip()].copy()
 
     if df_view.empty:
         st.warning("⚠️ Belum ada riwayat jabatan.")
     else:
-        st.dataframe(df_view, use_container_width=True)
+        st.dataframe(df_view, use_container_width=True, hide_index=True)
 
 # =========================================================
 # ROUTING UTAMA
@@ -1454,5 +1582,6 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
