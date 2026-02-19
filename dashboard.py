@@ -1498,15 +1498,21 @@ def page_rekap():
 # =========================================================
 # HALAMAN UPDATE RIWAYAT KEPSEK (UPDATE data KASEK)
 # =========================================================
-colA, colB = st.columns([1, 6])
+def page_update():
 
-with colA:
-    if st.button("⬅️ Kembali", use_container_width=True):
-        st.session_state.page = "detail"
-        st.rerun()
+    colA, colB = st.columns([1, 6])
 
-with colB:
-    st.markdown("## 📝 Update Riwayat Kepala Sekolah")
+    with colA:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            # pastikan sekolah tetap yang dipilih
+            if st.session_state.role == "Sekolah":
+                st.session_state.selected_sekolah = st.session_state.sekolah_user
+
+            st.session_state.page = "detail"
+            st.rerun()
+
+    with colB:
+        st.markdown("## 📝 Update Riwayat Kepala Sekolah")
 
 def page_update():
     st.markdown("## 📝 Update Riwayat Kepala Sekolah")
@@ -1720,6 +1726,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
