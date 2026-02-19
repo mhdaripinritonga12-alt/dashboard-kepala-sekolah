@@ -67,12 +67,13 @@ if "selected_sekolah" not in st.session_state:
 
 if "filter_status" not in st.session_state:
     st.session_state.filter_status = None
-    
+
 if "username" not in st.session_state:
     st.session_state.username = None
 
 if "sekolah_user" not in st.session_state:
     st.session_state.sekolah_user = None
+
 
 # =========================================================
 # USER LOGIN
@@ -84,16 +85,17 @@ USERS = {
     "viewer": {"password": "viewer123", "role": "View"},
 }
 
+
 # =========================================================
 # GOOGLE SHEET CONFIG (SIMPAN PERMANEN)
 # =========================================================
 SHEET_ID = "1LfdTvQAMxc1r97HOmL6zylzn_d_CWrmvC8V5etaMSIA"
 SHEET_NAME = "perubahan_kepsek"
 
-# =========================================================
-# FUNGSI SIMPAN & LOAD PENGGANTI (PERMANEN GOOGLE SHEET)
-# =========================================================
 
+# =========================================================
+# FUNGSI KONEK GOOGLE SHEET
+# =========================================================
 def konek_gsheet():
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
@@ -109,6 +111,9 @@ def konek_gsheet():
     return sheet
 
 
+# =========================================================
+# LOAD DATA PERUBAHAN
+# =========================================================
 def load_perubahan():
     try:
         sheet = konek_gsheet()
@@ -125,13 +130,22 @@ def load_perubahan():
         df["Sekolah Tujuan"] = df["Sekolah Tujuan"].astype(str).str.strip()
         df["Calon Pengganti"] = df["Calon Pengganti"].astype(str).str.strip()
 
-        return dict(zip(df["Sekolah Tujuan"], df["Calon Pengganti"]))
+        hasil = dict(zip(df["Sekolah Tujuan"], df["Calon Pengganti"]))
+
+        # buang yang kosong
+        hasil = {k: v for k, v in hasil.items() if k and v and k != "nan" and v != "nan"}
+
+        return hasil
 
     except Exception as e:
         st.error("❌ ERROR GOOGLE SHEET (LOAD):")
         st.exception(e)
         return {}
 
+
+# =========================================================
+# SAVE DATA PERUBAHAN
+# =========================================================
 def save_perubahan(data_dict, df_ks, df_guru):
     try:
         sheet = konek_gsheet()
@@ -140,25 +154,37 @@ def save_perubahan(data_dict, df_ks, df_guru):
         sheet.append_row(["Sekolah Tujuan", "Kepsek Lama", "Calon Pengganti", "Sekolah Asal"])
 
         rows = []
+
         for sekolah_tujuan, calon_pengganti in data_dict.items():
 
-            # Kepsek lama dari df_ks
-            data_row = df_ks[df_ks["Nama Sekolah"].astype(str).str.strip() == str(sekolah_tujuan).strip()]
+            sekolah_tujuan = str(sekolah_tujuan).strip()
+            calon_pengganti = str(calon_pengganti).strip()
+
+            # default
             kepsek_lama = "-"
-            if not data_row.empty:
-                kepsek_lama = str(data_row.iloc[0].get("Nama Kepala Sekolah", "-"))
-
-            # Sekolah asal calon pengganti dari df_guru (SIMPEG)
             asal = "-"
-            data_calon = df_guru[df_guru["NAMA GURU"].astype(str).str.strip() == str(calon_pengganti).strip()]
 
-            if not data_calon.empty:
-                calon_row = data_calon.iloc[0]
+            # ==========================
+            # Kepsek lama dari df_ks
+            # ==========================
+            if df_ks is not None and "Nama Sekolah" in df_ks.columns:
+                data_row = df_ks[df_ks["Nama Sekolah"].astype(str).str.strip() == sekolah_tujuan]
 
-                # ambil kolom UNOR / UNIT KERJA
-                kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
-                if kol_unor:
-                    asal = str(calon_row.get(kol_unor, "-")).strip()
+                if not data_row.empty:
+                    kepsek_lama = str(data_row.iloc[0].get("Nama Kepala Sekolah", "-")).strip()
+
+            # ==========================
+            # Sekolah asal dari df_guru
+            # ==========================
+            if df_guru is not None and "NAMA GURU" in df_guru.columns:
+                data_calon = df_guru[df_guru["NAMA GURU"].astype(str).str.strip() == calon_pengganti]
+
+                if not data_calon.empty:
+                    calon_row = data_calon.iloc[0]
+
+                    kol_unor = cari_kolom(df_guru, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
+                    if kol_unor:
+                        asal = str(calon_row.get(kol_unor, "-")).strip()
 
             rows.append([sekolah_tujuan, kepsek_lama, calon_pengganti, asal])
 
@@ -168,7 +194,10 @@ def save_perubahan(data_dict, df_ks, df_guru):
     except Exception as e:
         st.error(f"❌ Gagal simpan ke Google Sheet: {e}")
 
+
+# =========================================================
 # LOAD DATA PERUBAHAN SAAT APLIKASI START
+# =========================================================
 perubahan_kepsek = load_perubahan()
 
 # =========================================================
@@ -1755,6 +1784,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
