@@ -1610,86 +1610,45 @@ def page_update():
         st.divider()
 
     # ===========================
-    # SIMPAN SEMUA RIWAYAT SEKALIGUS
-    # ===========================
-    if st.button("💾 Simpan Semua Riwayat", use_container_width=True):
+# SIMPAN SEMUA RIWAYAT SEKALIGUS
+# ===========================
+if st.button("💾 Simpan Semua Riwayat", key="btn_simpan_semua_riwayat", use_container_width=True):
 
-        sukses = 0
-        gagal = 0
+    sukses = 0
+    gagal = 0
 
-        for item in st.session_state.riwayat_inputs:
-            nama_kepsek = item["nama_kepsek"].strip()
-            nip = item["nip"].strip()
-            mulai = item["mulai"].strip()
-            selesai = item["selesai"].strip()
-            ket = item["ket"].strip()
+    for item in st.session_state.riwayat_inputs:
+        nama_kepsek = item["nama_kepsek"].strip()
+        nip = item["nip"].strip()
+        mulai = item["mulai"].strip()
+        selesai = item["selesai"].strip()
+        ket = item["ket"].strip()
 
-            if nama_kepsek == "" or mulai == "":
-                gagal += 1
-                continue
+        if nama_kepsek == "" or mulai == "":
+            gagal += 1
+            continue
 
-            simpan_riwayat_baru(
-                nama_sekolah=nama_sekolah,
-                nama_kepsek=nama_kepsek,
-                nip=nip,
-                mulai=mulai,
-                selesai=selesai,
-                ket=ket
-            )
-            sukses += 1
+        simpan_riwayat_baru(
+            nama_sekolah=nama_sekolah,
+            nama_kepsek=nama_kepsek,
+            nip=nip,
+            mulai=mulai,
+            selesai=selesai,
+            ket=ket
+        )
+        sukses += 1
 
-        st.success(f"✅ Berhasil simpan {sukses} riwayat.")
-        if gagal > 0:
-            st.warning(f"⚠️ {gagal} riwayat tidak disimpan karena Nama Kepsek / Mulai kosong.")
+    st.success(f"✅ Berhasil simpan {sukses} riwayat.")
+    if gagal > 0:
+        st.warning(f"⚠️ {gagal} riwayat tidak disimpan karena Nama Kepsek / Mulai kosong.")
 
-        # reset form setelah simpan
-        st.session_state.riwayat_inputs = [
-            {"nama_kepsek": "", "nip": "", "mulai": "", "selesai": "", "ket": ""}
-        ]
-        st.rerun()
+    # reset form setelah simpan
+    st.session_state.riwayat_inputs = [
+        {"nama_kepsek": "", "nip": "", "mulai": "", "selesai": "", "ket": ""}
+    ]
+    st.rerun()
 
-    st.divider()
-
-    # ===========================
-    # SIMPAN SEMUA RIWAYAT SEKALIGUS
-    # ===========================
-    if st.button("💾 Simpan Semua Riwayat", use_container_width=True):
-
-        sukses = 0
-        gagal = 0
-
-        for item in st.session_state.riwayat_inputs:
-            nama_kepsek = item["nama_kepsek"].strip()
-            nip = item["nip"].strip()
-            mulai = item["mulai"].strip()
-            selesai = item["selesai"].strip()
-            ket = item["ket"].strip()
-
-            if nama_kepsek == "" or mulai == "":
-                gagal += 1
-                continue
-
-            simpan_riwayat_baru(
-                nama_sekolah=nama_sekolah,
-                nama_kepsek=nama_kepsek,
-                nip=nip,
-                mulai=mulai,
-                selesai=selesai,
-                ket=ket
-            )
-            sukses += 1
-
-        st.success(f"✅ Berhasil simpan {sukses} riwayat.")
-        if gagal > 0:
-            st.warning(f"⚠️ {gagal} riwayat tidak disimpan karena Nama Kepsek / Mulai kosong.")
-
-        # reset form setelah simpan
-        st.session_state.riwayat_inputs = [
-            {"nama_kepsek": "", "nip": "", "mulai": "", "selesai": "", "ket": ""}
-        ]
-        st.rerun()
-
-    st.divider()
+st.divider()
 
     # ===========================
     # TAMPILKAN RIWAYAT YANG SUDAH TERSIMPAN
@@ -1778,6 +1737,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
