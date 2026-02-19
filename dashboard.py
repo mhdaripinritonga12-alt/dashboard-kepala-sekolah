@@ -744,48 +744,58 @@ if not st.session_state.login:
     """, unsafe_allow_html=True)
 
 # ==========================
-# FORM LOGIN
+# FORM LOGIN (WAJIB DIATUR BEGINI)
 # ==========================
-col1, col2, col3 = st.columns([2, 3, 2])
+if not st.session_state.login:
 
-with col2:
-    st.markdown("""
-    <style>
-    /* Label Username & Password jadi putih */
-    div[data-testid="stTextInput"] label {
-        color: white !important;
-        font-weight: 700 !important;
-        font-size: 16px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([2, 3, 2])
 
-    username = st.text_input("👤 Username")
-    password = st.text_input("🔑 Password", type="password")
+    with col2:
+        st.markdown("""
+        <style>
+        /* Label Username & Password jadi putih */
+        div[data-testid="stTextInput"] label {
+            color: white !important;
+            font-weight: 700 !important;
+            font-size: 16px !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
-    if st.button("🔓 Login", use_container_width=True):
-        if username in USERS and USERS[username]["password"] == password:
-            st.session_state.login = True
-            st.session_state.role = USERS[username]["role"]
-            st.session_state.username = username
+        username = st.text_input("👤 Username")
+        password = st.text_input("🔑 Password", type="password")
 
-            # jika login sekolah
-            if USERS[username]["role"] == "Sekolah":
-                st.session_state.sekolah_user = USERS[username]["sekolah"]
-                st.session_state.selected_sekolah = USERS[username]["sekolah"]
-                st.session_state.page = "detail"
+        if st.button("🔓 Login", use_container_width=True):
+            if username in USERS and USERS[username]["password"] == password:
+
+                st.session_state.login = True
+                st.session_state.role = USERS[username]["role"]
+                st.session_state.username = username
+
+                # jika login sekolah
+                if USERS[username]["role"] == "Sekolah":
+                    st.session_state.sekolah_user = USERS[username]["sekolah"]
+                    st.session_state.selected_sekolah = USERS[username]["sekolah"]
+                    st.session_state.page = "detail"
+                else:
+                    st.session_state.sekolah_user = None
+                    st.session_state.page = "cabdin"
+
+                st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
+                st.rerun()
+
             else:
-                st.session_state.sekolah_user = None
-                st.session_state.page = "cabdin"
+                st.error("❌ Username atau Password salah")
 
-            st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
-            st.rerun()
-        else:
-            st.error("❌ Username atau Password salah")
+    st.stop()
 
-st.stop()
 
+# ==========================
+# JIKA SUDAH LOGIN BARU LANJUT KE SINI
+# ==========================
 st.caption(f"👤 Login sebagai: **{st.session_state.role}**")
+
+
 # =========================================================
 # SIDEBAR FILTER
 # =========================================================
@@ -796,6 +806,7 @@ search_sekolah = st.sidebar.text_input("Cari Nama Sekolah")
 
 jenjang_filter = st.sidebar.selectbox("Jenjang", ["Semua"] + sorted(df_ks["Jenjang"].dropna().unique()))
 ket_filter = st.sidebar.selectbox("Keterangan Akhir", ["Semua"] + sorted(df_ks["Keterangan Akhir"].dropna().unique()))
+
 
 # =========================================================
 # APPLY FILTER
@@ -814,7 +825,6 @@ def apply_filter(df):
         df = df[df["Nama Sekolah"].astype(str).str.contains(search_sekolah, case=False, na=False)]
 
     return df
-
 # =========================================================
 # FUNGSI WARNA OTOMATIS
 # =========================================================
@@ -1604,6 +1614,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
