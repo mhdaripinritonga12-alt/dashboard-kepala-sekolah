@@ -1496,9 +1496,15 @@ def page_rekap():
 
     st.dataframe(tampil, use_container_width=True, hide_index=True)
 # =========================================================
-# HALAMAN UPDATE RIWAYAT KEPSEK (UPDATE data KASEK)
+# HALAMAN UPDATE RIWAYAT KEPSEK (INPUT BANYAK SEKALIGUS)
 # =========================================================
 def page_update():
+
+    # ===========================
+    # AMBIL NAMA SEKOLAH LOGIN
+    # ===========================
+    if st.session_state.role == "Sekolah":
+        nama_sekolah = st.session
 
     # ===========================
     # HEADER + TOMBOL KEMBALI
@@ -1737,6 +1743,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
