@@ -1263,7 +1263,6 @@ st.success(f"🕒 Total Masa Jabatan: **{total_tahun} Tahun**")
 st.info(f"📍 Jumlah Periode Menjabat: **{jumlah_periode} Kali**")
 
 
-
     # =========================================================
     # ✅ FIX FINAL: RIWAYAT DAPODIK PASTI TAMPIL
     # =========================================================
@@ -1282,15 +1281,26 @@ st.info(f"📍 Jumlah Periode Menjabat: **{jumlah_periode} Kali**")
         bg="#f1f1f1"
     )
 
+    # =========================================================
+    # CALON PENGGANTI
+    # =========================================================
     pengganti_excel = row.get("Calon Pengganti jika Sudah Harus di Berhentikan", "-")
     pengganti = perubahan_kepsek.get(nama, "")
 
     st.markdown("## 👤 Calon Pengganti Kepala Sekolah")
 
     if pengganti:
-        tampil_colored_field("Calon Pengganti (Yang Dipilih Operator)", pengganti, bg="#d1e7dd")
+        tampil_colored_field(
+            "Calon Pengganti (Yang Dipilih Operator)",
+            pengganti,
+            bg="#d1e7dd"
+        )
     else:
-        tampil_colored_field("Calon Pengganti", pengganti_excel, bg="#fff3cd")
+        tampil_colored_field(
+            "Calon Pengganti",
+            pengganti_excel,
+            bg="#fff3cd"
+        )
 
     st.divider()
 
@@ -1298,14 +1308,21 @@ st.info(f"📍 Jumlah Periode Menjabat: **{jumlah_periode} Kali**")
 
     st.divider()
 
+    # =========================================================
+    # CEK ROLE VIEW ONLY
+    # =========================================================
     is_view_only = st.session_state.role in ["Kadis", "View"]
 
     if is_view_only:
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
         return
+
+    # =========================================================
+    # TOMBOL MENUJU UPDATE RIWAYAT
+    # =========================================================
     if st.button("📝 Update Riwayat Kepala Sekolah", use_container_width=True):
-    st.session_state.page = "update"
-    st.rerun()
+        st.session_state.page = "update"
+        st.rerun()
 
 
     # ============================================
@@ -1578,6 +1595,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
