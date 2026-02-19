@@ -766,28 +766,32 @@ if not st.session_state.login:
         password = st.text_input("🔑 Password", type="password")
 
         if st.button("🔓 Login", use_container_width=True):
-            if username in USERS and USERS[username]["password"] == password:
+    if username in USERS and USERS[username]["password"] == password:
+        st.session_state.login = True
+        st.session_state.role = USERS[username]["role"]
+        st.session_state.username = username
 
-                st.session_state.login = True
-                st.session_state.role = USERS[username]["role"]
-                st.session_state.username = username
+        # jika login sekolah
+        if USERS[username]["role"] == "Sekolah":
+            st.session_state.sekolah_user = USERS[username]["sekolah"]
+            st.session_state.selected_sekolah = USERS[username]["sekolah"]
 
-                # jika login sekolah
-                if USERS[username]["role"] == "Sekolah":
-                    st.session_state.sekolah_user = USERS[username]["sekolah"]
-                    st.session_state.selected_sekolah = USERS[username]["sekolah"]
-                    st.session_state.page = "detail"
-                else:
-                    st.session_state.sekolah_user = None
-                    st.session_state.page = "cabdin"
+            # ✅ SEKOLAH LANGSUNG MASUK UPDATE RIWAYAT
+            st.session_state.page = "update"
 
-                st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
-                st.rerun()
+        else:
+            st.session_state.sekolah_user = None
+            st.session_state.page = "cabdin"
 
-            else:
-                st.error("❌ Username atau Password salah")
-
+        st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
+        st.rerun()
+    else:
+        st.error("❌ Username atau Password salah")
+        
+    if not st.session_state.login:
+    ...
     st.stop()
+
 
 
 # ==========================
@@ -1500,11 +1504,15 @@ def page_rekap():
 # =========================================================
 def page_update():
 
+    # ===========================
+    # HEADER + TOMBOL KEMBALI
+    # ===========================
     colA, colB = st.columns([1, 6])
 
     with colA:
         if st.button("⬅️ Kembali", use_container_width=True):
-            # pastikan sekolah tetap yang dipilih
+
+            # jika sekolah login, kunci sekolahnya
             if st.session_state.role == "Sekolah":
                 st.session_state.selected_sekolah = st.session_state.sekolah_user
 
@@ -1514,15 +1522,16 @@ def page_update():
     with colB:
         st.markdown("## 📝 Update Riwayat Kepala Sekolah")
 
-def page_update():
-    st.markdown("## 📝 Update Riwayat Kepala Sekolah")
+    st.divider()
 
+    # ===========================
+    # VALIDASI SEKOLAH
+    # ===========================
     if st.session_state.selected_sekolah is None:
         st.warning("⚠️ Pilih sekolah dulu dari menu sekolah.")
         st.stop()
 
     nama_sekolah = st.session_state.selected_sekolah
-
     st.info(f"🏫 Sekolah: **{nama_sekolah}**")
 
     # ===========================
@@ -1646,6 +1655,47 @@ def page_update():
     st.divider()
 
     # ===========================
+    # SIMPAN SEMUA RIWAYAT SEKALIGUS
+    # ===========================
+    if st.button("💾 Simpan Semua Riwayat", use_container_width=True):
+
+        sukses = 0
+        gagal = 0
+
+        for item in st.session_state.riwayat_inputs:
+            nama_kepsek = item["nama_kepsek"].strip()
+            nip = item["nip"].strip()
+            mulai = item["mulai"].strip()
+            selesai = item["selesai"].strip()
+            ket = item["ket"].strip()
+
+            if nama_kepsek == "" or mulai == "":
+                gagal += 1
+                continue
+
+            simpan_riwayat_baru(
+                nama_sekolah=nama_sekolah,
+                nama_kepsek=nama_kepsek,
+                nip=nip,
+                mulai=mulai,
+                selesai=selesai,
+                ket=ket
+            )
+            sukses += 1
+
+        st.success(f"✅ Berhasil simpan {sukses} riwayat.")
+        if gagal > 0:
+            st.warning(f"⚠️ {gagal} riwayat tidak disimpan karena Nama Kepsek / Mulai kosong.")
+
+        # reset form setelah simpan
+        st.session_state.riwayat_inputs = [
+            {"nama_kepsek": "", "nip": "", "mulai": "", "selesai": "", "ket": ""}
+        ]
+        st.rerun()
+
+    st.divider()
+
+    # ===========================
     # TAMPILKAN RIWAYAT YANG SUDAH TERSIMPAN
     # ===========================
     st.markdown("## 📌 Riwayat Jabatan Tersimpan")
@@ -1670,6 +1720,12 @@ elif st.session_state.page == "sekolah":
     page_sekolah()
 
 elif st.session_state.page == "detail":
+
+    # ✅ JIKA ROLE SEKOLAH, JANGAN TAMPILKAN DETAIL
+    if st.session_state.role == "Sekolah":
+        st.session_state.page = "update"
+        st.rerun()
+
     set_bg("dashboard.jpg")
     page_detail()
 
@@ -1726,6 +1782,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
