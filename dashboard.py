@@ -743,50 +743,46 @@ if not st.session_state.login:
     </div>
     """, unsafe_allow_html=True)
 
+# ==========================
+# FORM LOGIN
+# ==========================
+col1, col2, col3 = st.columns([2, 3, 2])
 
-    # ==========================
-    # FORM LOGIN
-    # ==========================
-    col1, col2, col3 = st.columns([2, 3, 2])
+with col2:
+    st.markdown("""
+    <style>
+    /* Label Username & Password jadi putih */
+    div[data-testid="stTextInput"] label {
+        color: white !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-    with col2:
-        st.markdown("""
-        <style>
-        /* Label Username & Password jadi putih */
-        div[data-testid="stTextInput"] label {
-            color: white !important;
-            font-weight: 700 !important;
-            font-size: 16px !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+    username = st.text_input("👤 Username")
+    password = st.text_input("🔑 Password", type="password")
 
-        username = st.text_input("👤 Username")
-        password = st.text_input("🔑 Password", type="password")
+    if st.button("🔓 Login", use_container_width=True):
+        if username in USERS and USERS[username]["password"] == password:
+            st.session_state.login = True
+            st.session_state.role = USERS[username]["role"]
+            st.session_state.username = username
 
-        if st.button("🔓 Login", use_container_width=True):
-            if username in USERS and USERS[username]["password"] == password:
-                st.session_state.login = True
-                st.session_state.role = USERS[username]["role"]
-                st.session_state.username = username
-        
-                if USERS[username]["role"] == "Sekolah":
-                    st.session_state.sekolah_user = USERS[username]["sekolah"]
-                else:
-                    st.session_state.sekolah_user = None
-        
-                st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
-                st.rerun()
+            # jika login sekolah
+            if USERS[username]["role"] == "Sekolah":
+                st.session_state.sekolah_user = USERS[username]["sekolah"]
             else:
-        st.error("❌ Username atau Password salah")
+                st.session_state.sekolah_user = None
 
-            else:
-                st.error("❌ Username atau Password salah")
+            st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
+            st.rerun()
+        else:
+            st.error("❌ Username atau Password salah")
 
-    st.stop()
+st.stop()
 
 st.caption(f"👤 Login sebagai: **{st.session_state.role}**")
-
 
 # =========================================================
 # SIDEBAR FILTER
@@ -1582,6 +1578,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
