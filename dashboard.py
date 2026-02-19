@@ -1501,28 +1501,112 @@ def page_rekap():
 def page_update():
     st.markdown("## 📝 Update Riwayat Kepala Sekolah")
 
-    # kalau login sebagai sekolah → otomatis sekolahnya terkunci
-    if st.session_state.role == "Sekolah":
-        nama_sekolah = st.session_state.sekolah_user
-        st.info(f"🏫 Sekolah Anda: **{nama_sekolah}**")
-    else:
-        if st.session_state.selected_sekolah is None:
-            st.warning("⚠️ Pilih sekolah dulu dari menu sekolah.")
-            st.stop()
+    if st.session_state.selected_sekolah is None:
+        st.warning("⚠️ Pilih sekolah dulu dari menu sekolah.")
+        st.stop()
 
-        nama_sekolah = st.session_state.selected_sekolah
-        st.info(f"🏫 Sekolah: **{nama_sekolah}**")
+    nama_sekolah = st.session_state.selected_sekolah
 
-    nama_kepsek = st.text_input("Nama Kepala Sekolah")
-    nip = st.text_input("NIP Kepala Sekolah")
-    mulai = st.text_input("Mulai Menjabat (contoh: 2019 atau 01-01-2019)")
-    selesai = st.text_input("Selesai Menjabat (kosongkan jika masih menjabat)")
-    ket = st.text_area("Keterangan (opsional)")
+    st.info(f"🏫 Sekolah: **{nama_sekolah}**")
 
-    if st.button("💾 Simpan Riwayat", use_container_width=True):
-        if nama_kepsek.strip() == "" or mulai.strip() == "":
-            st.error("❌ Nama Kepsek dan Mulai Menjabat wajib diisi!")
-        else:
+    # ===========================
+    # SESSION UNTUK LIST RIWAYAT INPUT
+    # ===========================
+    if "riwayat_inputs" not in st.session_state:
+        st.session_state.riwayat_inputs = [
+            {"nama_kepsek": "", "nip": "", "mulai": "", "selesai": "", "ket": ""}
+        ]
+
+    # ===========================
+    # TOMBOL TAMBAH RIWAYAT
+    # ===========================
+    col_add, col_reset = st.columns([2, 2])
+
+    with col_add:
+        if st.button("➕ Tambah Riwayat Baru", use_container_width=True):
+            st.session_state.riwayat_inputs.append(
+                {"nama_kepsek": "", "nip": "", "mulai": "", "selesai": "", "ket": ""}
+            )
+            st.rerun()
+
+    with col_reset:
+        if st.button("🗑️ Reset Form", use_container_width=True):
+            st.session_state.riwayat_inputs = [
+                {"nama_kepsek": "", "nip": "", "mulai": "", "selesai": "", "ket": ""}
+            ]
+            st.rerun()
+
+    st.divider()
+
+    # ===========================
+    # FORM INPUT MULTI RIWAYAT
+    # ===========================
+    for i, item in enumerate(st.session_state.riwayat_inputs):
+        st.markdown(f"### 📌 Riwayat Ke-{i+1}")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            item["nama_kepsek"] = st.text_input(
+                f"Nama Kepala Sekolah (Riwayat {i+1})",
+                value=item["nama_kepsek"],
+                key=f"nama_{i}"
+            )
+
+            item["mulai"] = st.text_input(
+                f"Mulai Menjabat (Riwayat {i+1})",
+                value=item["mulai"],
+                placeholder="contoh: 2012 atau 01-01-2012",
+                key=f"mulai_{i}"
+            )
+
+            item["ket"] = st.text_area(
+                f"Keterangan (Riwayat {i+1})",
+                value=item["ket"],
+                key=f"ket_{i}"
+            )
+
+        with col2:
+            item["nip"] = st.text_input(
+                f"NIP Kepala Sekolah (Riwayat {i+1})",
+                value=item["nip"],
+                key=f"nip_{i}"
+            )
+
+            item["selesai"] = st.text_input(
+                f"Selesai Menjabat (Riwayat {i+1})",
+                value=item["selesai"],
+                placeholder="kosongkan jika masih menjabat",
+                key=f"selesai_{i}"
+            )
+
+        # tombol hapus riwayat tertentu
+        if len(st.session_state.riwayat_inputs) > 1:
+            if st.button(f"❌ Hapus Riwayat Ke-{i+1}", key=f"hapus_{i}"):
+                st.session_state.riwayat_inputs.pop(i)
+                st.rerun()
+
+        st.divider()
+
+    # ===========================
+    # SIMPAN SEMUA RIWAYAT SEKALIGUS
+    # ===========================
+    if st.button("💾 Simpan Semua Riwayat", use_container_width=True):
+
+        sukses = 0
+        gagal = 0
+
+        for item in st.session_state.riwayat_inputs:
+            nama_kepsek = item["nama_kepsek"].strip()
+            nip = item["nip"].strip()
+            mulai = item["mulai"].strip()
+            selesai = item["selesai"].strip()
+            ket = item["ket"].strip()
+
+            if nama_kepsek == "" or mulai == "":
+                gagal += 1
+                continue
+
             simpan_riwayat_baru(
                 nama_sekolah=nama_sekolah,
                 nama_kepsek=nama_kepsek,
@@ -1531,20 +1615,32 @@ def page_update():
                 selesai=selesai,
                 ket=ket
             )
-            st.success("✅ Riwayat jabatan berhasil disimpan ke Google Sheet!")
-            st.rerun()
+            sukses += 1
+
+        st.success(f"✅ Berhasil simpan {sukses} riwayat.")
+        if gagal > 0:
+            st.warning(f"⚠️ {gagal} riwayat tidak disimpan karena Nama Kepsek / Mulai kosong.")
+
+        # reset form setelah simpan
+        st.session_state.riwayat_inputs = [
+            {"nama_kepsek": "", "nip": "", "mulai": "", "selesai": "", "ket": ""}
+        ]
+        st.rerun()
 
     st.divider()
-    st.markdown("### 📌 Riwayat Jabatan Tersimpan")
+
+    # ===========================
+    # TAMPILKAN RIWAYAT YANG SUDAH TERSIMPAN
+    # ===========================
+    st.markdown("## 📌 Riwayat Jabatan Tersimpan")
 
     df_riwayat = load_riwayat()
-
-    df_view = df_riwayat[df_riwayat["Nama Sekolah"].astype(str).str.strip() == str(nama_sekolah).strip()].copy()
+    df_view = df_riwayat[df_riwayat["Nama Sekolah"].astype(str).str.strip() == nama_sekolah].copy()
 
     if df_view.empty:
         st.warning("⚠️ Belum ada riwayat jabatan.")
     else:
-        st.dataframe(df_view, use_container_width=True, hide_index=True)
+        st.dataframe(df_view, use_container_width=True)
 
 # =========================================================
 # ROUTING UTAMA
@@ -1614,6 +1710,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
