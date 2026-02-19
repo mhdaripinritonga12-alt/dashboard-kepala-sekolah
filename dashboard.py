@@ -765,29 +765,37 @@ if not st.session_state.login:
         username = st.text_input("👤 Username")
         password = st.text_input("🔑 Password", type="password")
 
-        if st.button("🔓 Login", use_container_width=True):
+if st.button("🔓 Login", use_container_width=True):
+    if username in USERS and USERS[username]["password"] == password:
 
-            if username in USERS and USERS[username]["password"] == password:
-                st.session_state.login = True
-                st.session_state.role = USERS[username]["role"]
-                st.session_state.username = username
+        st.session_state.login = True
+        st.session_state.role = USERS[username]["role"]
+        st.session_state.username = username
 
-                # jika login sekolah
-                if USERS[username]["role"] == "Sekolah":
-                    st.session_state.sekolah_user = USERS[username]["sekolah"]
-                    st.session_state.selected_sekolah = USERS[username]["sekolah"]
+        # RESET DEFAULT BIAR ROLE LAIN TIDAK NYASAR
+        st.session_state.selected_sekolah = None
+        st.session_state.selected_cabdin = None
 
-                    # sekolah langsung ke update
-                    st.session_state.page = "update"
-                else:
-                    st.session_state.sekolah_user = None
-                    st.session_state.page = "cabdin"
+        # ===========================
+        # ROLE SEKOLAH
+        # ===========================
+        if USERS[username]["role"] == "Sekolah":
+            st.session_state.sekolah_user = USERS[username]["sekolah"]
+            st.session_state.selected_sekolah = USERS[username]["sekolah"]
+            st.session_state.page = "update"   # sekolah langsung ke update
 
-                st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
-                st.rerun()
+        # ===========================
+        # ROLE KADIS / KABID / OPERATOR
+        # ===========================
+        else:
+            st.session_state.sekolah_user = None
+            st.session_state.page = "cabdin"   # dashboard awal seluruh data
 
-            else:
-                st.error("❌ Username atau Password salah")
+        st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
+        st.rerun()
+
+    else:
+        st.error("❌ Username atau Password salah")
 
     st.stop()
 
@@ -1747,6 +1755,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
