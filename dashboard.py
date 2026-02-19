@@ -1650,18 +1650,18 @@ if st.button("💾 Simpan Semua Riwayat", key="btn_simpan_semua_riwayat", use_co
 
 st.divider()
 
-    # ===========================
-    # TAMPILKAN RIWAYAT YANG SUDAH TERSIMPAN
-    # ===========================
-    st.markdown("## 📌 Riwayat Jabatan Tersimpan")
+# ===========================
+# TAMPILKAN RIWAYAT YANG SUDAH TERSIMPAN
+# ===========================
+st.markdown("## 📌 Riwayat Jabatan Tersimpan")
 
-    df_riwayat = load_riwayat()
-    df_view = df_riwayat[df_riwayat["Nama Sekolah"].astype(str).str.strip() == nama_sekolah].copy()
+df_riwayat = load_riwayat()
+df_view = df_riwayat[df_riwayat["Nama Sekolah"].astype(str).str.strip() == nama_sekolah].copy()
 
-    if df_view.empty:
-        st.warning("⚠️ Belum ada riwayat jabatan.")
-    else:
-        st.dataframe(df_view, use_container_width=True)
+if df_view.empty:
+    st.warning("⚠️ Belum ada riwayat jabatan.")
+else:
+    st.dataframe(df_view, use_container_width=True)
 
 # =========================================================
 # ROUTING UTAMA
@@ -1737,6 +1737,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
