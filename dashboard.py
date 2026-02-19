@@ -766,39 +766,35 @@ if not st.session_state.login:
         password = st.text_input("🔑 Password", type="password")
 
         if st.button("🔓 Login", use_container_width=True):
-    if username in USERS and USERS[username]["password"] == password:
-        st.session_state.login = True
-        st.session_state.role = USERS[username]["role"]
-        st.session_state.username = username
 
-        # jika login sekolah
-        if USERS[username]["role"] == "Sekolah":
-            st.session_state.sekolah_user = USERS[username]["sekolah"]
-            st.session_state.selected_sekolah = USERS[username]["sekolah"]
+            if username in USERS and USERS[username]["password"] == password:
+                st.session_state.login = True
+                st.session_state.role = USERS[username]["role"]
+                st.session_state.username = username
 
-            # ✅ SEKOLAH LANGSUNG MASUK UPDATE RIWAYAT
-            st.session_state.page = "update"
+                # jika login sekolah
+                if USERS[username]["role"] == "Sekolah":
+                    st.session_state.sekolah_user = USERS[username]["sekolah"]
+                    st.session_state.selected_sekolah = USERS[username]["sekolah"]
 
-        else:
-            st.session_state.sekolah_user = None
-            st.session_state.page = "cabdin"
+                    # sekolah langsung ke update
+                    st.session_state.page = "update"
+                else:
+                    st.session_state.sekolah_user = None
+                    st.session_state.page = "cabdin"
 
-        st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
-        st.rerun()
-    else:
-        st.error("❌ Username atau Password salah")
-        
-    if not st.session_state.login:
-    ...
+                st.success(f"✅ Login berhasil sebagai **{st.session_state.role}**")
+                st.rerun()
+
+            else:
+                st.error("❌ Username atau Password salah")
+
     st.stop()
 
-
-
 # ==========================
-# JIKA SUDAH LOGIN BARU LANJUT KE SINI
+# JIKA SUDAH LOGIN
 # ==========================
 st.caption(f"👤 Login sebagai: **{st.session_state.role}**")
-
 
 # =========================================================
 # SIDEBAR FILTER
@@ -1782,6 +1778,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
