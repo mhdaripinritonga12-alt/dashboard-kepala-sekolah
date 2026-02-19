@@ -1203,6 +1203,7 @@ def page_detail():
         st.stop()
 
     row = row_detail.iloc[0]
+
     # =========================================================
     # ✅ FIX FINAL: PILIH BARIS TERBAIK (RIWAYAT DAPODIK TIDAK KOSONG)
     # =========================================================
@@ -1251,17 +1252,23 @@ def page_detail():
         tampil_colored_field("Tahun Berjalan", row.get("Tahun Berjalan", "-"))
         tampil_colored_field("Masa Periode Sesuai KSPSTK", row.get("Masa Periode Sesuai KSPSTK", "-"))
         tampil_colored_field("Keterangan Jabatan", ket_jabatan, bg=bg_jabatan)
-        st.divider()
-st.markdown("## 📌 Rekap Masa Jabatan Kepala Sekolah")
 
-df_riwayat = load_riwayat()
-nama_kepsek_asli = row.get("Nama Kepala Sekolah", "-")
+    st.divider()
 
-total_tahun, jumlah_periode = hitung_masa_jabatan(df_riwayat, nama_kepsek_asli)
+    # =========================================================
+    # ✅ REKAP MASA JABATAN KEPSEK
+    # =========================================================
+    st.markdown("## 📌 Rekap Masa Jabatan Kepala Sekolah")
 
-st.success(f"🕒 Total Masa Jabatan: **{total_tahun} Tahun**")
-st.info(f"📍 Jumlah Periode Menjabat: **{jumlah_periode} Kali**")
+    df_riwayat = load_riwayat()
+    nama_kepsek_asli = row.get("Nama Kepala Sekolah", "-")
 
+    total_tahun, jumlah_periode = hitung_masa_jabatan(df_riwayat, nama_kepsek_asli)
+
+    st.success(f"🕒 Total Masa Jabatan: **{total_tahun} Tahun**")
+    st.info(f"📍 Jumlah Periode Menjabat: **{jumlah_periode} Kali**")
+
+    st.divider()
 
     # =========================================================
     # ✅ FIX FINAL: RIWAYAT DAPODIK PASTI TAMPIL
@@ -1595,6 +1602,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
