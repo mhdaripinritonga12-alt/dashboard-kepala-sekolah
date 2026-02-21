@@ -1432,7 +1432,7 @@ elif st.session_state.page == "update":
 
 
 # =========================================================
-# FOOTER - STYLE OFFICIAL CLEAN
+# FOOTER - FIX ANTI CSS GLOBAL
 # =========================================================
 st.divider()
 
@@ -1440,12 +1440,15 @@ st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
 
 st.markdown("""
 <div style="
-    background: #ffffff;
-    padding: 22px;
-    border-radius: 16px;
-    border-left: 6px solid #0d6efd;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    all: unset;
+    display:block;
+    background:#ffffff;
+    padding:22px;
+    border-radius:16px;
+    border-left:6px solid #0d6efd;
+    box-shadow:0 3px 10px rgba(0,0,0,0.12);
     margin-bottom:20px;
+    font-family: Arial, sans-serif;
 ">
 
     <div style="font-size:18px; font-weight:800; color:#0d6efd; margin-bottom:6px;">
@@ -1462,12 +1465,15 @@ st.markdown("""
 
 st.markdown("""
 <div style="
-    background: #ffffff;
-    padding: 22px;
-    border-radius: 16px;
-    border-left: 6px solid #198754;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    all: unset;
+    display:block;
+    background:#ffffff;
+    padding:22px;
+    border-radius:16px;
+    border-left:6px solid #198754;
+    box-shadow:0 3px 10px rgba(0,0,0,0.12);
     margin-bottom:20px;
+    font-family: Arial, sans-serif;
 ">
 
     <div style="font-size:17px; font-weight:800; color:#198754; margin-bottom:10px;">
@@ -1477,11 +1483,11 @@ st.markdown("""
     <ol style="color:#333; font-size:14px; line-height:1.8; padding-left:18px;">
         <li>Kepala Sekolah ditugaskan maksimal <b>2 (dua) periode</b>.</li>
         <li><b>1 (satu) periode = 4 (empat) tahun</b>.</li>
-        <li>Kepala Sekolah yang telah menjabat <b>lebih dari 2 periode wajib diberhentikan</b> dari penugasan.</li>
-        <li>Kepala Sekolah Periode 1 dapat diperpanjang menjadi Periode 2 apabila memenuhi syarat, termasuk sertifikat kompetensi (misalnya <b>BCKS</b>).</li>
-        <li>Kepala Sekolah wajib dievaluasi kinerjanya secara berkala sebagai dasar perpanjangan atau pemberhentian.</li>
-        <li>Jika terjadi kekosongan jabatan Kepala Sekolah, dapat ditunjuk <b>Pelaksana Tugas (Plt)</b> sampai Kepala Sekolah definitif ditetapkan.</li>
-        <li>Penugasan Kepala Sekolah merupakan tugas tambahan ASN dan harus sesuai aturan manajemen ASN.</li>
+        <li>Kepala Sekolah yang telah menjabat <b>lebih dari 2 periode wajib diberhentikan</b>.</li>
+        <li>Kepala Sekolah Periode 1 dapat diperpanjang menjadi Periode 2 apabila memenuhi syarat, termasuk <b>BCKS</b>.</li>
+        <li>Kepala Sekolah wajib dievaluasi secara berkala.</li>
+        <li>Jika terjadi kekosongan jabatan, dapat ditunjuk <b>Plt</b>.</li>
+        <li>Penugasan Kepala Sekolah merupakan tugas tambahan ASN.</li>
     </ol>
 
 </div>
@@ -1490,25 +1496,28 @@ st.markdown("""
 
 st.markdown("""
 <div style="
-    background: #ffffff;
-    padding: 18px;
-    border-radius: 14px;
-    border-left: 6px solid #ffc107;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    all: unset;
+    display:block;
+    background:#ffffff;
+    padding:18px;
+    border-radius:14px;
+    border-left:6px solid #ffc107;
+    box-shadow:0 3px 10px rgba(0,0,0,0.12);
     font-size:14px;
     color:#333;
     font-weight:600;
+    font-family: Arial, sans-serif;
 ">
     ✅ Dashboard ini disusun berdasarkan pemetaan status regulatif sesuai Permendikdasmen No. 7 Tahun 2025.
 </div>
 """, unsafe_allow_html=True)
-
 st.divider()
 st.markdown("""
 <div style="text-align:center; font-weight:800; font-size:16px;">
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
