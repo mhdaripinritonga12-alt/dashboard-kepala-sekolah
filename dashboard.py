@@ -1439,13 +1439,15 @@ st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
 
 st.markdown("""
 <div style="
-    background: linear-gradient(90deg, #0d6efd, #198754);
+    <div style="
+    background: white;
     padding: 18px;
     border-radius: 16px;
-    color: white;
+    color: black;
     font-size: 18px;
     font-weight: 800;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    border: 1px solid #e0e0e0;
 ">
 📌 Permendikdasmen Nomor 7 Tahun 2025  
 <br>
@@ -1475,5 +1477,6 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
