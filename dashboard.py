@@ -688,18 +688,40 @@ st.sidebar.header("🔍 Filter & Pencarian")
 search_nama = st.sidebar.text_input("Cari Nama Kepala Sekolah")
 search_sekolah = st.sidebar.text_input("Cari Nama Sekolah")
 
-jenjang_filter = st.sidebar.selectbox("Jenjang", ["Semua"] + sorted(df_ks["Jenjang"].dropna().unique()))
-ket_filter = st.sidebar.selectbox("Keterangan Akhir", ["Semua"] + sorted(df_ks["Keterangan Akhir"].dropna().unique()))
+# ==========================
+# FIX JENJANG
+# ==========================
+opsi_jenjang = ["Semua", "SMA", "SMK", "SLB"]
 
+# jika mau tetap ambil dari data tapi dipaksa bersih:
+data_jenjang = sorted(df_ks["Jenjang"].astype(str).str.strip().unique())
+opsi_final_jenjang = ["Semua"] + [j for j in opsi_jenjang if j in data_jenjang or j in opsi_jenjang]
+
+jenjang_filter = st.sidebar.selectbox("Jenjang", opsi_final_jenjang)
+
+# ==========================
+# FIX KETERANGAN AKHIR
+# ==========================
+opsi_ket = [
+    "Semua",
+    "Aktif Periode Ke 1",
+    "Aktif Periode Ke 2",
+    "Lebih dari 2 Periode",
+    "Plt"
+]
+
+ket_filter = st.sidebar.selectbox("Keterangan Akhir", opsi_ket)
 # =========================================================
 # APPLY FILTER
 # =========================================================
 def apply_filter(df):
+
     if jenjang_filter != "Semua":
         df = df[df["Jenjang"] == jenjang_filter]
 
     if ket_filter != "Semua":
-        df = df[df["Keterangan Akhir"] == ket_filter]
+        df["Status Regulatif"] = df.apply(map_status, axis=1)
+        df = df[df["Status Regulatif"] == ket_filter]
 
     if search_nama:
         df = df[df["Nama Kepala Sekolah"].astype(str).str.contains(search_nama, case=False, na=False)]
@@ -708,7 +730,6 @@ def apply_filter(df):
         df = df[df["Nama Sekolah"].astype(str).str.contains(search_sekolah, case=False, na=False)]
 
     return df
-
 # =========================================================
 # FUNGSI WARNA OTOMATIS
 # =========================================================
@@ -1454,4 +1475,5 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
