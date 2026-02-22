@@ -1404,31 +1404,31 @@ def page_detail():
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
-    if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-
-        if calon == "-- Pilih Calon Pengganti --":
-            st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-        else:
-
-            kepsek_lama = row.get("Nama Kepala Sekolah", "-")
-
-            perubahan_kepsek[nama] = calon
-            save_perubahan(perubahan_kepsek, df_ks, df_guru)
-
-            # =========================================
-            # SIMPAN KE AUDIT TRAIL SMART-KS 2026
-            # =========================================
-            save_audit_log(
-                sekolah=nama,
-                kepsek_lama=kepsek_lama,
-                pengganti=calon,
-                alasan=alasan_khusus if status_regulatif == "Aktif Periode Ke 1" else "Regulatif Normal",
-                role=st.session_state.role,
-                username="UserLogin"
-            )
-
-            st.success(f"✅ Diganti dengan: {calon}")
-            st.rerun()
+        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+    
+            if calon == "-- Pilih Calon Pengganti --":
+                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+            else:
+    
+                kepsek_lama = row.get("Nama Kepala Sekolah", "-")
+    
+                perubahan_kepsek[nama] = calon
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
+    
+                # =========================================
+                # SIMPAN KE AUDIT TRAIL SMART-KS 2026
+                # =========================================
+                save_audit_log(
+                    sekolah=nama,
+                    kepsek_lama=kepsek_lama,
+                    pengganti=calon,
+                    alasan=alasan_khusus if status_regulatif == "Aktif Periode Ke 1" else "Regulatif Normal",
+                    role=st.session_state.role,
+                    username="UserLogin"
+                )
+    
+                st.success(f"✅ Diganti dengan: {calon}")
+                st.rerun()
     with colbtn2:
         if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
             if nama in perubahan_kepsek:
@@ -1621,6 +1621,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
