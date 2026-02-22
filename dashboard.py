@@ -1602,17 +1602,17 @@ def page_update():
 def page_audit():
 
     # ============================================
-    # HEADER + TOMBOL KEMBALI
+    # TOMBOL KEMBALI (ICON SAJA)
     # ============================================
-    col_a, col_b = st.columns([1, 6])
+    col_back, col_title = st.columns([1, 10])
 
-    with col_a:
-        if st.button("⬅️ Kembali", key="back_audit", use_container_width=True):
+    with col_back:
+        if st.button("⬅", help="Kembali", use_container_width=True):
             st.session_state.page = "cabdin"
             st.rerun()
 
-    with col_b:
-        st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
+    with col_title:
+        st.markdown("### 📊 Audit Monitoring SMART-KS 2026")
 
     st.divider()
 
@@ -1782,6 +1782,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
