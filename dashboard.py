@@ -1463,11 +1463,11 @@ def page_detail():
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
-    if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-
-        if calon == "-- Pilih Calon Pengganti --":
-            st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-        else:
+        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+    
+            if calon == "-- Pilih Calon Pengganti --":
+                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+            else:
 
             # ===============================
             # AMBIL DATA KEPSEK LAMA
@@ -1759,6 +1759,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
