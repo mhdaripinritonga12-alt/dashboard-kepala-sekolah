@@ -1588,6 +1588,19 @@ def page_update():
         st.warning("⚠️ Belum ada riwayat jabatan.")
     else:
         st.dataframe(df_view, use_container_width=True)
+def page_audit():
+
+    col1, col2 = st.columns([1, 6])
+
+    with col1:
+        if st.button("⬅️ Kembali", use_container_width=True):
+            st.session_state.page = "cabdin"
+            st.rerun()
+
+    with col2:
+        st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
+
+    st.divider()
 # =========================================================
 # HALAMAN AUDIT MONITORING
 # =========================================================
@@ -1740,6 +1753,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
