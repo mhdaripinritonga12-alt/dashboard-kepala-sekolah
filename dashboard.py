@@ -85,6 +85,11 @@ SHEET_ID = "1LfdTvQAMxc1r97HOmL6zylzn_d_CWrmvC8V5etaMSIA"
 SHEET_NAME = "perubahan_kepsek"
 
 # =========================================================
+# SHEET AUDIT TRAIL SMART-KS 2026
+# =========================================================
+SHEET_AUDIT = "AUDIT_LOG_SMART_KS"
+
+# =========================================================
 # FUNGSI SIMPAN & LOAD PENGGANTI (PERMANEN GOOGLE SHEET)
 # =========================================================
 
@@ -165,6 +170,53 @@ def save_perubahan(data_dict, df_ks, df_guru):
 # LOAD DATA PERUBAHAN SAAT APLIKASI START
 perubahan_kepsek = load_perubahan()
 
+# =========================================================
+# FUNGSI SIMPAN AUDIT TRAIL SMART-KS 2026
+# =========================================================
+def save_audit_log(sekolah, kepsek_lama, pengganti, alasan, role, username):
+
+    try:
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+
+        creds_dict = st.secrets["gcp_service_account"]
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+        client = gspread.authorize(creds)
+
+        spreadsheet = client.open_by_key(SHEET_ID)
+
+        try:
+            sheet = spreadsheet.worksheet(SHEET_AUDIT)
+        except:
+            sheet = spreadsheet.add_worksheet(title=SHEET_AUDIT, rows="1000", cols="10")
+            sheet.append_row([
+                "Tanggal",
+                "Sekolah",
+                "Kepsek Lama",
+                "Pengganti",
+                "Alasan",
+                "Role",
+                "User"
+            ])
+
+        from datetime import datetime
+        tanggal = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
+        sheet.append_row([
+            tanggal,
+            sekolah,
+            kepsek_lama,
+            pengganti,
+            alasan,
+            role,
+            username
+        ])
+
+    except Exception as e:
+        st.error(f"❌ Gagal menyimpan Audit Log: {e}")
+        
 # =========================================================
 # DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
 # =========================================================
@@ -1352,15 +1404,31 @@ def page_detail():
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
-        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-            if calon == "-- Pilih Calon Pengganti --":
-                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-            else:
-                perubahan_kepsek[nama] = calon
-                save_perubahan(perubahan_kepsek, df_ks, df_guru)
-                st.success(f"✅ Diganti dengan: {calon}")
-                st.rerun()
+    if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
 
+        if calon == "-- Pilih Calon Pengganti --":
+            st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+        else:
+
+            kepsek_lama = row.get("Nama Kepala Sekolah", "-")
+
+            perubahan_kepsek[nama] = calon
+            save_perubahan(perubahan_kepsek, df_ks, df_guru)
+
+            # =========================================
+            # SIMPAN KE AUDIT TRAIL SMART-KS 2026
+            # =========================================
+            save_audit_log(
+                sekolah=nama,
+                kepsek_lama=kepsek_lama,
+                pengganti=calon,
+                alasan=alasan_khusus if status_regulatif == "Aktif Periode Ke 1" else "Regulatif Normal",
+                role=st.session_state.role,
+                username="UserLogin"
+            )
+
+            st.success(f"✅ Diganti dengan: {calon}")
+            st.rerun()
     with colbtn2:
         if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
             if nama in perubahan_kepsek:
@@ -1553,6 +1621,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
