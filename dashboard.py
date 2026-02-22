@@ -1210,30 +1210,30 @@ def page_detail():
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
         return
     # ============================================
-# 🔒 KUNCI HANYA PERIODE KE 1 (VERSI FINAL HIJAU RESMI)
-# ============================================
+    # 🔒 KUNCI HANYA PERIODE KE 1 (VERSI FINAL HIJAU RESMI)
+    # ============================================
 
-if status_regulatif == "Aktif Periode Ke 1":
+    if status_regulatif == "Aktif Periode Ke 1":
 
-    st.markdown("""
-    <div style="
-        background:#d1e7dd;
-        border-left:6px solid #198754;
-        padding:18px;
-        border-radius:14px;
-        font-weight:800;
-        color:black;
-        font-size:15px;
-        box-shadow:0 3px 10px rgba(0,0,0,0.12);
-        margin-top:15px;
-        margin-bottom:15px;
-    ">
-        🔒 Kepala Sekolah masih dalam <b>Periode Ke-1</b> sesuai Permendikdasmen No 7 Tahun 2025<br>
-        Tidak diperkenankan melakukan penggantian.
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.stop()    
+        st.markdown("""
+        <div style="
+            background:#d1e7dd;
+            border-left:6px solid #198754;
+            padding:18px;
+            border-radius:14px;
+            font-weight:800;
+            color:black;
+            font-size:15px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.12);
+            margin-top:15px;
+            margin-bottom:15px;
+        ">
+            🔒 Kepala Sekolah masih dalam <b>Periode Ke-1</b> sesuai Permendikdasmen No 7 Tahun 2025<br>
+            Tidak diperkenankan melakukan penggantian.
+        </div>
+        """, unsafe_allow_html=True)
+    
+        st.stop()    
     # ============================================
     # SELECTBOX CALON PENGGANTI
     # ============================================
@@ -1528,6 +1528,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
