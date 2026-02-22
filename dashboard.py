@@ -83,6 +83,10 @@ USERS = {
 # =========================================================
 SHEET_ID = "1LfdTvQAMxc1r97HOmL6zylzn_d_CWrmvC8V5etaMSIA"
 SHEET_NAME = "perubahan_kepsek"
+# =========================================================
+# SHEET AUDIT SMART-KS 2026
+# =========================================================
+SHEET_AUDIT = "AUDIT_LOG_SMART_KS"
 
 # =========================================================
 # SHEET AUDIT TRAIL SMART-KS 2026
@@ -169,7 +173,59 @@ def save_perubahan(data_dict, df_ks, df_guru):
 
 # LOAD DATA PERUBAHAN SAAT APLIKASI START
 perubahan_kepsek = load_perubahan()
+# =========================================================
+# FUNGSI SIMPAN AUDIT LOG (MENUNGGU PERSETUJUAN KADIS)
+# =========================================================
+def save_audit_log(sekolah, kepsek_lama, pengganti, alasan, role, username):
 
+    try:
+        sheet = konek_gsheet()
+        spreadsheet = sheet.spreadsheet
+
+        try:
+            audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+        except:
+            audit_sheet = spreadsheet.add_worksheet(title=SHEET_AUDIT, rows="1000", cols="10")
+            audit_sheet.append_row([
+                "Tanggal",
+                "Sekolah",
+                "Kepsek Lama",
+                "Pengganti",
+                "Alasan",
+                "Role Pengusul",
+                "User",
+                "Status Approval",
+                "Approved By"
+            ])
+
+        from datetime import datetime
+        tanggal = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
+        audit_sheet.append_row([
+            tanggal,
+            sekolah,
+            kepsek_lama,
+            pengganti,
+            alasan,
+            role,
+            username,
+            "Menunggu Persetujuan Kadis",
+            "-"
+        ])
+
+    except Exception as e:
+        st.error(f"Gagal menyimpan audit: {e}")
+# =========================================================
+# UPDATE STATUS APPROVAL (KHUSUS KADIS)
+# =========================================================
+def update_status_approval(row_index, status):
+
+    sheet = konek_gsheet()
+    spreadsheet = sheet.spreadsheet
+    audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+
+    audit_sheet.update(f"H{row_index}", status)
+    audit_sheet.update(f"I{row_index}", "Kadis")
 # =========================================================
 # FUNGSI SIMPAN AUDIT TRAIL SMART-KS 2026
 # =========================================================
@@ -852,7 +908,7 @@ def page_cabdin():
     </style>
     """, unsafe_allow_html=True)
 
-    col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 2, 2])
+    col1, col2, col3, col4, col5, col6 = st.columns([2, 2, 2, 2, 2, 2])
 
     with col1:
         logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
@@ -888,7 +944,10 @@ def page_cabdin():
             st.session_state.selected_sekolah = None
             st.session_state.filter_status = None
             st.rerun()
-
+    with col6:
+        if st.button("📊 Audit Log", use_container_width=True):
+            st.session_state.page = "audit"
+            st.rerun()
     st.divider()
 
     df_rekap = df_ks.copy()
@@ -1404,17 +1463,42 @@ def page_detail():
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
-        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-    
-            if calon == "-- Pilih Calon Pengganti --":
-                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-            else:
-    
-                kepsek_lama = row.get("Nama Kepala Sekolah", "-")
-    
-                perubahan_kepsek[nama] = calon
-                save_perubahan(perubahan_kepsek, df_ks, df_guru)
-    
+    if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+
+        if calon == "-- Pilih Calon Pengganti --":
+            st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+        else:
+
+            # ===============================
+            # AMBIL DATA KEPSEK LAMA
+            # ===============================
+            kepsek_lama = row.get("Nama Kepala Sekolah", "-")
+
+            # ===============================
+            # SIMPAN PERUBAHAN (SHEET UTAMA)
+            # ===============================
+            perubahan_kepsek[nama] = calon
+            save_perubahan(perubahan_kepsek, df_ks, df_guru)
+
+            # ===============================
+            # SIMPAN KE AUDIT (MENUNGGU KADIS)
+            # ===============================
+            try:
+                save_audit_log(
+                    sekolah=nama,
+                    kepsek_lama=kepsek_lama,
+                    pengganti=calon,
+                    alasan="Regulatif / Override",
+                    role=st.session_state.role,
+                    username=st.session_state.role
+                )
+
+                st.success("⏳ Usulan tersimpan dan masuk Audit Log. Menunggu persetujuan Kadis.")
+
+            except Exception as e:
+                st.error(f"Gagal menyimpan audit: {e}")
+
+            st.rerun()    
                 # =========================================
                 # SIMPAN KE AUDIT TRAIL SMART-KS 2026
                 # =========================================
@@ -1523,7 +1607,58 @@ def page_update():
         st.warning("⚠️ Belum ada riwayat jabatan.")
     else:
         st.dataframe(df_view, use_container_width=True)
+# =========================================================
+# HALAMAN AUDIT MONITORING
+# =========================================================
+def page_audit():
 
+    st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
+
+    sheet = konek_gsheet()
+    spreadsheet = sheet.spreadsheet
+    audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+
+    data = audit_sheet.get_all_records()
+
+    if not data:
+        st.warning("Belum ada audit log.")
+        return
+
+    df_audit = pd.DataFrame(data)
+
+    st.dataframe(df_audit, use_container_width=True)
+
+    # ==============================
+    # APPROVAL KHUSUS KADIS
+    # ==============================
+    if st.session_state.role == "Kadis":
+
+        pending = df_audit[
+            df_audit["Status Approval"] == "Menunggu Persetujuan Kadis"
+        ]
+
+        if pending.empty:
+            st.success("Tidak ada usulan menunggu persetujuan.")
+            return
+
+        pilih = st.selectbox(
+            "Pilih Sekolah",
+            pending["Sekolah"]
+        )
+
+        if st.button("✅ Setujui"):
+            index = pending[pending["Sekolah"] == pilih].index[0] + 2
+            update_status_approval(index, "Disetujui Kadis")
+            st.success("Disetujui Kadis")
+            st.rerun()
+
+        if st.button("❌ Tolak"):
+            index = pending[pending["Sekolah"] == pilih].index[0] + 2
+            update_status_approval(index, "Ditolak Kadis")
+            st.error("Ditolak Kadis")
+            st.rerun()
+    else:
+        st.info("🔐 Hanya Kadis yang dapat memberikan persetujuan.")
 # =========================================================
 # ROUTING UTAMA
 # =========================================================
@@ -1547,7 +1682,10 @@ elif st.session_state.page == "update":
     set_bg("dashboard.jpg")
     page_update()
 
-
+elif st.session_state.page == "audit":
+    set_bg("dashboard.jpg")
+    page_audit()
+    
 # =========================================================
 # FOOTER - FIX FINAL MENGGUNAKAN COMPONENTS.HTML
 # =========================================================
@@ -1621,6 +1759,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
