@@ -1210,16 +1210,17 @@ def page_detail():
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
         return
     # ============================================
-    # 🔒 KUNCI PERIODE 1
+    # 🔒 KUNCI HANYA PERIODE KE 1
     # ============================================
 
     status_regulatif = map_status(row)
 
-    boleh_ganti = status_regulatif in ["Periode 2", "Lebih dari 2 Periode", "Plt"]
-
-    if not boleh_ganti:
-        st.success("✅ Kepala Sekolah masih dalam periode aktif dan tidak dapat diganti.")
-        return
+    if status_regulatif == "Aktif Periode Ke 1":
+        st.info("""
+        🔒 Kepala Sekolah masih dalam Periode Ke-1 sesuai Permendikdasmen No 7 Tahun 2025  
+        Tidak diperkenankan melakukan penggantian.
+        """)
+        return    
     # ============================================
     # SELECTBOX CALON PENGGANTI
     # ============================================
@@ -1514,6 +1515,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
