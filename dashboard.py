@@ -1795,15 +1795,6 @@ components.html("""
         margin-bottom:20px;
     ">
 
-        <div style="font-size:20px; font-weight:800; color:#0d6efd; margin-bottom:8px;">
-            ## ⚖️ Dasar Hukum Penugasan Kepala Sekolah
-        </div>
-
-        <div style="font-size:14px; color:#444; margin-bottom:18px;">
-            Penugasan Kepala Sekolah Maksimal <b>2 Periode</b> 
-            (1 Periode = <b>4 Tahun</b>)
-        </div>
-
         <div style="
             font-size:16px; 
             font-weight:800; 
@@ -1847,6 +1838,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
