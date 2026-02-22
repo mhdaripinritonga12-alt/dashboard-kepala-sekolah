@@ -1525,56 +1525,56 @@ def page_detail():
                 st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
             else:
                 kepsek_lama = row.get("Nama Kepala Sekolah", "-")
-# ============================================
-# VALIDASI DUPLIKAT KEPSEK
-# ============================================
-
-# 1. Cek apakah calon sudah jadi kepala sekolah aktif
-if calon in df_ks["Nama Kepala Sekolah"].values:
-    st.error("⚠️ Guru ini sudah menjabat sebagai Kepala Sekolah!")
-    st.stop()
-
-# 2. Cek apakah sudah ada usulan pending
-sheet = konek_gsheet()
-spreadsheet = sheet.spreadsheet
-audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
-
-data = audit_sheet.get_all_records()
-df_audit = pd.DataFrame(data)
-
-if not df_audit.empty:
-    existing = df_audit[
-        (df_audit["Pengganti"] == calon) &
-        (df_audit["Status Approval"] == "Menunggu Persetujuan Kadis")
-    ]
-
-    if not existing.empty:
-        st.error("⚠️ Calon ini sedang dalam proses mutasi di sekolah lain!")
+    # ============================================
+    # VALIDASI DUPLIKAT KEPSEK
+    # ============================================
+    
+    # 1. Cek apakah calon sudah jadi kepala sekolah aktif
+    if calon in df_ks["Nama Kepala Sekolah"].values:
+        st.error("⚠️ Guru ini sudah menjabat sebagai Kepala Sekolah!")
         st.stop()
-
-# ============================================
-# SIMPAN PERUBAHAN (HARUS DI LUAR IF)
-# ============================================
-
-perubahan_kepsek[nama] = calon
-save_perubahan(perubahan_kepsek, df_ks, df_guru)
-
-try:
-    save_audit_log(
-        sekolah=nama,
-        kepsek_lama=kepsek_lama,
-        pengganti=calon,
-        alasan="Regulatif / Override",
-        role=st.session_state.role,
-        username=st.session_state.role
-    )
-
-    st.success("⏳ Usulan tersimpan dan masuk Audit Log. Menunggu persetujuan Kadis.")
-
-except Exception as e:
-    st.error(f"Gagal menyimpan audit: {e}")
-
-st.rerun()
+    
+    # 2. Cek apakah sudah ada usulan pending
+    sheet = konek_gsheet()
+    spreadsheet = sheet.spreadsheet
+    audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+    
+    data = audit_sheet.get_all_records()
+    df_audit = pd.DataFrame(data)
+    
+    if not df_audit.empty:
+        existing = df_audit[
+            (df_audit["Pengganti"] == calon) &
+            (df_audit["Status Approval"] == "Menunggu Persetujuan Kadis")
+        ]
+    
+        if not existing.empty:
+            st.error("⚠️ Calon ini sedang dalam proses mutasi di sekolah lain!")
+            st.stop()
+    
+    # ============================================
+    # SIMPAN PERUBAHAN (HARUS DI LUAR IF)
+    # ============================================
+    
+    perubahan_kepsek[nama] = calon
+    save_perubahan(perubahan_kepsek, df_ks, df_guru)
+    
+    try:
+        save_audit_log(
+            sekolah=nama,
+            kepsek_lama=kepsek_lama,
+            pengganti=calon,
+            alasan="Regulatif / Override",
+            role=st.session_state.role,
+            username=st.session_state.role
+        )
+    
+        st.success("⏳ Usulan tersimpan dan masuk Audit Log. Menunggu persetujuan Kadis.")
+    
+    except Exception as e:
+        st.error(f"Gagal menyimpan audit: {e}")
+    
+    st.rerun()
     
     with colbtn2:
         if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
@@ -1848,6 +1848,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
