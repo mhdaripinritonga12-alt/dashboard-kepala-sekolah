@@ -1796,7 +1796,7 @@ components.html("""
     ">
 
         <div style="font-size:20px; font-weight:800; color:#0d6efd; margin-bottom:8px;">
-            📌 Permendikdasmen Nomor 7 Tahun 2025
+            ## ⚖️ Dasar Hukum Penugasan Kepala Sekolah
         </div>
 
         <div style="font-size:14px; color:#444; margin-bottom:18px;">
@@ -1810,7 +1810,7 @@ components.html("""
             color:#198754; 
             margin-bottom:10px;
         ">
-            Ringkasan Pokok Ketentuan
+            📌 Permendikdasmen Nomor 7 Tahun 2025
         </div>
 
         <ol style="color:#333; font-size:14px; line-height:1.8; padding-left:18px;">
@@ -1847,6 +1847,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
