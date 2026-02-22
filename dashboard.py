@@ -222,13 +222,18 @@ def save_audit_log(sekolah, kepsek_lama, pengganti, alasan, role, username):
 # UPDATE STATUS APPROVAL (KHUSUS KADIS)
 # =========================================================
 def update_status_approval(row_index, status):
-
     sheet = konek_gsheet()
     spreadsheet = sheet.spreadsheet
     audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
 
-    audit_sheet.update(f"H{row_index}", status)
-    audit_sheet.update(f"I{row_index}", "Kadis")
+    # Konversi index dataframe ke baris Google Sheet
+    real_row = row_index + 2  # +1 header +1 karena index mulai 0
+
+    # WAJIB format 2D array
+    audit_sheet.update(
+        f"H{real_row}",
+        [[status]]
+    )
 # =========================================================
 # FUNGSI SIMPAN AUDIT TRAIL SMART-KS 2026
 # =========================================================
@@ -1777,6 +1782,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
