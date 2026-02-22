@@ -1461,58 +1461,51 @@ def page_detail():
     
             components.html(html_card, height=450, scrolling=True)  
     colbtn1, colbtn2 = st.columns(2)
+    # ============================================
+    # KOLOM TOMBOL SIMPAN & RESET
+    # ============================================
+    colbtn1, colbtn2 = st.columns(2)
 
-with colbtn1:
-    if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+    with colbtn1:
+        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
 
-        if calon == "-- Pilih Calon Pengganti --":
-            st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-        else:
-            # ===============================
-            # AMBIL DATA KEPSEK LAMA
-            # ===============================
-            kepsek_lama = row.get("Nama Kepala Sekolah", "-")
+            if calon == "-- Pilih Calon Pengganti --":
+                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+            else:
+                kepsek_lama = row.get("Nama Kepala Sekolah", "-")
 
-            # ===============================
-            # SIMPAN PERUBAHAN (SHEET UTAMA)
-            # ===============================
-            perubahan_kepsek[nama] = calon
-            save_perubahan(perubahan_kepsek, df_ks, df_guru)
+                perubahan_kepsek[nama] = calon
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
 
-            # ===============================
-            # SIMPAN KE AUDIT (MENUNGGU KADIS)
-            # ===============================
-            try:
-                save_audit_log(
-                    sekolah=nama,
-                    kepsek_lama=kepsek_lama,
-                    pengganti=calon,
-                    alasan="Regulatif / Override",
-                    role=st.session_state.role,
-                    username=st.session_state.role
-                )
+                try:
+                    save_audit_log(
+                        sekolah=nama,
+                        kepsek_lama=kepsek_lama,
+                        pengganti=calon,
+                        alasan="Regulatif / Override",
+                        role=st.session_state.role,
+                        username=st.session_state.role
+                    )
 
-                st.success("⏳ Usulan tersimpan dan masuk Audit Log. Menunggu persetujuan Kadis.")
+                    st.success("⏳ Usulan tersimpan dan masuk Audit Log. Menunggu persetujuan Kadis.")
 
-            except Exception as e:
-                st.error(f"Gagal menyimpan audit: {e}")
+                except Exception as e:
+                    st.error(f"Gagal menyimpan audit: {e}")
 
-            st.rerun()
+                st.rerun()
 
+    with colbtn2:
+        if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
 
-with colbtn2:
-    if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
+            if nama in perubahan_kepsek:
+                del perubahan_kepsek[nama]
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
 
-        if nama in perubahan_kepsek:
-            del perubahan_kepsek[nama]
-            save_perubahan(perubahan_kepsek, df_ks, df_guru)
+            if key_select in st.session_state:
+                del st.session_state[key_select]
 
-        if key_select in st.session_state:
-            del st.session_state[key_select]
-
-        st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
-        st.rerun()
-# =========================================================
+            st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
+            st.rerun()# =========================================================
 # HALAMAN REKAP PROVINSI
 # =========================================================
 def page_rekap():
@@ -1746,6 +1739,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
