@@ -324,8 +324,8 @@ def save_audit_log(sekolah, kepsek_lama, pengganti, alasan, role, username):
         "Menunggu Persetujuan Kadis",
         "-"
     ])
-    except Exception as e:
-        st.error(f"❌ Gagal menyimpan Audit Log: {e}")
+        except Exception as e:
+            st.error(f"❌ Gagal menyimpan Audit Log: {e}")
         
 # =========================================================
 # DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
@@ -1845,6 +1845,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
