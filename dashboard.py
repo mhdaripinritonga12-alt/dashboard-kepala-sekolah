@@ -1210,11 +1210,11 @@ def page_detail():
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
         return
     # ============================================
-    # 🔒 KUNCI HANYA PERIODE KE 1 (VERSI FINAL HIJAU RESMI)
+    # 🔒 KUNCI PERIODE 1 DENGAN PENGECUALIAN KHUSUS
     # ============================================
 
     if status_regulatif == "Aktif Periode Ke 1":
-
+    
         st.markdown("""
         <div style="
             background:#d1e7dd;
@@ -1228,12 +1228,37 @@ def page_detail():
             margin-top:15px;
             margin-bottom:15px;
         ">
-            🔒 Kepala Sekolah masih dalam <b>Periode Ke-1</b> sesuai Permendikdasmen No 7 Tahun 2025<br>
-            Tidak diperkenankan melakukan penggantian.
+            🔒 Kepala Sekolah masih dalam <b>Periode Ke-1</b><br>
+            Secara regulatif tidak diperkenankan melakukan penggantian.
         </div>
         """, unsafe_allow_html=True)
     
-        st.stop()    
+        st.markdown("### ⚖️ Pengecualian Khusus (Jika Ada)")
+    
+        alasan_khusus = st.selectbox(
+            "Pilih Alasan Pemberhentian",
+            [
+                "-- Tidak Ada Pengecualian --",
+                "Meninggal Dunia",
+                "Perkara Hukum",
+                "Hukuman Disiplin Berat",
+                "Mengundurkan Diri",
+                "Mutasi / Promosi Jabatan"
+            ],
+            key=f"alasan_khusus_{nama}"
+        )
+    
+        # Jika tidak ada pengecualian → stop
+        if alasan_khusus == "-- Tidak Ada Pengecualian --":
+            st.stop()
+    
+        # Jika ada pengecualian → tampilkan peringatan keras
+        st.error(f"""
+        ⚠️ Pengecualian dipilih: **{alasan_khusus}**  
+        Sistem mengizinkan proses penggantian karena alasan khusus.
+        """)
+    
+   
     # ============================================
     # SELECTBOX CALON PENGGANTI
     # ============================================
@@ -1528,6 +1553,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
