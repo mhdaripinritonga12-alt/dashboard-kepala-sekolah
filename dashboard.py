@@ -1468,7 +1468,6 @@ with colbtn1:
         if calon == "-- Pilih Calon Pengganti --":
             st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
         else:
-
             # ===============================
             # AMBIL DATA KEPSEK LAMA
             # ===============================
@@ -1498,33 +1497,21 @@ with colbtn1:
             except Exception as e:
                 st.error(f"Gagal menyimpan audit: {e}")
 
-            st.rerun()   
-                # =========================================
-                # SIMPAN KE AUDIT TRAIL SMART-KS 2026
-                # =========================================
-                save_audit_log(
-                    sekolah=nama,
-                    kepsek_lama=kepsek_lama,
-                    pengganti=calon,
-                    alasan=alasan_khusus if status_regulatif == "Aktif Periode Ke 1" else "Regulatif Normal",
-                    role=st.session_state.role,
-                    username="UserLogin"
-                )
-    
-                st.success(f"✅ Diganti dengan: {calon}")
-                st.rerun()
-    with colbtn2:
-        if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
-            if nama in perubahan_kepsek:
-                del perubahan_kepsek[nama]
-                save_perubahan(perubahan_kepsek, df_ks, df_guru)
-
-            if key_select in st.session_state:
-                del st.session_state[key_select]
-
-            st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
             st.rerun()
 
+
+with colbtn2:
+    if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
+
+        if nama in perubahan_kepsek:
+            del perubahan_kepsek[nama]
+            save_perubahan(perubahan_kepsek, df_ks, df_guru)
+
+        if key_select in st.session_state:
+            del st.session_state[key_select]
+
+        st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
+        st.rerun()
 # =========================================================
 # HALAMAN REKAP PROVINSI
 # =========================================================
@@ -1759,6 +1746,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
