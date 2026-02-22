@@ -222,62 +222,108 @@ def save_audit_log(sekolah, kepsek_lama, pengganti, alasan, role, username):
 # UPDATE STATUS APPROVAL (KHUSUS KADIS)
 # =========================================================
 def update_status_approval(row_index, status):
+
     sheet = konek_gsheet()
     spreadsheet = sheet.spreadsheet
     audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+    perubahan_sheet = spreadsheet.worksheet(SHEET_NAME)
 
-    # Konversi index dataframe ke baris Google Sheet
-    real_row = row_index + 2  # +1 header +1 karena index mulai 0
+    real_row = row_index + 2
 
-    # WAJIB format 2D array
-    audit_sheet.update(
-        f"H{real_row}",
-        [[status]]
-    )
+    # Update status
+    audit_sheet.update(f"H{real_row}", [[status]])
+
+    # =====================================
+    # JIKA DISETUJUI → UPDATE SHEET UTAMA
+    # =====================================
+    if status == "Disetujui Kadis":
+
+        row_data = audit_sheet.row_values(real_row)
+
+        sekolah = row_data[1]
+        kepsek_lama = row_data[2]
+        pengganti = row_data[3]
+
+        data = perubahan_sheet.get_all_records()
+        df = pd.DataFrame(data)
+
+        if not df.empty and sekolah in df["Sekolah Tujuan"].values:
+            idx = df[df["Sekolah Tujuan"] == sekolah].index[0] + 2
+            perubahan_sheet.update(f"C{idx}", [[pengganti]])
+        else:
+            perubahan_sheet.append_row([
+                sekolah,
+                kepsek_lama,
+                pengganti,
+                "-"
+            ])
+    # =====================================
+    # JIKA DITOLAK → HAPUS DARI SHEET UTAMA
+    # =====================================
+    if status == "Ditolak Kadis":
+
+        row_data = audit_sheet.row_values(real_row)
+        sekolah = row_data[1]
+
+        data = perubahan_sheet.get_all_records()
+        df = pd.DataFrame(data)
+
+        if not df.empty and sekolah in df["Sekolah Tujuan"].values:
+            idx = df[df["Sekolah Tujuan"] == sekolah].index[0] + 2
+            perubahan_sheet.delete_rows(idx)
 # =========================================================
 # FUNGSI SIMPAN AUDIT TRAIL SMART-KS 2026
 # =========================================================
 def save_audit_log(sekolah, kepsek_lama, pengganti, alasan, role, username):
 
+    sheet = konek_gsheet()
+    spreadsheet = sheet.spreadsheet
+
     try:
-        scopes = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-
-        creds_dict = st.secrets["gcp_service_account"]
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
-        client = gspread.authorize(creds)
-
-        spreadsheet = client.open_by_key(SHEET_ID)
-
-        try:
-            sheet = spreadsheet.worksheet(SHEET_AUDIT)
-        except:
-            sheet = spreadsheet.add_worksheet(title=SHEET_AUDIT, rows="1000", cols="10")
-            sheet.append_row([
-                "Tanggal",
-                "Sekolah",
-                "Kepsek Lama",
-                "Pengganti",
-                "Alasan",
-                "Role",
-                "User"
-            ])
-
-        from datetime import datetime
-        tanggal = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-
-        sheet.append_row([
-            tanggal,
-            sekolah,
-            kepsek_lama,
-            pengganti,
-            alasan,
-            role,
-            username
+        audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+    except:
+        audit_sheet = spreadsheet.add_worksheet(title=SHEET_AUDIT, rows="1000", cols="10")
+        audit_sheet.append_row([
+            "Tanggal",
+            "Sekolah",
+            "Kepsek Lama",
+            "Pengganti",
+            "Alasan",
+            "Role Pengusul",
+            "User",
+            "Status Approval",
+            "Approved By"
         ])
 
+    data = audit_sheet.get_all_records()
+    df = pd.DataFrame(data)
+
+    # ===============================
+    # CEK DUPLIKAT YANG MASIH PENDING
+    # ===============================
+    if not df.empty:
+        duplikat = df[
+            (df["Sekolah"] == sekolah) &
+            (df["Status Approval"] == "Menunggu Persetujuan Kadis")
+        ]
+
+        if not duplikat.empty:
+            return  # JANGAN SIMPAN LAGI
+
+    from datetime import datetime
+    tanggal = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
+    audit_sheet.append_row([
+        tanggal,
+        sekolah,
+        kepsek_lama,
+        pengganti,
+        alasan,
+        role,
+        username,
+        "Menunggu Persetujuan Kadis",
+        "-"
+    ])
     except Exception as e:
         st.error(f"❌ Gagal menyimpan Audit Log: {e}")
         
@@ -1481,7 +1527,32 @@ def page_detail():
                 st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
             else:
                 kepsek_lama = row.get("Nama Kepala Sekolah", "-")
-
+    # ============================================
+    # VALIDASI DUPLIKAT KEPSEK
+    # ============================================
+    
+    # 1. Cek apakah calon sudah jadi kepala sekolah aktif
+    if calon in df_ks["Nama Kepala Sekolah"].values:
+        st.error("⚠️ Guru ini sudah menjabat sebagai Kepala Sekolah!")
+        st.stop()
+    
+    # 2. Cek apakah sudah ada usulan pending
+    sheet = konek_gsheet()
+    spreadsheet = sheet.spreadsheet
+    audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+    
+    data = audit_sheet.get_all_records()
+    df_audit = pd.DataFrame(data)
+    
+    if not df_audit.empty:
+        existing = df_audit[
+            (df_audit["Pengganti"] == calon) &
+            (df_audit["Status Approval"] == "Menunggu Persetujuan Kadis")
+        ]
+    
+        if not existing.empty:
+            st.error("⚠️ Calon ini sedang dalam proses mutasi di sekolah lain!")
+            st.stop()
                 perubahan_kepsek[nama] = calon
                 save_perubahan(perubahan_kepsek, df_ks, df_guru)
 
@@ -1775,6 +1846,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
