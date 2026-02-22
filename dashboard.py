@@ -97,6 +97,7 @@ SHEET_AUDIT = "AUDIT_LOG_SMART_KS"
 # FUNGSI SIMPAN & LOAD PENGGANTI (PERMANEN GOOGLE SHEET)
 # =========================================================
 
+@st.cache_resource
 def konek_gsheet():
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
@@ -112,6 +113,7 @@ def konek_gsheet():
     return sheet
 
 
+@st.cache_data(ttl=60)
 def load_perubahan():
     try:
         sheet = konek_gsheet()
@@ -173,6 +175,7 @@ def save_perubahan(data_dict, df_ks, df_guru):
 
 # LOAD DATA PERUBAHAN SAAT APLIKASI START
 perubahan_kepsek = load_perubahan()
+load_perubahan.clear()
 # =========================================================
 # FUNGSI SIMPAN AUDIT LOG (MENUNGGU PERSETUJUAN KADIS)
 # =========================================================
@@ -1760,6 +1763,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
