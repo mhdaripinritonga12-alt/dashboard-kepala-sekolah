@@ -1777,42 +1777,40 @@ elif st.session_state.page == "audit":
     page_audit()
     
 # =========================================================
-# FOOTER - FIX FINAL MENGGUNAKAN COMPONENTS.HTML
+# FOOTER FINAL – DASAR HUKUM TERPADU
 # =========================================================
 st.divider()
 
 st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
 
 components.html("""
-<div style="
-    font-family: Arial, sans-serif;
-">
-        <div style="
-        background:#ffffff;
-        padding:22px;
-        border-radius:16px;
-        border-left:6px solid #0d6efd;
-        box-shadow:0 3px 10px rgba(0,0,0,0.12);
-        margin-bottom:20px;
-    ">
-        <div style="font-size:18px; font-weight:800; color:#0d6efd; margin-bottom:6px;">
-            📌 Permendikdasmen Nomor 7 Tahun 2025
-        </div>
-        <div style="font-size:14px; color:#444;">
-            Penugasan Kepala Sekolah Maksimal 2 Periode (1 Periode = 4 Tahun)
-        </div>
-    </div>
+<div style="font-family: Arial, sans-serif;">
 
     <div style="
         background:#ffffff;
-        padding:22px;
-        border-radius:16px;
-        border-left:6px solid #198754;
-        box-shadow:0 3px 10px rgba(0,0,0,0.12);
+        padding:24px;
+        border-radius:18px;
+        border-left:8px solid #198754;
+        box-shadow:0 4px 12px rgba(0,0,0,0.12);
         margin-bottom:20px;
     ">
-        <div style="font-size:17px; font-weight:800; color:#198754; margin-bottom:10px;">
-            📌 Ringkasan Pokok Ketentuan Permendikdasmen No. 7 Tahun 2025
+
+        <div style="font-size:20px; font-weight:800; color:#0d6efd; margin-bottom:8px;">
+            📌 Permendikdasmen Nomor 7 Tahun 2025
+        </div>
+
+        <div style="font-size:14px; color:#444; margin-bottom:18px;">
+            Penugasan Kepala Sekolah Maksimal <b>2 Periode</b> 
+            (1 Periode = <b>4 Tahun</b>)
+        </div>
+
+        <div style="
+            font-size:16px; 
+            font-weight:800; 
+            color:#198754; 
+            margin-bottom:10px;
+        ">
+            Ringkasan Pokok Ketentuan
         </div>
 
         <ol style="color:#333; font-size:14px; line-height:1.8; padding-left:18px;">
@@ -1824,6 +1822,7 @@ components.html("""
             <li>Jika terjadi kekosongan jabatan, dapat ditunjuk <b>Plt</b>.</li>
             <li>Penugasan Kepala Sekolah merupakan tugas tambahan ASN.</li>
         </ol>
+
     </div>
 
     <div style="
@@ -1848,6 +1847,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
