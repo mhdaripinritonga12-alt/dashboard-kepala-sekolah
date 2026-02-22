@@ -1611,6 +1611,8 @@ def page_audit():
 
     st.divider()
 
+def page_audit():
+
     # ============================================
     # LOAD DATA AUDIT
     # ============================================
@@ -1631,48 +1633,50 @@ def page_audit():
 
     except Exception as e:
         st.error(f"Gagal memuat Audit Log: {e}")
-    # ==============================
-# APPROVAL KHUSUS KADIS
-# ==============================
-if st.session_state.role == "Kadis":
-
-    if "Status Approval" not in df_audit.columns:
-        st.error("Kolom 'Status Approval' tidak ditemukan di Sheet.")
-        st.stop()
-
-    pending = df_audit[
-        df_audit["Status Approval"] == "Menunggu Persetujuan Kadis"
-    ]
-
-    if pending.empty:
-        st.success("Tidak ada usulan menunggu persetujuan.")
         return
 
-    pilih = st.selectbox(
-        "Pilih Sekolah",
-        pending["Sekolah"].unique()
-    )
+    # ==============================
+    # APPROVAL KHUSUS KADIS
+    # ==============================
+    if st.session_state.role == "Kadis":
 
-    # Ambil index dataframe asli (tanpa +2)
-    selected_index = pending[pending["Sekolah"] == pilih].index[0]
+        if "Status Approval" not in df_audit.columns:
+            st.error("Kolom 'Status Approval' tidak ditemukan di Sheet.")
+            return
 
-    col1, col2 = st.columns(2)
+        pending = df_audit[
+            df_audit["Status Approval"] == "Menunggu Persetujuan Kadis"
+        ]
 
-    with col1:
-        if st.button("✅ Setujui", use_container_width=True):
-            update_status_approval(selected_index, "Disetujui Kadis")
-            st.success("Disetujui Kadis")
-            st.rerun()
+        if pending.empty:
+            st.success("Tidak ada usulan menunggu persetujuan.")
+            return
 
-    with col2:
-        if st.button("❌ Tolak", use_container_width=True):
-            update_status_approval(selected_index, "Ditolak Kadis")
-            st.error("Ditolak Kadis")
-            st.rerun()
+        pilih = st.selectbox(
+            "Pilih Sekolah",
+            pending["Sekolah"].unique()
+        )
 
-else:
-    st.info("🔐 Hanya Kadis yang dapat memberikan persetujuan.")
-        
+        selected_index = pending[
+            pending["Sekolah"] == pilih
+        ].index[0]
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("✅ Setujui", use_container_width=True):
+                update_status_approval(selected_index, "Disetujui Kadis")
+                st.success("Disetujui Kadis")
+                st.rerun()
+
+        with col2:
+            if st.button("❌ Tolak", use_container_width=True):
+                update_status_approval(selected_index, "Ditolak Kadis")
+                st.error("Ditolak Kadis")
+                st.rerun()
+
+    else:
+        st.info("🔐 Hanya Kadis yang dapat memberikan persetujuan.")        
 # =========================================================
 # ROUTING UTAMA
 # =========================================================
@@ -1773,6 +1777,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
