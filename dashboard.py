@@ -1505,7 +1505,8 @@ def page_detail():
                 del st.session_state[key_select]
 
             st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
-            st.rerun()# =========================================================
+            st.rerun()
+# =========================================================
 # HALAMAN REKAP PROVINSI
 # =========================================================
 def page_rekap():
@@ -1739,6 +1740,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
