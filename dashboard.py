@@ -1602,21 +1602,14 @@ def page_update():
 def page_audit():
 
     # ============================================
-    # HEADER + TOMBOL KEMBALI MINI
+    # HEADER + TOMBOL KEMBALI
     # ============================================
+    if st.button("⬅ Kembali", key="btn_back_audit"):
+        st.session_state.page = "cabdin"
+        st.rerun()
 
-    col_back, col_title = st.columns([1, 12])
-
-    with col_back:
-        if st.button("↩️", key="btn_back_audit"):
-            st.session_state.page = "cabdin"
-            st.rerun()
-
-    with col_title:
-        st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
-
+    st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
     st.divider()
-def page_audit():
 
     # ============================================
     # LOAD DATA AUDIT
@@ -1640,9 +1633,9 @@ def page_audit():
         st.error(f"Gagal memuat Audit Log: {e}")
         return
 
-    # ==============================
+    # ============================================
     # APPROVAL KHUSUS KADIS
-    # ==============================
+    # ============================================
     if st.session_state.role == "Kadis":
 
         if "Status Approval" not in df_audit.columns:
@@ -1782,6 +1775,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
