@@ -1588,40 +1588,47 @@ def page_update():
         st.warning("⚠️ Belum ada riwayat jabatan.")
     else:
         st.dataframe(df_view, use_container_width=True)
-def page_audit():
-
-    col1, col2 = st.columns([1, 6])
-
-    with col1:
-        if st.button("⬅️ Kembali", use_container_width=True):
-            st.session_state.page = "cabdin"
-            st.rerun()
-
-    with col2:
-        st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
-
-    st.divider()
 # =========================================================
 # HALAMAN AUDIT MONITORING
 # =========================================================
 def page_audit():
 
-    st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
+    # ============================================
+    # HEADER + TOMBOL KEMBALI
+    # ============================================
+    col_a, col_b = st.columns([1, 6])
 
-    sheet = konek_gsheet()
-    spreadsheet = sheet.spreadsheet
-    audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+    with col_a:
+        if st.button("⬅️ Kembali", key="back_audit", use_container_width=True):
+            st.session_state.page = "cabdin"
+            st.rerun()
 
-    data = audit_sheet.get_all_records()
+    with col_b:
+        st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
 
-    if not data:
-        st.warning("Belum ada audit log.")
-        return
+    st.divider()
 
-    df_audit = pd.DataFrame(data)
+    # ============================================
+    # LOAD DATA AUDIT
+    # ============================================
+    try:
+        sheet = konek_gsheet()
+        spreadsheet = sheet.spreadsheet
+        audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
 
-    st.dataframe(df_audit, use_container_width=True)
+        data = audit_sheet.get_all_records()
 
+        if not data:
+            st.warning("Belum ada audit log.")
+            return
+
+        df_audit = pd.DataFrame(data)
+
+        st.dataframe(df_audit, use_container_width=True)
+
+    except Exception as e:
+        st.error(f"Gagal memuat Audit Log: {e}")
+    
     # ==============================
     # APPROVAL KHUSUS KADIS
     # ==============================
@@ -1753,6 +1760,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
