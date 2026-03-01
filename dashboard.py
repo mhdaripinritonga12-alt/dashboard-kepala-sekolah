@@ -1525,32 +1525,35 @@ def page_detail():
                 st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
             else:
                 kepsek_lama = row.get("Nama Kepala Sekolah", "-")
-    # ============================================
-    # VALIDASI DUPLIKAT KEPSEK
-    # ============================================
-    
-    # 1. Cek apakah calon sudah jadi kepala sekolah aktif
-    if calon in df_ks["Nama Kepala Sekolah"].values:
-        st.error("⚠️ Guru ini sudah menjabat sebagai Kepala Sekolah!")
-        st.stop()
-    
-    # 2. Cek apakah sudah ada usulan pending
-    sheet = konek_gsheet()
-    spreadsheet = sheet.spreadsheet
-    audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
-    
-    data = audit_sheet.get_all_records()
-    df_audit = pd.DataFrame(data)
-    
-    if not df_audit.empty:
-        existing = df_audit[
-            (df_audit["Pengganti"] == calon) &
-            (df_audit["Status Approval"] == "Menunggu Persetujuan Kadis")
-        ]
-    
-        if not existing.empty:
-            st.error("⚠️ Calon ini sedang dalam proses mutasi di sekolah lain!")
-            st.stop()
+# ============================================
+# KOLOM TOMBOL SIMPAN & RESET
+# ============================================
+colbtn1, colbtn2 = st.columns(2)
+
+with colbtn1:
+    if st.button("💾 Simpan Pengganti", use_container_width=True):
+
+        if calon == "-- Pilih Calon Pengganti --":
+            st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+        else:
+            perubahan_kepsek[nama] = calon
+            save_perubahan(perubahan_kepsek, df_ks, df_guru)
+
+            st.success(f"✅ Diganti dengan: {calon}")
+            st.rerun()
+
+
+with colbtn2:
+    if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", use_container_width=True):
+
+        if nama in perubahan_kepsek:
+            del perubahan_kepsek[nama]
+            save_perubahan(perubahan_kepsek, df_ks, df_guru)
+
+        st.session_state[f"calon_{nama}"] = "-- Pilih Calon Pengganti --"
+
+        st.success("✅ Dikembalikan ke Kepala Sekolah Awal")
+        st.rerun()
     
     # ============================================
     # SIMPAN PERUBAHAN (HARUS DI LUAR IF)
@@ -1838,6 +1841,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
