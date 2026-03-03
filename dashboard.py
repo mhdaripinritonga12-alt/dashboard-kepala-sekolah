@@ -1513,21 +1513,19 @@ def page_detail():
     
             components.html(html_card, height=450, scrolling=True)  
     colbtn1, colbtn2 = st.columns(2)
-    # ============================================
-    # KOLOM TOMBOL SIMPAN & RESET
-    # ============================================
-    colbtn1, colbtn2 = st.columns(2)
+# ============================================
+# PILIH CALON PENGGANTI
+# ============================================
 
-    with colbtn1:
-        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+calon = st.selectbox(
+    "Pilih Calon Pengganti",
+    ["-- Pilih Calon Pengganti --"] + daftar_nama
+)
 
-            if calon == "-- Pilih Calon Pengganti --":
-                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-            else:
-                kepsek_lama = row.get("Nama Kepala Sekolah", "-")
 # ============================================
 # KOLOM TOMBOL SIMPAN & RESET
 # ============================================
+
 colbtn1, colbtn2 = st.columns(2)
 
 with colbtn1:
@@ -1537,11 +1535,7 @@ with colbtn1:
             st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
         else:
             perubahan_kepsek[nama] = calon
-            save_perubahan(perubahan_kepsek, df_ks, df_guru)
-
-            st.success(f"✅ Diganti dengan: {calon}")
-            st.rerun()
-
+            st.success("✅ Pengganti berhasil disimpan.")
 
 with colbtn2:
     if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", use_container_width=True):
@@ -1841,6 +1835,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
