@@ -226,105 +226,56 @@ def update_status_approval(row_index, status):
     sheet = konek_gsheet()
     spreadsheet = sheet.spreadsheet
     audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
-    perubahan_sheet = spreadsheet.worksheet(SHEET_NAME)
 
-    real_row = row_index + 2
-
-    # Update status
-    audit_sheet.update(f"H{real_row}", [[status]])
-
-    # =====================================
-    # JIKA DISETUJUI → UPDATE SHEET UTAMA
-    # =====================================
-    if status == "Disetujui Kadis":
-
-        row_data = audit_sheet.row_values(real_row)
-
-        sekolah = row_data[1]
-        kepsek_lama = row_data[2]
-        pengganti = row_data[3]
-
-        data = perubahan_sheet.get_all_records()
-        df = pd.DataFrame(data)
-
-        if not df.empty and sekolah in df["Sekolah Tujuan"].values:
-            idx = df[df["Sekolah Tujuan"] == sekolah].index[0] + 2
-            perubahan_sheet.update(f"C{idx}", [[pengganti]])
-        else:
-            perubahan_sheet.append_row([
-                sekolah,
-                kepsek_lama,
-                pengganti,
-                "-"
-            ])
-    # =====================================
-    # JIKA DITOLAK → HAPUS DARI SHEET UTAMA
-    # =====================================
-    if status == "Ditolak Kadis":
-
-        row_data = audit_sheet.row_values(real_row)
-        sekolah = row_data[1]
-
-        data = perubahan_sheet.get_all_records()
-        df = pd.DataFrame(data)
-
-        if not df.empty and sekolah in df["Sekolah Tujuan"].values:
-            idx = df[df["Sekolah Tujuan"] == sekolah].index[0] + 2
-            perubahan_sheet.delete_rows(idx)
+    audit_sheet.update(f"H{row_index}", status)
+    audit_sheet.update(f"I{row_index}", "Kadis")
 # =========================================================
 # FUNGSI SIMPAN AUDIT TRAIL SMART-KS 2026
 # =========================================================
 def save_audit_log(sekolah, kepsek_lama, pengganti, alasan, role, username):
 
-    sheet = konek_gsheet()
-    spreadsheet = sheet.spreadsheet
-
     try:
-        audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
-    except:
-        audit_sheet = spreadsheet.add_worksheet(title=SHEET_AUDIT, rows="1000", cols="10")
-        audit_sheet.append_row([
-            "Tanggal",
-            "Sekolah",
-            "Kepsek Lama",
-            "Pengganti",
-            "Alasan",
-            "Role Pengusul",
-            "User",
-            "Status Approval",
-            "Approved By"
-        ])
-
-    data = audit_sheet.get_all_records()
-    df = pd.DataFrame(data)
-
-    # ===============================
-    # CEK DUPLIKAT YANG MASIH PENDING
-    # ===============================
-    if not df.empty:
-        duplikat = df[
-            (df["Sekolah"] == sekolah) &
-            (df["Status Approval"] == "Menunggu Persetujuan Kadis")
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
         ]
 
-        if not duplikat.empty:
-            return  # JANGAN SIMPAN LAGI
+        creds_dict = st.secrets["gcp_service_account"]
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+        client = gspread.authorize(creds)
 
-    from datetime import datetime
-    tanggal = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        spreadsheet = client.open_by_key(SHEET_ID)
 
-    audit_sheet.append_row([
-        tanggal,
-        sekolah,
-        kepsek_lama,
-        pengganti,
-        alasan,
-        role,
-        username,
-        "Menunggu Persetujuan Kadis",
-        "-"
-    ])
-    
+        try:
+            sheet = spreadsheet.worksheet(SHEET_AUDIT)
+        except:
+            sheet = spreadsheet.add_worksheet(title=SHEET_AUDIT, rows="1000", cols="10")
+            sheet.append_row([
+                "Tanggal",
+                "Sekolah",
+                "Kepsek Lama",
+                "Pengganti",
+                "Alasan",
+                "Role",
+                "User"
+            ])
+
+        from datetime import datetime
+        tanggal = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
+        sheet.append_row([
+            tanggal,
+            sekolah,
+            kepsek_lama,
+            pengganti,
+            alasan,
+            role,
+            username
+        ])
+
+    except Exception as e:
+        st.error(f"❌ Gagal menyimpan Audit Log: {e}")
+        
 # =========================================================
 # DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
 # =========================================================
@@ -1513,66 +1464,39 @@ def page_detail():
     
             components.html(html_card, height=450, scrolling=True)  
     colbtn1, colbtn2 = st.columns(2)
-# ============================================
-# PILIH CALON PENGGANTI
-# ============================================
-
-calon = st.selectbox(
-    "Pilih Calon Pengganti",
-    ["-- Pilih Calon Pengganti --"] + daftar_nama
-)
-
-# ============================================
-# KOLOM TOMBOL SIMPAN & RESET
-# ============================================
-
-colbtn1, colbtn2 = st.columns(2)
-
-with colbtn1:
-    if st.button("💾 Simpan Pengganti", use_container_width=True):
-
-        if calon == "-- Pilih Calon Pengganti --":
-            st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-        else:
-            perubahan_kepsek[nama] = calon
-            st.success("✅ Pengganti berhasil disimpan.")
-
-with colbtn2:
-    if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", use_container_width=True):
-
-        if nama in perubahan_kepsek:
-            del perubahan_kepsek[nama]
-            save_perubahan(perubahan_kepsek, df_ks, df_guru)
-
-        st.session_state[f"calon_{nama}"] = "-- Pilih Calon Pengganti --"
-
-        st.success("✅ Dikembalikan ke Kepala Sekolah Awal")
-        st.rerun()
-    
     # ============================================
-    # SIMPAN PERUBAHAN (HARUS DI LUAR IF)
+    # KOLOM TOMBOL SIMPAN & RESET
     # ============================================
-    
-    perubahan_kepsek[nama] = calon
-    save_perubahan(perubahan_kepsek, df_ks, df_guru)
-    
-    try:
-        save_audit_log(
-            sekolah=nama,
-            kepsek_lama=kepsek_lama,
-            pengganti=calon,
-            alasan="Regulatif / Override",
-            role=st.session_state.role,
-            username=st.session_state.role
-        )
-    
-        st.success("⏳ Usulan tersimpan dan masuk Audit Log. Menunggu persetujuan Kadis.")
-    
-    except Exception as e:
-        st.error(f"Gagal menyimpan audit: {e}")
-    
-    st.rerun()
-    
+    colbtn1, colbtn2 = st.columns(2)
+
+    with colbtn1:
+        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+
+            if calon == "-- Pilih Calon Pengganti --":
+                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+            else:
+                kepsek_lama = row.get("Nama Kepala Sekolah", "-")
+
+                perubahan_kepsek[nama] = calon
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
+
+                try:
+                    save_audit_log(
+                        sekolah=nama,
+                        kepsek_lama=kepsek_lama,
+                        pengganti=calon,
+                        alasan="Regulatif / Override",
+                        role=st.session_state.role,
+                        username=st.session_state.role
+                    )
+
+                    st.success("⏳ Usulan tersimpan dan masuk Audit Log. Menunggu persetujuan Kadis.")
+
+                except Exception as e:
+                    st.error(f"Gagal menyimpan audit: {e}")
+
+                st.rerun()
+
     with colbtn2:
         if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
 
@@ -1675,11 +1599,16 @@ def page_audit():
     # ============================================
     # HEADER + TOMBOL KEMBALI
     # ============================================
-    if st.button("⬅ Kembali", key="btn_back_audit"):
-        st.session_state.page = "cabdin"
-        st.rerun()
+    col_a, col_b = st.columns([1, 6])
 
-    st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
+    with col_a:
+        if st.button("⬅️ Kembali", key="back_audit", use_container_width=True):
+            st.session_state.page = "cabdin"
+            st.rerun()
+
+    with col_b:
+        st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
+
     st.divider()
 
     # ============================================
@@ -1702,16 +1631,11 @@ def page_audit():
 
     except Exception as e:
         st.error(f"Gagal memuat Audit Log: {e}")
-        return
-
-    # ============================================
+    
+    # ==============================
     # APPROVAL KHUSUS KADIS
-    # ============================================
+    # ==============================
     if st.session_state.role == "Kadis":
-
-        if "Status Approval" not in df_audit.columns:
-            st.error("Kolom 'Status Approval' tidak ditemukan di Sheet.")
-            return
 
         pending = df_audit[
             df_audit["Status Approval"] == "Menunggu Persetujuan Kadis"
@@ -1723,29 +1647,22 @@ def page_audit():
 
         pilih = st.selectbox(
             "Pilih Sekolah",
-            pending["Sekolah"].unique()
+            pending["Sekolah"]
         )
 
-        selected_index = pending[
-            pending["Sekolah"] == pilih
-        ].index[0]
+        if st.button("✅ Setujui"):
+            index = pending[pending["Sekolah"] == pilih].index[0] + 2
+            update_status_approval(index, "Disetujui Kadis")
+            st.success("Disetujui Kadis")
+            st.rerun()
 
-        col1, col2 = st.columns(2)
-
-        with col1:
-            if st.button("✅ Setujui", use_container_width=True):
-                update_status_approval(selected_index, "Disetujui Kadis")
-                st.success("Disetujui Kadis")
-                st.rerun()
-
-        with col2:
-            if st.button("❌ Tolak", use_container_width=True):
-                update_status_approval(selected_index, "Ditolak Kadis")
-                st.error("Ditolak Kadis")
-                st.rerun()
-
+        if st.button("❌ Tolak"):
+            index = pending[pending["Sekolah"] == pilih].index[0] + 2
+            update_status_approval(index, "Ditolak Kadis")
+            st.error("Ditolak Kadis")
+            st.rerun()
     else:
-        st.info("🔐 Hanya Kadis yang dapat memberikan persetujuan.")        
+        st.info("🔐 Hanya Kadis yang dapat memberikan persetujuan.")
 # =========================================================
 # ROUTING UTAMA
 # =========================================================
@@ -1774,31 +1691,43 @@ elif st.session_state.page == "audit":
     page_audit()
     
 # =========================================================
-# FOOTER FINAL – DASAR HUKUM TERPADU
+# FOOTER - FIX FINAL MENGGUNAKAN COMPONENTS.HTML
 # =========================================================
 st.divider()
 
 st.markdown("## ⚖️ Dasar Hukum Penugasan Kepala Sekolah")
 
 components.html("""
-<div style="font-family: Arial, sans-serif;">
+<div style="
+    font-family: Arial, sans-serif;
+">
 
     <div style="
         background:#ffffff;
-        padding:24px;
-        border-radius:18px;
-        border-left:8px solid #198754;
-        box-shadow:0 4px 12px rgba(0,0,0,0.12);
+        padding:22px;
+        border-radius:16px;
+        border-left:6px solid #0d6efd;
+        box-shadow:0 3px 10px rgba(0,0,0,0.12);
         margin-bottom:20px;
     ">
-
-        <div style="
-            font-size:16px; 
-            font-weight:800; 
-            color:#198754; 
-            margin-bottom:10px;
-        ">
+        <div style="font-size:18px; font-weight:800; color:#0d6efd; margin-bottom:6px;">
             📌 Permendikdasmen Nomor 7 Tahun 2025
+        </div>
+        <div style="font-size:14px; color:#444;">
+            Penugasan Kepala Sekolah Maksimal 2 Periode (1 Periode = 4 Tahun)
+        </div>
+    </div>
+
+    <div style="
+        background:#ffffff;
+        padding:22px;
+        border-radius:16px;
+        border-left:6px solid #198754;
+        box-shadow:0 3px 10px rgba(0,0,0,0.12);
+        margin-bottom:20px;
+    ">
+        <div style="font-size:17px; font-weight:800; color:#198754; margin-bottom:10px;">
+            📌 Ringkasan Pokok Ketentuan Permendikdasmen No. 7 Tahun 2025
         </div>
 
         <ol style="color:#333; font-size:14px; line-height:1.8; padding-left:18px;">
@@ -1810,7 +1739,6 @@ components.html("""
             <li>Jika terjadi kekosongan jabatan, dapat ditunjuk <b>Plt</b>.</li>
             <li>Penugasan Kepala Sekolah merupakan tugas tambahan ASN.</li>
         </ol>
-
     </div>
 
     <div style="
@@ -1835,26 +1763,6 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
