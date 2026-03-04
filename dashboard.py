@@ -1270,69 +1270,6 @@ def page_detail():
         st.stop()
 
     row = row_detail.iloc[0]
-    # ================================
-    # AMBIL DATA KEPALA SEKOLAH SIMPEG
-    # ================================
-    
-    nama_kepsek = row.get("Nama Kepala Sekolah", "")
-
-    data_kepsek = ambil_data_simpeg(nama_kepsek)
-    nama_kepsek = row.get("Nama Kepala Sekolah", "")
-    data_kepsek = ambil_data_simpeg(nama_kepsek)
-    st.markdown("## 👨‍🏫 Data SIMPEG Kepala Sekolah")
-
-    if not data_kepsek.empty:
-    
-        kepsek_row = data_kepsek.iloc[0]
-    
-        nip = kepsek_row.get("NIP", "-")
-        nik = kepsek_row.get("NIK", "-")
-        nohp = kepsek_row.get("NO HP", "-")
-        jabatan = kepsek_row.get("JABATAN", "-")
-        jenis_pegawai = kepsek_row.get("JENIS PEGAWAI", "-")
-        unor = kepsek_row.get("UNIT KERJA", "-")
-        cabdis = kepsek_row.get("CABANG DINAS", "-")
-        alamat = kepsek_row.get("ALAMAT", "-")
-    
-        html_kepsek = f"""
-        <div style="
-            background:white;
-            border-radius:16px;
-            padding:20px;
-            box-shadow:0 3px 12px rgba(0,0,0,0.15);
-            display:flex;
-            gap:20px;
-            align-items:flex-start;
-        ">
-    
-        <div>
-        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="120">
-        </div>
-    
-        <div>
-    
-        <div style="font-size:22px;font-weight:800;margin-bottom:10px;">
-        👨‍🏫 {nama_kepsek}
-        </div>
-    
-        <div><b>NIP :</b> {nip}</div>
-        <div><b>NIK :</b> {nik}</div>
-        <div><b>No HP :</b> {nohp}</div>
-        <div><b>Jabatan :</b> {jabatan}</div>
-        <div><b>Jenis Pegawai :</b> {jenis_pegawai}</div>
-    
-        <hr>
-    
-        <div><b>Unit Kerja :</b> {unor}</div>
-        <div><b>Cabang Dinas :</b> {cabdis}</div>
-        <div><b>Alamat :</b> {alamat}</div>
-    
-        </div>
-    
-        </div>
-        """
-    
-        components.html(html_kepsek, height=320)
     # =========================================================
     # PILIH BARIS TERBAIK (RIWAYAT DAPODIK TIDAK KOSONG)
     # =========================================================
@@ -1353,12 +1290,37 @@ def page_detail():
             row = kandidat.iloc[0]
     
     
+    # =========================================================
+    # DATA KEPALA SEKOLAH (DATABASE + SIMPEG)
+    # =========================================================
+    
     st.divider()
-    st.markdown("## 👨‍🏫 Data SIMPEG Kepala Sekolah")
+    st.markdown("## 👨‍🏫 Data Kepala Sekolah")
     
-    nama_kepsek = row.get("Nama Kepala Sekolah", "")
+    nama_kepsek = row.get("Nama Kepala Sekolah", "-")
+    nama_sekolah = row.get("Nama Sekolah", "-")
+    jenjang = row.get("Jenjang", "-")
+    tahun_pengangkatan = row.get("Tahun Pengangkatan", "-")
+    tahun_berjalan = row.get("Tahun Berjalan", "-")
+    periode = row.get("Masa Periode Sesuai KSPSTK", "-")
+    status = row.get("Status", "-")
+    cabdis = row.get("Cabang Dinas", "-")
+    kabupaten = row.get("Kabupaten", "-")
+    ket_jabatan = row.get("Keterangan Jabatan", "-")
+    ket_bcks = row.get("Ket Sertifikat BCKS", "-")
     
+    # ================================
+    # AMBIL DATA SIMPEG
+    # ================================
     data_kepsek = ambil_data_simpeg(nama_kepsek)
+    
+    nip = "-"
+    nik = "-"
+    nohp = "-"
+    jabatan = "-"
+    jenis_pegawai = "-"
+    unor = "-"
+    alamat = "-"
     
     if data_kepsek is not None and not data_kepsek.empty:
     
@@ -1368,20 +1330,14 @@ def page_detail():
         nik = bersihkan(kepsek_row.get("NIK", "-"))
         nohp = bersihkan(kepsek_row.get("NO HP", "-"))
         jabatan = bersihkan(kepsek_row.get("JABATAN", "-"))
-        jenis = bersihkan(kepsek_row.get("JENIS PEGAWAI", "-"))
-        unit = bersihkan(kepsek_row.get("UNIT KERJA", "-"))
-        cabdis = bersihkan(row.get("Cabang Dinas", "-"))
+        jenis_pegawai = bersihkan(kepsek_row.get("JENIS PEGAWAI", "-"))
+        unor = bersihkan(kepsek_row.get("UNIT KERJA", "-"))
+        alamat = bersihkan(kepsek_row.get("ALAMAT", "-"))
     
-    else:
     
-        nip = "-"
-        nik = "-"
-        nohp = "-"
-        jabatan = "-"
-        jenis = "-"
-        unit = row.get("Nama Sekolah", "-")
-        cabdis = row.get("Cabang Dinas", "-")
-    
+    # =========================================================
+    # CARD TAMPILAN KEPALA SEKOLAH
+    # =========================================================
     
     html_kepsek = f"""
     <div style="
@@ -1391,7 +1347,7 @@ def page_detail():
     border-left:8px solid #28a745;
     box-shadow:0 3px 10px rgba(0,0,0,0.12);
     display:flex;
-    gap:20px;
+    gap:25px;
     align-items:flex-start;
     ">
     
@@ -1399,30 +1355,42 @@ def page_detail():
     <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="120">
     </div>
     
-    <div>
+    <div style="flex:1">
     
     <div style="font-size:22px;font-weight:800;margin-bottom:10px;">
     👨‍🏫 {nama_kepsek}
     </div>
     
-    <div><b>NIP :</b> {nip}</div>
-    <div><b>NIK :</b> {nik}</div>
-    <div><b>No HP :</b> {nohp}</div>
-    <div><b>Jabatan :</b> {jabatan}</div>
-    <div><b>Jenis Pegawai :</b> {jenis}</div>
+    <div><b>Nama Sekolah :</b> {nama_sekolah}</div>
+    <div><b>Jenjang :</b> {jenjang}</div>
+    <div><b>Cabang Dinas :</b> {cabdis}</div>
+    <div><b>Kabupaten :</b> {kabupaten}</div>
+    <div><b>Status :</b> {status}</div>
     
     <hr>
     
-    <div><b>Unit Kerja :</b> {unit}</div>
-    <div><b>Cabang Dinas :</b> {cabdis}</div>
+    <div><b>Tahun Pengangkatan :</b> {tahun_pengangkatan}</div>
+    <div><b>Tahun Berjalan :</b> {tahun_berjalan}</div>
+    <div><b>Masa Periode :</b> {periode}</div>
+    <div><b>Keterangan Jabatan :</b> {ket_jabatan}</div>
+    <div><b>Sertifikat BCKS :</b> {ket_bcks}</div>
+    
+    <hr>
+    
+    <div><b>NIP :</b> {nip}</div>
+    <div><b>NIK :</b> {nik}</div>
+    <div><b>No HP :</b> {nohp}</div>
+    <div><b>Jabatan SIMPEG :</b> {jabatan}</div>
+    <div><b>Jenis Pegawai :</b> {jenis_pegawai}</div>
+    <div><b>Unit Kerja :</b> {unor}</div>
+    <div><b>Alamat :</b> {alamat}</div>
     
     </div>
+    
     </div>
     """
     
-    components.html(html_kepsek, height=320)
-    
-    
+    components.html(html_kepsek, height=420)
     # =========================================================
     # RIWAYAT DAPODIK
     # =========================================================
@@ -1946,6 +1914,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
