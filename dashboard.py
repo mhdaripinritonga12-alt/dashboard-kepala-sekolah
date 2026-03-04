@@ -534,7 +534,21 @@ def ambil_data_simpeg(nama_guru):
 
     hasil = df_guru[df_guru["NAMA GURU"].astype(str).str.strip() == nama_guru].copy()
     return hasil
+# =========================================================
+# FOTO SIMPEG (AUTO GENERATE DARI NIP)
+# =========================================================
+def ambil_foto_simpeg(nip):
+    if nip is None:
+        return None
 
+    nip = str(nip).strip()
+
+    if nip == "" or nip == "-" or nip.lower() == "nan":
+        return None
+
+    # jika SIMPEG punya endpoint foto
+    url = f"https://simpeg.sumutprov.go.id/foto/{nip}.jpg"
+    return url
 # =========================================================
 # DETEKSI KOLOM SIMPEG (UNOR/CABDIS/ALAMAT)
 # =========================================================
@@ -1430,8 +1444,17 @@ def page_detail():
                 nama_guru = bersihkan(calon_row.get(kol_nama, "-"))
             else:
                 nama_guru = str(calon)
+    # =========================================================
+    # FOTO SIMPEG
+    # =========================================================
+    foto_url = ambil_foto_simpeg(nip)
     
-            html_card = f"""
+    if foto_url:
+        foto_html = f'<img src="{foto_url}" width="120" style="border-radius:10px;">'
+    else:
+        foto_html = ""
+    
+    html_card = f"""
     <div style="
         background: white;
         border-radius: 16px;
@@ -1441,24 +1464,35 @@ def page_detail():
         margin-top: 10px;
         margin-bottom: 10px;
         line-height: 1.6;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
     ">
-        <div style="font-size:18px; font-weight:800; margin-bottom:10px;">
-            👤 {nama_guru}
-        </div>
     
-        <div style="margin-bottom:8px;"><b>NIP:</b> {nip}</div>
-        <div style="margin-bottom:8px;"><b>NIK:</b> {nik}</div>
-        <div style="margin-bottom:8px;"><b>No HP:</b> {nohp}</div>
-        <div style="margin-bottom:8px;"><b>Jabatan:</b> {jabatan}</div>
-        <div style="margin-bottom:8px;"><b>Jenis Pegawai:</b> {jenis_pegawai}</div>
+    <div style="display:flex; gap:20px;">
     
-        <hr style="margin:12px 0;">
+    <div>
+    {foto_html}
+    </div>
     
-        <div style="margin-bottom:8px;"><b>UNOR / Unit Kerja:</b> {unor}</div>
-        <div style="margin-bottom:8px;"><b>Cabang Dinas:</b> {cabdis}</div>
-        <div style="margin-bottom:8px;"><b>Alamat:</b> {alamat}</div>
+    <div>
+    
+    <div style="font-size:18px; font-weight:800; margin-bottom:10px;">
+    👤 {nama_guru}
+    </div>
+    
+    <div><b>NIP:</b> {nip}</div>
+    <div><b>NIK:</b> {nik}</div>
+    <div><b>No HP:</b> {nohp}</div>
+    <div><b>Jabatan:</b> {jabatan}</div>
+    <div><b>Jenis Pegawai:</b> {jenis_pegawai}</div>
+    
+    <hr style="margin:12px 0;">
+    
+    <div><b>UNOR / Unit Kerja:</b> {unor}</div>
+    <div><b>Cabang Dinas:</b> {cabdis}</div>
+    <div><b>Alamat:</b> {alamat}</div>
+    
+    </div>
+    
+    </div>
     </div>
     """
     
@@ -1763,6 +1797,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
