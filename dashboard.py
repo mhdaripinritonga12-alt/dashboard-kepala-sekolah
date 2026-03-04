@@ -1276,7 +1276,7 @@ def page_detail():
     
     nama_kepsek = row.get("Nama Kepala Sekolah", "")
 
-data_kepsek = ambil_data_simpeg(nama_kepsek)
+    data_kepsek = ambil_data_simpeg(nama_kepsek)
     nama_kepsek = row.get("Nama Kepala Sekolah", "")
     data_kepsek = ambil_data_simpeg(nama_kepsek)
     st.markdown("## 👨‍🏫 Data SIMPEG Kepala Sekolah")
@@ -1882,6 +1882,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
