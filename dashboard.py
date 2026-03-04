@@ -1454,56 +1454,56 @@ def page_detail():
                 nama_guru = bersihkan(calon_row.get(kol_nama, "-"))
             else:
                 nama_guru = str(calon)
-    # =========================================================
-    # FOTO SIMPEG
-    # =========================================================
-    foto_url = ambil_foto_simpeg(nip)
+        # =========================================================
+        # FOTO SIMPEG
+        # =========================================================
+        foto_url = ambil_foto_simpeg(nip)
+        
+        if foto_url:
+            foto_html = f'<img src="{foto_url}" width="120" style="border-radius:10px;">'
+        else:
+            foto_html = ""
+        
+    html_card = f"""
+    <div style="
+        background: white;
+        border-radius: 16px;
+        padding: 16px;
+        border-left: 8px solid #0d6efd;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    ">
+    <div style="display:flex; gap:20px;">
     
-    if foto_url:
-        foto_html = f'<img src="{foto_url}" width="120" style="border-radius:10px;">'
-    else:
-        foto_html = ""
+    <div>
+    {foto_html}
+    </div>
     
-html_card = f"""
-<div style="
-    background: white;
-    border-radius: 16px;
-    padding: 16px;
-    border-left: 8px solid #0d6efd;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-">
-<div style="display:flex; gap:20px;">
-
-<div>
-{foto_html}
-</div>
-
-<div>
-
-<div style="font-size:18px; font-weight:800;">
-👤 {nama_guru}
-</div>
-
-<div><b>NIP:</b> {nip}</div>
-<div><b>NIK:</b> {nik}</div>
-<div><b>No HP:</b> {nohp}</div>
-<div><b>Jabatan:</b> {jabatan}</div>
-
-<hr>
-
-<div><b>UNOR:</b> {unor}</div>
-<div><b>Cabdis:</b> {cabdis}</div>
-<div><b>Alamat:</b> {alamat}</div>
-
-</div>
-
-</div>
-</div>
-"""
-
-components.html(html_card, height=450, scrolling=True)
-
-colbtn1, colbtn2 = st.columns(2)
+    <div>
+    
+    <div style="font-size:18px; font-weight:800;">
+    👤 {nama_guru}
+    </div>
+    
+    <div><b>NIP:</b> {nip}</div>
+    <div><b>NIK:</b> {nik}</div>
+    <div><b>No HP:</b> {nohp}</div>
+    <div><b>Jabatan:</b> {jabatan}</div>
+    
+    <hr>
+    
+    <div><b>UNOR:</b> {unor}</div>
+    <div><b>Cabdis:</b> {cabdis}</div>
+    <div><b>Alamat:</b> {alamat}</div>
+    
+    </div>
+    
+    </div>
+    </div>
+    """
+    
+    components.html(html_card, height=450, scrolling=True)
+    
+    colbtn1, colbtn2 = st.columns(2)
     # ============================================
     # KOLOM TOMBOL SIMPAN & RESET
     # ============================================
@@ -1803,6 +1803,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
