@@ -1354,86 +1354,73 @@ def page_detail():
     
     
     st.divider()
-    st.markdown("## 📝 Data Lengkap (Database)")
+    st.markdown("## 👨‍🏫 Data SIMPEG Kepala Sekolah")
     
-    # =========================================================
-    # STATUS REGULATIF
-    # =========================================================
+    nama_kepsek = row.get("Nama Kepala Sekolah", "")
     
-    status_regulatif = map_status(row)
+    data_kepsek = ambil_data_simpeg(nama_kepsek)
     
-    bg_status = "#dbeeff"
+    if data_kepsek is not None and not data_kepsek.empty:
     
-    if status_regulatif == "Aktif Periode Ke 2":
-        bg_status = "#fff3cd"
+        kepsek_row = data_kepsek.iloc[0]
     
-    elif status_regulatif == "Lebih dari 2 Periode":
-        bg_status = "#f8d7da"
+        nip = bersihkan(kepsek_row.get("NIP", "-"))
+        nik = bersihkan(kepsek_row.get("NIK", "-"))
+        nohp = bersihkan(kepsek_row.get("NO HP", "-"))
+        jabatan = bersihkan(kepsek_row.get("JABATAN", "-"))
+        jenis = bersihkan(kepsek_row.get("JENIS PEGAWAI", "-"))
+        unit = bersihkan(kepsek_row.get("UNIT KERJA", "-"))
+        cabdis = bersihkan(row.get("Cabang Dinas", "-"))
     
-    elif status_regulatif == "Plt":
-        bg_status = "#d1e7dd"
+    else:
     
-    
-    # =========================================================
-    # DATA TAMBAHAN
-    # =========================================================
-    
-    ket_jabatan = row.get("Keterangan Jabatan", "-")
-    ket_bcks = row.get("Ket Sertifikat BCKS", "-")
-    
-    bg_jabatan = get_warna_jabatan(ket_jabatan)
-    bg_bcks = get_warna_bcks(ket_bcks)
+        nip = "-"
+        nik = "-"
+        nohp = "-"
+        jabatan = "-"
+        jenis = "-"
+        unit = row.get("Nama Sekolah", "-")
+        cabdis = row.get("Cabang Dinas", "-")
     
     
-    # =========================================================
-    # TAMPIL DATA 2 KOLOM
-    # =========================================================
+    html_kepsek = f"""
+    <div style="
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    border-left:8px solid #28a745;
+    box-shadow:0 3px 10px rgba(0,0,0,0.12);
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+    ">
     
-    col_left, col_right = st.columns(2)
+    <div>
+    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="120">
+    </div>
     
-    with col_left:
+    <div>
     
-        tampil_colored_field("NO", row.get("NO", "-"))
-        tampil_colored_field("Nama Kepala Sekolah", row.get("Nama Kepala Sekolah", "-"))
-        tampil_colored_field("Cabang Dinas", row.get("Cabang Dinas", "-"))
-        tampil_colored_field("Kabupaten", row.get("Kabupaten", "-"))
-        tampil_colored_field("Status", row.get("Status", "-"))
+    <div style="font-size:22px;font-weight:800;margin-bottom:10px;">
+    👨‍🏫 {nama_kepsek}
+    </div>
     
-        tampil_colored_field(
-            "Ket Sertifikat BCKS",
-            ket_bcks,
-            bg=bg_bcks
-        )
+    <div><b>NIP :</b> {nip}</div>
+    <div><b>NIK :</b> {nik}</div>
+    <div><b>No HP :</b> {nohp}</div>
+    <div><b>Jabatan :</b> {jabatan}</div>
+    <div><b>Jenis Pegawai :</b> {jenis}</div>
     
-        tampil_colored_field(
-            "Keterangan Akhir",
-            row.get("Keterangan Akhir", "-")
-        )
+    <hr>
     
-        tampil_colored_field(
-            "Status Regulatif",
-            status_regulatif,
-            bg=bg_status
-        )
+    <div><b>Unit Kerja :</b> {unit}</div>
+    <div><b>Cabang Dinas :</b> {cabdis}</div>
     
+    </div>
+    </div>
+    """
     
-    with col_right:
-    
-        tampil_colored_field("Nama Sekolah", row.get("Nama Sekolah", "-"))
-        tampil_colored_field("Jenjang", row.get("Jenjang", "-"))
-        tampil_colored_field("Tahun Pengangkatan", row.get("Tahun Pengangkatan", "-"))
-        tampil_colored_field("Tahun Berjalan", row.get("Tahun Berjalan", "-"))
-    
-        tampil_colored_field(
-            "Masa Periode Sesuai KSPSTK",
-            row.get("Masa Periode Sesuai KSPSTK", "-")
-        )
-    
-        tampil_colored_field(
-            "Keterangan Jabatan",
-            ket_jabatan,
-            bg=bg_jabatan
-        )
+    components.html(html_kepsek, height=320)
     
     
     # =========================================================
@@ -1968,6 +1955,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
