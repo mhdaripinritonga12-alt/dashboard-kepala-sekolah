@@ -1483,9 +1483,10 @@ if not data_kepsek.empty:
     
         data_calon = ambil_data_simpeg(calon)
 
-        if data_calon is None or len(data_calon) == 0:
-            st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
-            return
+        def ambil_data_simpeg(nama):
+
+        if nama is None:
+            return pd.DataFrame()
         else:
             calon_row = data_calon.iloc[0]
             calon_row = calon_row.apply(lambda x: bersihkan(x))
@@ -1872,6 +1873,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
