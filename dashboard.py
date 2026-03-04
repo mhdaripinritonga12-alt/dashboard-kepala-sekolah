@@ -350,14 +350,40 @@ def load_data():
     return df_ks, df_guru
 
 df_ks, df_guru = load_data()
-# =========================================================
-# LOAD RIWAYAT DAPODIK
-# =========================================================
+# ==========================================
+# HITUNG TAHUN PENGANGKATAN DARI RIWAYAT
+# ==========================================
+
+tahun_pengangkatan = "-"
+tahun_berjalan = "-"
+
 try:
-    df_riwayat_dapodik = pd.read_excel(DATA_FILE, sheet_name="Riwayat_Dapodik", dtype=str)
-    df_riwayat_dapodik = df_riwayat_dapodik.fillna("")
+
+    nip_kepsek = str(row.get("NIP", "")).strip()
+
+    data_riwayat = df_riwayat_dapodik[
+        df_riwayat_dapodik["NIP"].astype(str).str.strip() == nip_kepsek
+    ]
+
+    if not data_riwayat.empty:
+
+        data_riwayat["TMT"] = pd.to_datetime(
+            data_riwayat["TMT"],
+            errors="coerce",
+            dayfirst=True
+        )
+
+        tmt_awal = data_riwayat["TMT"].min()
+
+        if pd.notnull(tmt_awal):
+
+            tahun_pengangkatan = int(tmt_awal.year)
+
+            from datetime import datetime
+            tahun_berjalan = datetime.now().year - tahun_pengangkatan
+
 except:
-    df_riwayat_dapodik = pd.DataFrame()
+    pass
 
 # =========================================================
 # ✅ DEBUG PLT: CEK APAKAH DATA PLT MASUK KE DF_KS
@@ -2026,6 +2052,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
