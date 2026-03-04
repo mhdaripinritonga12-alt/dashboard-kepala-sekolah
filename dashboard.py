@@ -528,33 +528,24 @@ def ambil_data_simpeg(nama_guru):
     if nama_guru is None:
         return pd.DataFrame()
 
-    nama_guru = str(nama_guru).strip()
+    nama_guru = str(nama_guru).strip().upper()
 
     if "NAMA GURU" not in df_guru.columns:
         return pd.DataFrame()
 
-    hasil = df_guru[
-        df_guru["NAMA GURU"].astype(str).str.strip() == nama_guru
-    ].copy()
+    df_tmp = df_guru.copy()
 
-    return hasil
-def ambil_foto_simpeg(nip):
-    if nip is None:
-        return None
+    # normalisasi nama di database
+    df_tmp["NAMA_GURU_FIX"] = (
+        df_tmp["NAMA GURU"]
+        .astype(str)
+        .str.replace("\xa0", " ", regex=False)
+        .str.strip()
+        .str.upper()
+    )
 
-    nip = str(nip).strip()
+    hasil = df_tmp[df_tmp["NAMA_GURU_FIX"] == nama_guru]
 
-    if nip == "" or nip == "-" or nip.lower() == "nan":
-        return None
-
-    url = f"https://simpeg.sumutprov.go.id/foto/{nip}.jpg"
-    return url
-    nama_guru = str(nama_guru).strip()
-
-    if "NAMA GURU" not in df_guru.columns:
-        return pd.DataFrame()
-
-    hasil = df_guru[df_guru["NAMA GURU"].astype(str).str.strip() == nama_guru].copy()
     return hasil
 # =========================================================
 # FOTO SIMPEG (AUTO GENERATE DARI NIP)
@@ -1916,6 +1907,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
