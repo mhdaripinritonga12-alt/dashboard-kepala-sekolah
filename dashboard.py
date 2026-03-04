@@ -1311,36 +1311,24 @@ def page_detail():
     nama_kepsek = row.get("Nama Kepala Sekolah", "-")
     nama_sekolah = row.get("Nama Sekolah", "-")
     jenjang = row.get("Jenjang", "-")
-    # =========================================================
-    # HITUNG TAHUN PENGANGKATAN DARI RIWAYAT DAPODIK
-    # =========================================================
+    # ==========================================
+    # HITUNG TAHUN PENGANGKATAN DARI RIWAYAT
+    # ==========================================
+    
     tahun_pengangkatan = "-"
     
     try:
     
-        if not df_riwayat_dapodik.empty:
+        if 'row_detail' in locals() and not row_detail.empty:
     
-            nama_kepsek = str(row.get("Nama Kepala Sekolah", "")).strip().upper()
+            if "TMT" in row_detail.columns:
     
-            data_riwayat = df_riwayat_dapodik[
-                df_riwayat_dapodik["Nama Kepala Sekolah"]
-                .astype(str)
-                .str.strip()
-                .str.upper()
-                == nama_kepsek
-            ]
+                tmt_series = pd.to_datetime(row_detail["TMT"], errors="coerce")
     
-            if not data_riwayat.empty and "TMT Tugas" in data_riwayat.columns:
-    
-                data_riwayat["TMT Tugas"] = pd.to_datetime(
-                    data_riwayat["TMT Tugas"],
-                    errors="coerce"
-                )
-    
-                tmt_awal = data_riwayat["TMT Tugas"].min()
+                tmt_awal = tmt_series.min()
     
                 if pd.notnull(tmt_awal):
-                    tahun_pengangkatan = tmt_awal.year
+                    tahun_pengangkatan = int(tmt_awal.year)
     
     except:
         pass
@@ -2029,6 +2017,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
