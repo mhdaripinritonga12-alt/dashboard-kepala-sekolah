@@ -1478,16 +1478,15 @@ if not data_kepsek.empty:
     # ============================================
     # TAMPILKAN DATA SIMPEG CALON
     # ============================================
+    
     if calon != "-- Pilih Calon Pengganti --":
+    
         st.markdown("### 📌 Data SIMPEG Calon Pengganti")
     
         data_calon = ambil_data_simpeg(calon)
-
-        def ambil_data_simpeg(nama):
-
-        if nama is None:
-            return pd.DataFrame()
-        else:
+    
+        if data_calon is not None and not data_calon.empty:
+    
             calon_row = data_calon.iloc[0]
             calon_row = calon_row.apply(lambda x: bersihkan(x))
     
@@ -1523,6 +1522,9 @@ if not data_kepsek.empty:
                 nama_guru = bersihkan(calon_row.get(kol_nama, "-"))
             else:
                 nama_guru = str(calon)
+    
+        else:
+            st.warning("Data calon pengganti tidak ditemukan di SIMPEG.")
         # =========================================================
         # FOTO SIMPEG
         # =========================================================
@@ -1873,6 +1875,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
