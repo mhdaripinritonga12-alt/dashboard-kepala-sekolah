@@ -535,8 +535,7 @@ def ambil_data_simpeg(nama_guru):
 
     df_tmp = df_guru.copy()
 
-    # normalisasi nama di database
-    df_tmp["NAMA_GURU_FIX"] = (
+    df_tmp["NAMA_FIX"] = (
         df_tmp["NAMA GURU"]
         .astype(str)
         .str.replace("\xa0", " ", regex=False)
@@ -544,7 +543,19 @@ def ambil_data_simpeg(nama_guru):
         .str.upper()
     )
 
-    hasil = df_tmp[df_tmp["NAMA_GURU_FIX"] == nama_guru]
+    # cari jika nama ada di dalam string
+    hasil = df_tmp[df_tmp["NAMA_FIX"].str.contains(nama_guru, na=False)]
+
+    # jika tidak ketemu, coba balik kata
+    if hasil.empty:
+
+        kata = nama_guru.split()
+
+        if len(kata) >= 2:
+
+            balik = kata[-1] + " " + kata[0]
+
+            hasil = df_tmp[df_tmp["NAMA_FIX"].str.contains(balik, na=False)]
 
     return hasil
 # =========================================================
@@ -1907,6 +1918,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
