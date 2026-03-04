@@ -1319,20 +1319,29 @@ def page_detail():
     
     try:
     
-        if 'row_detail' in locals() and not row_detail.empty:
+        nip_kepsek = str(row.get("NIP", "")).strip()
     
-            if "TMT" in row_detail.columns:
+        data_riwayat = df_riwayat_dapodik[
+            df_riwayat_dapodik["NIP"].astype(str).str.strip() == nip_kepsek
+        ]
     
-                tmt_series = pd.to_datetime(row_detail["TMT"], errors="coerce")
+        if not data_riwayat.empty:
     
-                tmt_awal = tmt_series.min()
+            tmt_series = pd.to_datetime(data_riwayat["TMT"], errors="coerce")
     
-                if pd.notnull(tmt_awal):
-                    tahun_pengangkatan = int(tmt_awal.year)
+            tmt_awal = tmt_series.min()
+    
+            if pd.notnull(tmt_awal):
+                tahun_pengangkatan = int(tmt_awal.year)
     
     except:
         pass
-    tahun_berjalan = row.get("Tahun Berjalan", "-")
+    from datetime import datetime
+
+    if tahun_pengangkatan != "-":
+        tahun_berjalan = datetime.now().year - tahun_pengangkatan
+    else:
+        tahun_berjalan = "-"
     periode = row.get("Masa Periode Sesuai KSPSTK", "-")
     status = row.get("Status", "-")
     cabdis = row.get("Cabang Dinas", "-")
@@ -2017,6 +2026,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
