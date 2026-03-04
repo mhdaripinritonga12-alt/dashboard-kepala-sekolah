@@ -1484,6 +1484,37 @@ def page_detail():
                 kolom = [k for k in kolom if k in data_riwayat.columns]
     
                 df_tampil = data_riwayat[kolom].copy()
+                # ======================================
+                # TMT PERTAMA KEPALA SEKOLAH
+                # ======================================
+                
+                from datetime import datetime
+                
+                tmt_pertama = None
+                tahun_pengangkatan = "-"
+                tahun_berjalan = "-"
+                
+                if "TMT" in df_tampil.columns:
+                
+                    # ubah ke datetime
+                    tmt_series = pd.to_datetime(df_tampil["TMT"], errors="coerce")
+                
+                    # ambil tanggal paling awal
+                    tmt_pertama = tmt_series.min()
+                
+                    if pd.notna(tmt_pertama):
+                
+                        today = datetime.today()
+                
+                        selisih = today - tmt_pertama
+                
+                        tahun = selisih.days // 365
+                        bulan = (selisih.days % 365) // 30
+                        hari = (selisih.days % 365) % 30
+                
+                        tahun_pengangkatan = tmt_pertama.strftime("%d-%m-%Y")
+                
+                        tahun_berjalan = f"{tahun} Tahun {bulan} Bulan {hari} Hari"
                 # ======================================================
                 # AMBIL TMT PERTAMA (AWAL MENJABAT KEPALA SEKOLAH)
                 # ======================================================
@@ -2057,6 +2088,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
