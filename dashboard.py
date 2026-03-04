@@ -1353,55 +1353,73 @@ def page_detail():
     html_kepsek = f"""
     <div style="
     background:white;
-    border-radius:16px;
-    padding:20px;
-    border-left:8px solid #28a745;
-    box-shadow:0 3px 10px rgba(0,0,0,0.12);
+    border-radius:18px;
+    padding:25px;
+    border-left:10px solid #2e8b57;
+    box-shadow:0 4px 14px rgba(0,0,0,0.15);
     display:flex;
-    gap:25px;
+    gap:30px;
     align-items:flex-start;
+    flex-wrap:wrap;
     ">
     
     <div>
-    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="120">
+    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+    style="width:120px;border-radius:10px;">
     </div>
     
-    <div style="flex:1">
+    <div style="flex:1;min-width:350px">
     
-    <div style="font-size:22px;font-weight:800;margin-bottom:10px;">
+    <div style="font-size:24px;font-weight:800;margin-bottom:12px;color:#1b4332">
     👨‍🏫 {nama_kepsek}
     </div>
     
-    <div><b>Nama Sekolah :</b> {nama_sekolah}</div>
-    <div><b>Jenjang :</b> {jenjang}</div>
-    <div><b>Cabang Dinas :</b> {cabdis}</div>
-    <div><b>Kabupaten :</b> {kabupaten}</div>
-    <div><b>Status :</b> {status}</div>
+    <div style="display:grid;grid-template-columns:200px auto;gap:6px;font-size:15px">
     
-    <hr>
+    <div><b>Nama Sekolah</b></div><div>: {nama_sekolah}</div>
+    <div><b>Jenjang</b></div><div>: {jenjang}</div>
+    <div><b>Cabang Dinas</b></div><div>: {cabdis}</div>
+    <div><b>Kabupaten</b></div><div>: {kabupaten}</div>
+    <div><b>Status</b></div><div>: {status}</div>
     
-    <div><b>Tahun Pengangkatan :</b> {tahun_pengangkatan}</div>
-    <div><b>Tahun Berjalan :</b> {tahun_berjalan}</div>
-    <div><b>Masa Periode :</b> {periode}</div>
-    <div><b>Keterangan Jabatan :</b> {ket_jabatan}</div>
-    <div><b>Sertifikat BCKS :</b> {ket_bcks}</div>
+    </div>
     
-    <hr>
+    <hr style="margin:12px 0">
     
-    <div><b>NIP :</b> {nip}</div>
-    <div><b>NIK :</b> {nik}</div>
-    <div><b>No HP :</b> {nohp}</div>
-    <div><b>Jabatan SIMPEG :</b> {jabatan}</div>
-    <div><b>Jenis Pegawai :</b> {jenis_pegawai}</div>
-    <div><b>Unit Kerja :</b> {unor}</div>
-    <div><b>Alamat :</b> {alamat}</div>
+    <div style="display:grid;grid-template-columns:200px auto;gap:6px;font-size:15px">
+    
+    <div><b>Tahun Pengangkatan</b></div><div>: {tahun_pengangkatan}</div>
+    <div><b>Tahun Berjalan</b></div><div>: {tahun_berjalan}</div>
+    <div><b>Masa Periode</b></div><div>: {periode}</div>
+    <div><b>Keterangan Jabatan</b></div><div>: {ket_jabatan}</div>
+    <div><b>Sertifikat BCKS</b></div><div>: {ket_bcks}</div>
+    
+    </div>
+    
+    <hr style="margin:12px 0">
+    
+    <div style="display:grid;grid-template-columns:200px auto;gap:6px;font-size:15px">
+    
+    <div><b>NIP</b></div><div>: {nip}</div>
+    <div><b>NIK</b></div><div>: {nik}</div>
+    <div><b>No HP</b></div><div>: {nohp}</div>
+    <div><b>Jabatan SIMPEG</b></div><div>: {jabatan}</div>
+    <div><b>Jenis Pegawai</b></div><div>: {jenis_pegawai}</div>
+    <div><b>Unit Kerja</b></div><div>: {unor}</div>
+    
+    <div><b>Alamat</b></div>
+    <div style="word-wrap:break-word;white-space:normal">
+    : {alamat}
+    </div>
+    
+    </div>
     
     </div>
     
     </div>
     """
     
-    components.html(html_kepsek, height=420)
+    components.html(html_kepsek, height=450)
     # =========================================================
     # RIWAYAT DAPODIK
     # =========================================================
@@ -1927,6 +1945,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
