@@ -1419,7 +1419,7 @@ def page_detail():
     </div>
     """
     
-    components.html(html_kepsek, height=400)
+    components.html(html_kepsek, height=500)
     # =========================================================
     # RIWAYAT DAPODIK
     # =========================================================
@@ -1945,6 +1945,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
