@@ -1474,6 +1474,22 @@ def page_detail():
                 kolom = [k for k in kolom if k in data_riwayat.columns]
     
                 df_tampil = data_riwayat[kolom].copy()
+
+                # =========================================================
+                # FORMAT TANGGAL TMT & TST (ANTI ERROR)
+                # =========================================================
+                if "TMT Tugas" in df_tampil.columns:
+                    df_tampil["TMT Tugas"] = pd.to_datetime(
+                        df_tampil["TMT Tugas"], errors="coerce"
+                    ).dt.strftime("%d-%m-%Y")
+                
+                if "TST Tugas" in df_tampil.columns:
+                
+                    df_tampil["TST Tugas"] = pd.to_datetime(
+                        df_tampil["TST Tugas"], errors="coerce"
+                    ).dt.strftime("%d-%m-%Y")
+                
+                    df_tampil["TST Tugas"] = df_tampil["TST Tugas"].replace("NaT", "Sekarang")
     
                 df_tampil.insert(0, "No", range(1, len(df_tampil) + 1))
     
@@ -2020,5 +2036,6 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
