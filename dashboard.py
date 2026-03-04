@@ -1421,7 +1421,7 @@ def page_detail():
     
     components.html(html_kepsek, height=550)
     # =========================================================
-    # RIWAYAT DAPODIK
+    # RIWAYAT DAPODIK (VERSI TEKS)
     # =========================================================
     
     kol_riwayat = cari_kolom_riwayat_dapodik(df_ks)
@@ -1440,16 +1440,16 @@ def page_detail():
     )
     
     
-    # ======================================================
-    # RIWAYAT DAPODIK
-    # ======================================================
+    # =========================================================
+    # RIWAYAT DAPODIK (TABEL)
+    # =========================================================
     
     st.divider()
     st.markdown("## 📚 Riwayat Dapodik")
     
     try:
     
-        if 'row_detail' in locals() and row_detail is not None and not row_detail.empty:
+        if "row_detail" in locals() and row_detail is not None and not row_detail.empty:
     
             kolom_dibutuhkan = [
                 "Jabatan",
@@ -1462,7 +1462,7 @@ def page_detail():
     
             kolom_tersedia = [k for k in kolom_dibutuhkan if k in row_detail.columns]
     
-            if len(kolom_tersedia) > 0:
+            if kolom_tersedia:
     
                 df_riwayat = row_detail[kolom_tersedia].copy()
     
@@ -1512,7 +1512,7 @@ def page_detail():
     
             else:
     
-                st.info("Data riwayat dapodik tidak tersedia")
+                st.info("Kolom riwayat dapodik tidak ditemukan")
     
         else:
     
@@ -1523,9 +1523,9 @@ def page_detail():
         st.warning("Riwayat dapodik tidak dapat ditampilkan")
     
     
-    # ======================================================
+    # =========================================================
     # STATUS REGULATIF
-    # ======================================================
+    # =========================================================
     
     try:
         status_regulatif = map_status(row)
@@ -1533,9 +1533,23 @@ def page_detail():
         status_regulatif = "-"
     
     
-    # ======================================================
-    # CALON PENGGANTI
-    # ======================================================
+    # =========================================================
+    # CALON PENGGANTI (ANTI ERROR)
+    # =========================================================
+    
+    pengganti = ""
+    pengganti_excel = ""
+    
+    try:
+        pengganti = st.session_state.get("calon_pengganti", "")
+    except:
+        pass
+    
+    try:
+        pengganti_excel = row.get("Calon Pengganti", "")
+    except:
+        pass
+    
     
     if pengganti:
     
@@ -1555,7 +1569,6 @@ def page_detail():
     
     
     st.divider()
-    
     # =========================================================
     # ROLE VIEW ONLY
     # =========================================================
@@ -2027,6 +2040,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
