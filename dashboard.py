@@ -524,8 +524,20 @@ guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 # FUNGSI AMBIL DATA SIMPEG
 # =========================================================
 def ambil_data_simpeg(nama_guru):
+
     if nama_guru is None:
         return pd.DataFrame()
+
+    nama_guru = str(nama_guru).strip()
+
+    if "NAMA GURU" not in df_guru.columns:
+        return pd.DataFrame()
+
+    hasil = df_guru[
+        df_guru["NAMA GURU"].astype(str).str.strip() == nama_guru
+    ].copy()
+
+    return hasil
 def ambil_foto_simpeg(nip):
     if nip is None:
         return None
@@ -1415,9 +1427,10 @@ def page_detail():
         st.markdown("### 📌 Data SIMPEG Calon Pengganti")
     
         data_calon = ambil_data_simpeg(calon)
-    
-        if data_calon.empty:
+
+        if data_calon is None or len(data_calon) == 0:
             st.warning("⚠️ Data calon pengganti tidak ditemukan di SIMPEG.")
+            return
         else:
             calon_row = data_calon.iloc[0]
             calon_row = calon_row.apply(lambda x: bersihkan(x))
@@ -1804,6 +1817,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
