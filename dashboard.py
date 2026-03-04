@@ -1488,7 +1488,21 @@ def page_detail():
     except Exception as e:
     
         st.warning("Riwayat dapodik tidak dapat ditampilkan")
+    # =========================================================
+    # FORMAT TANGGAL TMT & TST
+    # =========================================================
+    if "TMT Tugas" in df_tampil.columns:
+        df_tampil["TMT Tugas"] = pd.to_datetime(
+            df_tampil["TMT Tugas"], errors="coerce"
+        ).dt.strftime("%d-%m-%Y")
     
+    if "TST Tugas" in df_tampil.columns:
+        df_tampil["TST Tugas"] = pd.to_datetime(
+            df_tampil["TST Tugas"], errors="coerce"
+        ).dt.strftime("%d-%m-%Y")
+    
+    # jika kosong tampilkan "Sekarang"
+    df_tampil["TST Tugas"] = df_tampil["TST Tugas"].replace("NaT", "Sekarang")
     # =========================================================
     # STATUS REGULATIF
     # =========================================================
@@ -2006,4 +2020,5 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
