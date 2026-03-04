@@ -1429,25 +1429,6 @@ def page_detail():
     """
     
     components.html(html_kepsek, height=550)
-    # =========================================================
-    # RIWAYAT DAPODIK (VERSI TEKS)
-    # =========================================================
-    
-    kol_riwayat = cari_kolom_riwayat_dapodik(df_ks)
-    
-    if kol_riwayat:
-        riwayat_dapodik = bersihkan(row.get(kol_riwayat, "-"))
-    else:
-        riwayat_dapodik = bersihkan(row.get("Riwayat Dapodik", "-"))
-    
-    riwayat_dapodik = format_riwayat_dapodik(riwayat_dapodik)
-    
-    tampil_colored_field(
-        "Riwayat Dapodik",
-        riwayat_dapodik.replace("\n", "<br>"),
-        bg="#f1f1f1"
-    )
-    
     
     # =========================================================
     # RIWAYAT DAPODIK (TABEL DARI SHEET RIWAYAT_DAPODIK)
@@ -2016,6 +1997,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
