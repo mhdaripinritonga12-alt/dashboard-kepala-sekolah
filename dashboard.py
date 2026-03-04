@@ -1464,50 +1464,46 @@ def page_detail():
     else:
         foto_html = ""
     
-    html_card = f"""
-    <div style="
-        background: white;
-        border-radius: 16px;
-        padding: 16px;
-        border-left: 8px solid #0d6efd;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-        margin-top: 10px;
-        margin-bottom: 10px;
-        line-height: 1.6;
-    ">
-    
-    <div style="display:flex; gap:20px;">
-    
-    <div>
-    {foto_html}
-    </div>
-    
-    <div>
-    
-    <div style="font-size:18px; font-weight:800; margin-bottom:10px;">
-    👤 {nama_guru}
-    </div>
-    
-    <div><b>NIP:</b> {nip}</div>
-    <div><b>NIK:</b> {nik}</div>
-    <div><b>No HP:</b> {nohp}</div>
-    <div><b>Jabatan:</b> {jabatan}</div>
-    <div><b>Jenis Pegawai:</b> {jenis_pegawai}</div>
-    
-    <hr style="margin:12px 0;">
-    
-    <div><b>UNOR / Unit Kerja:</b> {unor}</div>
-    <div><b>Cabang Dinas:</b> {cabdis}</div>
-    <div><b>Alamat:</b> {alamat}</div>
-    
-    </div>
-    
-    </div>
-    </div>
-    """
-    
-            components.html(html_card, height=450, scrolling=True)  
-    colbtn1, colbtn2 = st.columns(2)
+html_card = f"""
+<div style="
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    border-left: 8px solid #0d6efd;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+">
+<div style="display:flex; gap:20px;">
+
+<div>
+{foto_html}
+</div>
+
+<div>
+
+<div style="font-size:18px; font-weight:800;">
+👤 {nama_guru}
+</div>
+
+<div><b>NIP:</b> {nip}</div>
+<div><b>NIK:</b> {nik}</div>
+<div><b>No HP:</b> {nohp}</div>
+<div><b>Jabatan:</b> {jabatan}</div>
+
+<hr>
+
+<div><b>UNOR:</b> {unor}</div>
+<div><b>Cabdis:</b> {cabdis}</div>
+<div><b>Alamat:</b> {alamat}</div>
+
+</div>
+
+</div>
+</div>
+"""
+
+components.html(html_card, height=450, scrolling=True)
+
+colbtn1, colbtn2 = st.columns(2)
     # ============================================
     # KOLOM TOMBOL SIMPAN & RESET
     # ============================================
@@ -1807,6 +1803,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
