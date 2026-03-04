@@ -1463,8 +1463,9 @@ def page_detail():
             foto_html = f'<img src="{foto_url}" width="120" style="border-radius:10px;">'
         else:
             foto_html = ""
-        
-        html_card = f"""
+        if calon != "-- Pilih Calon Pengganti --":
+
+    html_card = f"""
     <div style="
         background:white;
         border-radius:16px;
@@ -1472,39 +1473,36 @@ def page_detail():
         box-shadow:0 3px 12px rgba(0,0,0,0.15);
         display:flex;
         gap:20px;
-        align-items:flex-start;
     ">
-    
+
     <div>
-    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" 
-    width="120" 
-    style="border-radius:10px;">
+    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="110">
     </div>
-    
-    <div style="flex:1">
-    
-    <div style="font-size:22px;font-weight:800;margin-bottom:10px;">
+
+    <div>
+
+    <div style="font-size:20px;font-weight:800;margin-bottom:10px;">
     👤 {nama_guru}
     </div>
-    
+
     <div><b>NIP :</b> {nip}</div>
     <div><b>NIK :</b> {nik}</div>
     <div><b>No HP :</b> {nohp}</div>
     <div><b>Jabatan :</b> {jabatan}</div>
     <div><b>Jenis Pegawai :</b> {jenis_pegawai}</div>
-    
-    <hr style="margin:10px 0">
-    
+
+    <hr>
+
     <div><b>Unit Kerja :</b> {unor}</div>
     <div><b>Cabang Dinas :</b> {cabdis}</div>
     <div><b>Alamat :</b> {alamat}</div>
-    
+
     </div>
-    
+
     </div>
     """
-    
-    components.html(html_card, height=450, scrolling=True)
+
+    components.html(html_card, height=320)
     
     colbtn1, colbtn2 = st.columns(2)
     # ============================================
@@ -1806,6 +1804,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
