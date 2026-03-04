@@ -1334,91 +1334,177 @@ def page_detail():
     
         components.html(html_kepsek, height=320)
     # =========================================================
-    # ✅ FIX FINAL: PILIH BARIS TERBAIK (RIWAYAT DAPODIK TIDAK KOSONG)
+    # PILIH BARIS TERBAIK (RIWAYAT DAPODIK TIDAK KOSONG)
     # =========================================================
+    
+    row = row_detail.iloc[0]
+    
     if "Riwayat Dapodik" in row_detail.columns:
-        kandidat = row_detail[row_detail["Riwayat Dapodik"].astype(str).str.strip() != ""]
-        kandidat = kandidat[kandidat["Riwayat Dapodik"].astype(str).str.lower().str.strip() != "nan"]
-
+    
+        kandidat = row_detail[
+            row_detail["Riwayat Dapodik"].astype(str).str.strip() != ""
+        ]
+    
+        kandidat = kandidat[
+            kandidat["Riwayat Dapodik"].astype(str).str.lower().str.strip() != "nan"
+        ]
+    
         if not kandidat.empty:
             row = kandidat.iloc[0]
-
+    
+    
     st.divider()
     st.markdown("## 📝 Data Lengkap (Database)")
-
+    
+    # =========================================================
+    # STATUS REGULATIF
+    # =========================================================
+    
     status_regulatif = map_status(row)
-
+    
     bg_status = "#dbeeff"
+    
     if status_regulatif == "Aktif Periode Ke 2":
         bg_status = "#fff3cd"
-    if status_regulatif == "Lebih dari 2 Periode":
+    
+    elif status_regulatif == "Lebih dari 2 Periode":
         bg_status = "#f8d7da"
-    if status_regulatif == "Plt":
+    
+    elif status_regulatif == "Plt":
         bg_status = "#d1e7dd"
-
+    
+    
+    # =========================================================
+    # DATA TAMBAHAN
+    # =========================================================
+    
     ket_jabatan = row.get("Keterangan Jabatan", "-")
     ket_bcks = row.get("Ket Sertifikat BCKS", "-")
-
+    
     bg_jabatan = get_warna_jabatan(ket_jabatan)
     bg_bcks = get_warna_bcks(ket_bcks)
-
+    
+    
+    # =========================================================
+    # TAMPIL DATA 2 KOLOM
+    # =========================================================
+    
     col_left, col_right = st.columns(2)
-
+    
     with col_left:
+    
         tampil_colored_field("NO", row.get("NO", "-"))
         tampil_colored_field("Nama Kepala Sekolah", row.get("Nama Kepala Sekolah", "-"))
         tampil_colored_field("Cabang Dinas", row.get("Cabang Dinas", "-"))
         tampil_colored_field("Kabupaten", row.get("Kabupaten", "-"))
         tampil_colored_field("Status", row.get("Status", "-"))
-        tampil_colored_field("Ket Sertifikat BCKS", ket_bcks, bg=bg_bcks)
-        tampil_colored_field("Keterangan Akhir", row.get("Keterangan Akhir", "-"))
-        tampil_colored_field("Status Regulatif", status_regulatif, bg=bg_status)
-
+    
+        tampil_colored_field(
+            "Ket Sertifikat BCKS",
+            ket_bcks,
+            bg=bg_bcks
+        )
+    
+        tampil_colored_field(
+            "Keterangan Akhir",
+            row.get("Keterangan Akhir", "-")
+        )
+    
+        tampil_colored_field(
+            "Status Regulatif",
+            status_regulatif,
+            bg=bg_status
+        )
+    
+    
     with col_right:
+    
         tampil_colored_field("Nama Sekolah", row.get("Nama Sekolah", "-"))
         tampil_colored_field("Jenjang", row.get("Jenjang", "-"))
         tampil_colored_field("Tahun Pengangkatan", row.get("Tahun Pengangkatan", "-"))
         tampil_colored_field("Tahun Berjalan", row.get("Tahun Berjalan", "-"))
-        tampil_colored_field("Masa Periode Sesuai KSPSTK", row.get("Masa Periode Sesuai KSPSTK", "-"))
-        tampil_colored_field("Keterangan Jabatan", ket_jabatan, bg=bg_jabatan)
-
-
+    
+        tampil_colored_field(
+            "Masa Periode Sesuai KSPSTK",
+            row.get("Masa Periode Sesuai KSPSTK", "-")
+        )
+    
+        tampil_colored_field(
+            "Keterangan Jabatan",
+            ket_jabatan,
+            bg=bg_jabatan
+        )
+    
+    
     # =========================================================
-    # ✅ FIX FINAL: RIWAYAT DAPODIK PASTI TAMPIL
+    # RIWAYAT DAPODIK
     # =========================================================
+    
     kol_riwayat = cari_kolom_riwayat_dapodik(df_ks)
-
+    
     if kol_riwayat:
         riwayat_dapodik = bersihkan(row.get(kol_riwayat, "-"))
     else:
         riwayat_dapodik = bersihkan(row.get("Riwayat Dapodik", "-"))
-
+    
     riwayat_dapodik = format_riwayat_dapodik(riwayat_dapodik)
-
+    
     tampil_colored_field(
         "Riwayat Dapodik",
         riwayat_dapodik.replace("\n", "<br>"),
         bg="#f1f1f1"
     )
-
-    pengganti_excel = row.get("Calon Pengganti jika Sudah Harus di Berhentikan", "-")
+    
+    
+    # =========================================================
+    # CALON PENGGANTI
+    # =========================================================
+    
+    pengganti_excel = row.get(
+        "Calon Pengganti jika Sudah Harus di Berhentikan",
+        "-"
+    )
+    
     pengganti = perubahan_kepsek.get(nama, "")
-
+    
     st.markdown("## 👤 Calon Pengganti Kepala Sekolah")
-
+    
     if pengganti:
-        tampil_colored_field("Calon Pengganti (Yang Dipilih Operator)", pengganti, bg="#d1e7dd")
+    
+        tampil_colored_field(
+            "Calon Pengganti (Yang Dipilih Operator)",
+            pengganti,
+            bg="#d1e7dd"
+        )
+    
     else:
-        tampil_colored_field("Calon Pengganti", pengganti_excel, bg="#fff3cd")
-
+    
+        tampil_colored_field(
+            "Calon Pengganti",
+            pengganti_excel,
+            bg="#fff3cd"
+        )
+    
+    
     st.divider()
-
+    
+    # =========================================================
+    # PASAL PERMENDIKDASMEN
+    # =========================================================
+    
     tampil_pasal_permendikdasmen(status_regulatif, ket_bcks)
-
+    
     st.divider()
-
-    is_view_only = st.session_state.role in ["Kadis", "View"]
-
+    
+    
+    # =========================================================
+    # ROLE VIEW ONLY
+    # =========================================================
+    
+    role_user = st.session_state.get("role", "")
+    
+    is_view_only = role_user in ["Kadis", "View"]
+    
     if is_view_only:
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
     # ============================================
@@ -1882,6 +1968,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
