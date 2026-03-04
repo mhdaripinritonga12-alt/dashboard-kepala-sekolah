@@ -1281,58 +1281,58 @@ def page_detail():
     data_kepsek = ambil_data_simpeg(nama_kepsek)
     st.markdown("## 👨‍🏫 Data SIMPEG Kepala Sekolah")
 
-if not data_kepsek.empty:
-
-    kepsek_row = data_kepsek.iloc[0]
-
-    nip = kepsek_row.get("NIP", "-")
-    nik = kepsek_row.get("NIK", "-")
-    nohp = kepsek_row.get("NO HP", "-")
-    jabatan = kepsek_row.get("JABATAN", "-")
-    jenis_pegawai = kepsek_row.get("JENIS PEGAWAI", "-")
-    unor = kepsek_row.get("UNIT KERJA", "-")
-    cabdis = kepsek_row.get("CABANG DINAS", "-")
-    alamat = kepsek_row.get("ALAMAT", "-")
-
-    html_kepsek = f"""
-    <div style="
-        background:white;
-        border-radius:16px;
-        padding:20px;
-        box-shadow:0 3px 12px rgba(0,0,0,0.15);
-        display:flex;
-        gap:20px;
-        align-items:flex-start;
-    ">
-
-    <div>
-    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="120">
-    </div>
-
-    <div>
-
-    <div style="font-size:22px;font-weight:800;margin-bottom:10px;">
-    👨‍🏫 {nama_kepsek}
-    </div>
-
-    <div><b>NIP :</b> {nip}</div>
-    <div><b>NIK :</b> {nik}</div>
-    <div><b>No HP :</b> {nohp}</div>
-    <div><b>Jabatan :</b> {jabatan}</div>
-    <div><b>Jenis Pegawai :</b> {jenis_pegawai}</div>
-
-    <hr>
-
-    <div><b>Unit Kerja :</b> {unor}</div>
-    <div><b>Cabang Dinas :</b> {cabdis}</div>
-    <div><b>Alamat :</b> {alamat}</div>
-
-    </div>
-
-    </div>
-    """
-
-    components.html(html_kepsek, height=320)
+    if not data_kepsek.empty:
+    
+        kepsek_row = data_kepsek.iloc[0]
+    
+        nip = kepsek_row.get("NIP", "-")
+        nik = kepsek_row.get("NIK", "-")
+        nohp = kepsek_row.get("NO HP", "-")
+        jabatan = kepsek_row.get("JABATAN", "-")
+        jenis_pegawai = kepsek_row.get("JENIS PEGAWAI", "-")
+        unor = kepsek_row.get("UNIT KERJA", "-")
+        cabdis = kepsek_row.get("CABANG DINAS", "-")
+        alamat = kepsek_row.get("ALAMAT", "-")
+    
+        html_kepsek = f"""
+        <div style="
+            background:white;
+            border-radius:16px;
+            padding:20px;
+            box-shadow:0 3px 12px rgba(0,0,0,0.15);
+            display:flex;
+            gap:20px;
+            align-items:flex-start;
+        ">
+    
+        <div>
+        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="120">
+        </div>
+    
+        <div>
+    
+        <div style="font-size:22px;font-weight:800;margin-bottom:10px;">
+        👨‍🏫 {nama_kepsek}
+        </div>
+    
+        <div><b>NIP :</b> {nip}</div>
+        <div><b>NIK :</b> {nik}</div>
+        <div><b>No HP :</b> {nohp}</div>
+        <div><b>Jabatan :</b> {jabatan}</div>
+        <div><b>Jenis Pegawai :</b> {jenis_pegawai}</div>
+    
+        <hr>
+    
+        <div><b>Unit Kerja :</b> {unor}</div>
+        <div><b>Cabang Dinas :</b> {cabdis}</div>
+        <div><b>Alamat :</b> {alamat}</div>
+    
+        </div>
+    
+        </div>
+        """
+    
+        components.html(html_kepsek, height=320)
     # =========================================================
     # ✅ FIX FINAL: PILIH BARIS TERBAIK (RIWAYAT DAPODIK TIDAK KOSONG)
     # =========================================================
@@ -1882,6 +1882,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
