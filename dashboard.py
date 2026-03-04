@@ -1464,40 +1464,43 @@ def page_detail():
         else:
             foto_html = ""
         
-    html_card = f"""
+        html_card = f"""
     <div style="
-        background: white;
-        border-radius: 16px;
-        padding: 16px;
-        border-left: 8px solid #0d6efd;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        background:white;
+        border-radius:16px;
+        padding:20px;
+        box-shadow:0 3px 12px rgba(0,0,0,0.15);
+        display:flex;
+        gap:20px;
+        align-items:flex-start;
     ">
-    <div style="display:flex; gap:20px;">
     
     <div>
-    {foto_html}
+    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" 
+    width="120" 
+    style="border-radius:10px;">
     </div>
     
-    <div>
+    <div style="flex:1">
     
-    <div style="font-size:18px; font-weight:800;">
+    <div style="font-size:22px;font-weight:800;margin-bottom:10px;">
     👤 {nama_guru}
     </div>
     
-    <div><b>NIP:</b> {nip}</div>
-    <div><b>NIK:</b> {nik}</div>
-    <div><b>No HP:</b> {nohp}</div>
-    <div><b>Jabatan:</b> {jabatan}</div>
+    <div><b>NIP :</b> {nip}</div>
+    <div><b>NIK :</b> {nik}</div>
+    <div><b>No HP :</b> {nohp}</div>
+    <div><b>Jabatan :</b> {jabatan}</div>
+    <div><b>Jenis Pegawai :</b> {jenis_pegawai}</div>
     
-    <hr>
+    <hr style="margin:10px 0">
     
-    <div><b>UNOR:</b> {unor}</div>
-    <div><b>Cabdis:</b> {cabdis}</div>
-    <div><b>Alamat:</b> {alamat}</div>
+    <div><b>Unit Kerja :</b> {unor}</div>
+    <div><b>Cabang Dinas :</b> {cabdis}</div>
+    <div><b>Alamat :</b> {alamat}</div>
     
     </div>
     
-    </div>
     </div>
     """
     
@@ -1803,6 +1806,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
