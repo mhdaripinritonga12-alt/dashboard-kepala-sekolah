@@ -1328,13 +1328,22 @@ def page_detail():
     
         kepsek_row = data_kepsek.iloc[0]
     
-        nip = bersihkan(kepsek_row.get("NIP", "-"))
-        nik = bersihkan(kepsek_row.get("NIK", "-"))
-        nohp = bersihkan(kepsek_row.get("NO HP", "-"))
-        jabatan = bersihkan(kepsek_row.get("JABATAN", "-"))
-        jenis_pegawai = bersihkan(kepsek_row.get("JENIS PEGAWAI", "-"))
-        unor = bersihkan(kepsek_row.get("UNIT KERJA", "-"))
-        alamat = bersihkan(kepsek_row.get("ALAMAT", "-"))
+        # DETEKSI KOLOM OTOMATIS
+        kol_nip = cari_kolom(data_kepsek, ["NIP"])
+        kol_nik = cari_kolom(data_kepsek, ["NIK"])
+        kol_hp = cari_kolom(data_kepsek, ["HP","TELP","HANDPHONE","NO HP","NO. HP"])
+        kol_jabatan = cari_kolom(data_kepsek, ["JABATAN"])
+        kol_jenis = cari_kolom(data_kepsek, ["JENIS PEGAWAI","STATUS PEGAWAI","KEDUDUKAN"])
+        kol_unor = cari_kolom(data_kepsek, ["UNOR","UNIT","INSTANSI","SATKER"])
+        kol_alamat = cari_kolom(data_kepsek, ["ALAMAT","DOMISILI","TEMPAT TINGGAL"])
+        
+        nip = bersihkan(kepsek_row.get(kol_nip, "-")) if kol_nip else "-"
+        nik = bersihkan(kepsek_row.get(kol_nik, "-")) if kol_nik else "-"
+        nohp = bersihkan(kepsek_row.get(kol_hp, "-")) if kol_hp else "-"
+        jabatan = bersihkan(kepsek_row.get(kol_jabatan, "-")) if kol_jabatan else "-"
+        jenis_pegawai = bersihkan(kepsek_row.get(kol_jenis, "-")) if kol_jenis else "-"
+        unor = bersihkan(kepsek_row.get(kol_unor, "-")) if kol_unor else "-"
+        alamat = bersihkan(kepsek_row.get(kol_alamat, "-")) if kol_alamat else "-"
     
     
     # =========================================================
@@ -1918,6 +1927,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
