@@ -1479,16 +1479,6 @@ def page_detail():
     # PASAL PERMENDIKDASMEN
     # =========================================================
     
-    st.markdown("## 👤 Calon Pengganti Kepala Sekolah")
-
-    if pengganti:
-    
-        tampil_colored_field(
-            "Calon Pengganti (Yang Dipilih Operator)",
-            pengganti,
-            bg="#d1e7dd"
-        )
-    
     else:
     
         tampil_colored_field(
@@ -1971,6 +1961,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
