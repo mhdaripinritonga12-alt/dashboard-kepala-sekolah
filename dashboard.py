@@ -351,6 +351,14 @@ def load_data():
 
 df_ks, df_guru = load_data()
 # =========================================================
+# LOAD RIWAYAT DAPODIK
+# =========================================================
+try:
+    df_riwayat_dapodik = pd.read_excel(DATA_FILE, sheet_name="Riwayat_Dapodik", dtype=str)
+    df_riwayat_dapodik = df_riwayat_dapodik.fillna("")
+except:
+    df_riwayat_dapodik = pd.DataFrame()
+# =========================================================
 # ✅ DEBUG PLT: CEK APAKAH DATA PLT MASUK KE DF_KS
 # =========================================================
 cek_plt = df_ks[
@@ -1441,7 +1449,7 @@ def page_detail():
     
     
     # =========================================================
-    # RIWAYAT DAPODIK (TABEL)
+    # RIWAYAT DAPODIK (TABEL - DARI SHEET RIWAYAT_DAPODIK)
     # =========================================================
     
     st.divider()
@@ -1449,26 +1457,36 @@ def page_detail():
     
     try:
     
-        if "row_detail" in locals() and row_detail is not None and not row_detail.empty:
+        if not df_riwayat_dapodik.empty:
     
-            kolom_dibutuhkan = [
-                "Jabatan",
-                "Satuan Pendidikan",
-                "Jumlah Jam",
-                "Nomor SK",
-                "TMT Tugas",
-                "TST Tugas"
+            nama_kepsek = str(row.get("Nama Kepala Sekolah", "")).strip().upper()
+    
+            data_riwayat = df_riwayat_dapodik[
+                df_riwayat_dapodik["Nama Kepala Sekolah"]
+                .astype(str)
+                .str.strip()
+                .str.upper()
+                == nama_kepsek
             ]
     
-            kolom_tersedia = [k for k in kolom_dibutuhkan if k in row_detail.columns]
+            if not data_riwayat.empty:
     
-            if kolom_tersedia:
+                kolom_tampil = [
+                    "Jabatan",
+                    "Satuan Pendidikan",
+                    "Jumlah Jam",
+                    "Nomor SK",
+                    "TMT Tugas",
+                    "TST Tugas"
+                ]
     
-                df_riwayat = row_detail[kolom_tersedia].copy()
+                kolom_tampil = [k for k in kolom_tampil if k in data_riwayat.columns]
     
-                df_riwayat.insert(0, "No", range(1, len(df_riwayat) + 1))
+                df_tampil = data_riwayat[kolom_tampil].copy()
     
-                html_table = df_riwayat.to_html(
+                df_tampil.insert(0, "No", range(1, len(df_tampil) + 1))
+    
+                html_table = df_tampil.to_html(
                     index=False,
                     classes="dapodik",
                     border=0
@@ -1511,17 +1529,14 @@ def page_detail():
                 st.markdown(style + html_table, unsafe_allow_html=True)
     
             else:
-    
-                st.info("Kolom riwayat dapodik tidak ditemukan")
+                st.info("Riwayat dapodik belum tersedia")
     
         else:
-    
-            st.info("Data riwayat dapodik belum tersedia")
+            st.info("Sheet Riwayat_Dapodik belum tersedia")
     
     except Exception as e:
     
         st.warning("Riwayat dapodik tidak dapat ditampilkan")
-    
     
     # =========================================================
     # STATUS REGULATIF
@@ -2040,6 +2055,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
