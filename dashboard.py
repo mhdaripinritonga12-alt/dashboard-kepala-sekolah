@@ -1463,13 +1463,13 @@ def page_detail():
             if not data_riwayat.empty:
     
                 kolom = [
-                    "Jabatan",
-                    "Satuan Pendidikan",
-                    "Jumlah Jam",
-                    "Nomor SK",
-                    "TMT Tugas",
-                    "TST Tugas"
-                ]
+                "Jabatan",
+                "Satuan Pendidikan",
+                "Jumlah Jam",
+                "Nomor SK",
+                "TMT",
+                "TST"
+            ]
     
                 kolom = [k for k in kolom if k in data_riwayat.columns]
     
@@ -1479,17 +1479,17 @@ def page_detail():
                 # FORMAT TANGGAL
                 # ==============================
     
-                if "TMT Tugas" in df_tampil.columns:
-                    df_tampil["TMT Tugas"] = pd.to_datetime(
-                        df_tampil["TMT Tugas"], errors="coerce"
+                if "TMT" in df_tampil.columns:
+                    df_tampil["TMT"] = pd.to_datetime(
+                        df_tampil["TMT"], errors="coerce"
                     ).dt.strftime("%d-%m-%Y")
     
-                if "TST Tugas" in df_tampil.columns:
-                    df_tampil["TST Tugas"] = pd.to_datetime(
-                        df_tampil["TST Tugas"], errors="coerce"
+                if "TST" in df_tampil.columns:
+                    df_tampil["TST"] = pd.to_datetime(
+                        df_tampil["TST"], errors="coerce"
                     ).dt.strftime("%d-%m-%Y")
     
-                    df_tampil["TST Tugas"] = df_tampil["TST Tugas"].replace("NaT", "Sekarang")
+                    df_tampil["TST"] = df_tampil["TST"].replace("NaT", "Sekarang")
     
                 df_tampil.insert(0, "No", range(1, len(df_tampil) + 1))
     
@@ -2022,6 +2022,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
