@@ -1476,21 +1476,6 @@ def page_detail():
     st.divider()
     
     # =========================================================
-    # PASAL PERMENDIKDASMEN
-    # =========================================================
-    
-    else:
-    
-        tampil_colored_field(
-            "Calon Pengganti",
-            pengganti_excel,
-            bg="#fff3cd"
-        )
-    
-    st.divider()
-    
-    
-    # =========================================================
     # ROLE VIEW ONLY
     # =========================================================
     
@@ -1961,6 +1946,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
