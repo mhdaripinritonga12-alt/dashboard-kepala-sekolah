@@ -1311,17 +1311,20 @@ def page_detail():
     nama_kepsek = row.get("Nama Kepala Sekolah", "-")
     nama_sekolah = row.get("Nama Sekolah", "-")
     jenjang = row.get("Jenjang", "-")
-    tahun_pengangkatan = row.get("Tahun Pengangkatan")
-    if pd.isna(tahun_pengangkatan):
+    # ======================================
+    # TAHUN PENGANGKATAN OTOMATIS DARI TMT
+    # ======================================
+    
+    if tmt_pertama is not None:
+        tahun_pengangkatan = tmt_pertama.strftime("%d-%m-%Y")
+    else:
         tahun_pengangkatan = "-"
-    else:
-        tahun_pengangkatan = int(tahun_pengangkatan)
-    tahun_berjalan = row.get("Tahun Berjalan")
-
-    if pd.isna(tahun_berjalan):
-        tahun_berjalan = "-"
-    else:
-        tahun_berjalan = int(tahun_berjalan)
+    
+    # ======================================
+    # MASA JABATAN BERJALAN
+    # ======================================
+    
+    tahun_berjalan = tahun_berjalan
     periode = row.get("Masa Periode Sesuai KSPSTK", "-")
     status = row.get("Status", "-")
     cabdis = row.get("Cabang Dinas", "-")
@@ -1474,6 +1477,34 @@ def page_detail():
                 kolom = [k for k in kolom if k in data_riwayat.columns]
     
                 df_tampil = data_riwayat[kolom].copy()
+                # ======================================================
+                # AMBIL TMT PERTAMA (AWAL MENJABAT KEPALA SEKOLAH)
+                # ======================================================
+                tmt_pertama = None
+                
+                if "TMT" in df_tampil.columns:
+                
+                    df_tmt = pd.to_datetime(df_tampil["TMT"], errors="coerce")
+                
+                    if not df_tmt.dropna().empty:
+                        tmt_pertama = df_tmt.min()
+                from datetime import datetime
+
+                tahun_pengangkatan = "-"
+                tahun_berjalan = "-"
+                
+                if tmt_pertama is not None:
+                
+                    today = datetime.today()
+                
+                    tahun_pengangkatan = tmt_pertama.year
+                
+                    selisih = today - tmt_pertama
+                
+                    tahun = selisih.days // 365
+                    bulan = (selisih.days % 365) // 30
+                
+                    tahun_berjalan = f"{tahun} Tahun {bulan} Bulan"
     
                 # ==============================
                 # FORMAT TANGGAL
@@ -2022,6 +2053,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
