@@ -1342,7 +1342,7 @@ def page_detail():
         nohp = bersihkan(kepsek_row.get(kol_hp, "-")) if kol_hp else "-"
         jabatan = bersihkan(kepsek_row.get(kol_jabatan, "-")) if kol_jabatan else "-"
         jenis_pegawai = bersihkan(kepsek_row.get(kol_jenis, "-")) if kol_jenis else "-"
-        unor = bersihkan(kepsek_row.get(kol_unor, "-")) if kol_unor else "-"
+        unor = row.get("Nama Sekolah", "-")
         alamat = bersihkan(kepsek_row.get(kol_alamat, "-")) if kol_alamat else "-"
     
     
@@ -1945,6 +1945,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
