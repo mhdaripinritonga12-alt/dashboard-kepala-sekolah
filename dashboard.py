@@ -1244,9 +1244,16 @@ def tampil_colored_field(label, value, bg="#f1f1f1", text_color="black"):
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
 def page_detail():
+    # ======================================
+    # DEFAULT VARIABEL TMT
+    # ======================================
+    tmt_pertama = None
+    tahun_pengangkatan = "-"
+    tahun_berjalan = "-"
     if st.session_state.selected_sekolah is None:
         st.session_state.page = "sekolah"
         st.rerun()
+
 
     col_a, col_b, col_c = st.columns([1, 6, 1])
 
@@ -1488,22 +1495,19 @@ def page_detail():
                 
                     if not df_tmt.dropna().empty:
                         tmt_pertama = df_tmt.min()
+                    
                 from datetime import datetime
 
-                tahun_pengangkatan = "-"
-                tahun_berjalan = "-"
-                
                 if tmt_pertama is not None:
                 
                     today = datetime.today()
-                
-                    tahun_pengangkatan = tmt_pertama.year
                 
                     selisih = today - tmt_pertama
                 
                     tahun = selisih.days // 365
                     bulan = (selisih.days % 365) // 30
                 
+                    tahun_pengangkatan = tmt_pertama.strftime("%d-%m-%Y")
                     tahun_berjalan = f"{tahun} Tahun {bulan} Bulan"
     
                 # ==============================
@@ -2053,6 +2057,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
