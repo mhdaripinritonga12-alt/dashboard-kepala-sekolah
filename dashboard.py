@@ -1311,7 +1311,39 @@ def page_detail():
     nama_kepsek = row.get("Nama Kepala Sekolah", "-")
     nama_sekolah = row.get("Nama Sekolah", "-")
     jenjang = row.get("Jenjang", "-")
-    tahun_pengangkatan = row.get("Tahun Pengangkatan", "-")
+    # =========================================================
+    # HITUNG TAHUN PENGANGKATAN DARI RIWAYAT DAPODIK
+    # =========================================================
+    tahun_pengangkatan = "-"
+    
+    try:
+    
+        if not df_riwayat_dapodik.empty:
+    
+            nama_kepsek = str(row.get("Nama Kepala Sekolah", "")).strip().upper()
+    
+            data_riwayat = df_riwayat_dapodik[
+                df_riwayat_dapodik["Nama Kepala Sekolah"]
+                .astype(str)
+                .str.strip()
+                .str.upper()
+                == nama_kepsek
+            ]
+    
+            if not data_riwayat.empty and "TMT Tugas" in data_riwayat.columns:
+    
+                data_riwayat["TMT Tugas"] = pd.to_datetime(
+                    data_riwayat["TMT Tugas"],
+                    errors="coerce"
+                )
+    
+                tmt_awal = data_riwayat["TMT Tugas"].min()
+    
+                if pd.notnull(tmt_awal):
+                    tahun_pengangkatan = tmt_awal.year
+    
+    except:
+        pass
     tahun_berjalan = row.get("Tahun Berjalan", "-")
     periode = row.get("Masa Periode Sesuai KSPSTK", "-")
     status = row.get("Status", "-")
@@ -1997,6 +2029,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
