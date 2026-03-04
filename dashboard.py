@@ -1465,46 +1465,46 @@ def page_detail():
             foto_html = ""
         if calon != "-- Pilih Calon Pengganti --":
 
-    html_card = f"""
-    <div style="
-        background:white;
-        border-radius:16px;
-        padding:20px;
-        box-shadow:0 3px 12px rgba(0,0,0,0.15);
-        display:flex;
-        gap:20px;
-    ">
-
-    <div>
-    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="110">
-    </div>
-
-    <div>
-
-    <div style="font-size:20px;font-weight:800;margin-bottom:10px;">
-    👤 {nama_guru}
-    </div>
-
-    <div><b>NIP :</b> {nip}</div>
-    <div><b>NIK :</b> {nik}</div>
-    <div><b>No HP :</b> {nohp}</div>
-    <div><b>Jabatan :</b> {jabatan}</div>
-    <div><b>Jenis Pegawai :</b> {jenis_pegawai}</div>
-
-    <hr>
-
-    <div><b>Unit Kerja :</b> {unor}</div>
-    <div><b>Cabang Dinas :</b> {cabdis}</div>
-    <div><b>Alamat :</b> {alamat}</div>
-
-    </div>
-
-    </div>
-    """
-
-    components.html(html_card, height=320)
-    
-    colbtn1, colbtn2 = st.columns(2)
+            html_card = f"""
+            <div style="
+                background:white;
+                border-radius:16px;
+                padding:20px;
+                box-shadow:0 3px 12px rgba(0,0,0,0.15);
+                display:flex;
+                gap:20px;
+            ">
+        
+            <div>
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="110">
+            </div>
+        
+            <div>
+        
+            <div style="font-size:20px;font-weight:800;margin-bottom:10px;">
+            👤 {nama_guru}
+            </div>
+        
+            <div><b>NIP :</b> {nip}</div>
+            <div><b>NIK :</b> {nik}</div>
+            <div><b>No HP :</b> {nohp}</div>
+            <div><b>Jabatan :</b> {jabatan}</div>
+            <div><b>Jenis Pegawai :</b> {jenis_pegawai}</div>
+        
+            <hr>
+        
+            <div><b>Unit Kerja :</b> {unor}</div>
+            <div><b>Cabang Dinas :</b> {cabdis}</div>
+            <div><b>Alamat :</b> {alamat}</div>
+        
+            </div>
+        
+            </div>
+            """
+        
+            components.html(html_card, height=320)
+            
+            colbtn1, colbtn2 = st.columns(2)
     # ============================================
     # KOLOM TOMBOL SIMPAN & RESET
     # ============================================
@@ -1804,6 +1804,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
