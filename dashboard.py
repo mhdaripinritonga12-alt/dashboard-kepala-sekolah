@@ -358,6 +358,7 @@ try:
     df_riwayat_dapodik = df_riwayat_dapodik.fillna("")
 except:
     df_riwayat_dapodik = pd.DataFrame()
+
 # =========================================================
 # ✅ DEBUG PLT: CEK APAKAH DATA PLT MASUK KE DF_KS
 # =========================================================
@@ -1449,7 +1450,7 @@ def page_detail():
     
     
     # =========================================================
-    # RIWAYAT DAPODIK (TABEL - DARI SHEET RIWAYAT_DAPODIK)
+    # RIWAYAT DAPODIK (TABEL DARI SHEET RIWAYAT_DAPODIK)
     # =========================================================
     
     st.divider()
@@ -1471,7 +1472,7 @@ def page_detail():
     
             if not data_riwayat.empty:
     
-                kolom_tampil = [
+                kolom = [
                     "Jabatan",
                     "Satuan Pendidikan",
                     "Jumlah Jam",
@@ -1480,59 +1481,19 @@ def page_detail():
                     "TST Tugas"
                 ]
     
-                kolom_tampil = [k for k in kolom_tampil if k in data_riwayat.columns]
+                kolom = [k for k in kolom if k in data_riwayat.columns]
     
-                df_tampil = data_riwayat[kolom_tampil].copy()
+                df_tampil = data_riwayat[kolom].copy()
     
                 df_tampil.insert(0, "No", range(1, len(df_tampil) + 1))
     
-                html_table = df_tampil.to_html(
-                    index=False,
-                    classes="dapodik",
-                    border=0
-                )
-    
-                style = """
-                <style>
-    
-                table.dapodik{
-                    width:100%;
-                    border-collapse:collapse;
-                    font-size:14px;
-                    background:white;
-                    box-shadow:0 3px 10px rgba(0,0,0,0.12);
-                    border-radius:10px;
-                    overflow:hidden;
-                }
-    
-                table.dapodik th{
-                    background:#8fa7c1;
-                    color:black;
-                    text-align:center;
-                    padding:8px;
-                    border:1px solid #9aa9b8;
-                    font-weight:bold;
-                }
-    
-                table.dapodik td{
-                    padding:8px;
-                    border:1px solid #c3ccd6;
-                }
-    
-                table.dapodik tr:nth-child(even){
-                    background:#f4f7fb;
-                }
-    
-                </style>
-                """
-    
-                st.markdown(style + html_table, unsafe_allow_html=True)
+                st.dataframe(df_tampil, use_container_width=True, hide_index=True)
     
             else:
                 st.info("Riwayat dapodik belum tersedia")
     
         else:
-            st.info("Sheet Riwayat_Dapodik belum tersedia")
+            st.warning("Sheet Riwayat_Dapodik tidak ditemukan")
     
     except Exception as e:
     
@@ -2055,6 +2016,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
