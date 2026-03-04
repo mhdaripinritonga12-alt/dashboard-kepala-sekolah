@@ -526,7 +526,17 @@ guru_list = sorted(df_guru["NAMA GURU"].astype(str).dropna().unique())
 def ambil_data_simpeg(nama_guru):
     if nama_guru is None:
         return pd.DataFrame()
+def ambil_foto_simpeg(nip):
+    if nip is None:
+        return None
 
+    nip = str(nip).strip()
+
+    if nip == "" or nip == "-" or nip.lower() == "nan":
+        return None
+
+    url = f"https://simpeg.sumutprov.go.id/foto/{nip}.jpg"
+    return url
     nama_guru = str(nama_guru).strip()
 
     if "NAMA GURU" not in df_guru.columns:
@@ -1797,6 +1807,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
