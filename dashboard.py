@@ -1424,25 +1424,14 @@ def page_detail():
     
     st.markdown("## 👤 Calon Pengganti Kepala Sekolah")
     
-    if pengganti:
-    
-        tampil_colored_field(
-            "Calon Pengganti (Yang Dipilih Operator)",
-            pengganti,
-            bg="#d1e7dd"
-        )
-    
-    else:
-    
-        tampil_colored_field(
-            "Calon Pengganti",
-            pengganti_excel,
-            bg="#fff3cd"
-        )
-    
-    
-    st.divider()
-    
+    # TAMBAHKAN INI
+    status_regulatif = map_status(row)
+
+# =========================================================
+# ROLE VIEW ONLY
+# =========================================================
+
+role_user = st.session_state.get("role", "")
     # =========================================================
     # ROLE VIEW ONLY
     # =========================================================
@@ -1914,6 +1903,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
