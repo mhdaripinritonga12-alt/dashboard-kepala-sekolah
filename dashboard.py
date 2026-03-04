@@ -1311,37 +1311,17 @@ def page_detail():
     nama_kepsek = row.get("Nama Kepala Sekolah", "-")
     nama_sekolah = row.get("Nama Sekolah", "-")
     jenjang = row.get("Jenjang", "-")
-    # ==========================================
-    # HITUNG TAHUN PENGANGKATAN DARI RIWAYAT
-    # ==========================================
-    
-    tahun_pengangkatan = "-"
-    
-    try:
-    
-        nip_kepsek = str(row.get("NIP", "")).strip()
-    
-        data_riwayat = df_riwayat_dapodik[
-            df_riwayat_dapodik["NIP"].astype(str).str.strip() == nip_kepsek
-        ]
-    
-        if not data_riwayat.empty:
-    
-            tmt_series = pd.to_datetime(data_riwayat["TMT"], errors="coerce")
-    
-            tmt_awal = tmt_series.min()
-    
-            if pd.notnull(tmt_awal):
-                tahun_pengangkatan = int(tmt_awal.year)
-    
-    except:
-        pass
-    from datetime import datetime
-
-    if tahun_pengangkatan != "-":
-        tahun_berjalan = datetime.now().year - tahun_pengangkatan
+    tahun_pengangkatan = row.get("Tahun Pengangkatan")
+    if pd.isna(tahun_pengangkatan):
+        tahun_pengangkatan = "-"
     else:
+        tahun_pengangkatan = int(tahun_pengangkatan)
+    tahun_berjalan = row.get("Tahun Berjalan")
+
+    if pd.isna(tahun_berjalan):
         tahun_berjalan = "-"
+    else:
+        tahun_berjalan = int(tahun_berjalan)
     periode = row.get("Masa Periode Sesuai KSPSTK", "-")
     status = row.get("Status", "-")
     cabdis = row.get("Cabang Dinas", "-")
@@ -2026,3 +2006,4 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
