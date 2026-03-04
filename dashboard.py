@@ -1414,7 +1414,7 @@ if not data_kepsek.empty:
 
     if is_view_only:
         st.info("ℹ️ Anda login sebagai **View Only**. Tidak dapat mengubah data.")
-            return
+    return
     # ============================================
     # 🔒 KUNCI PERIODE 1 DENGAN PENGECUALIAN KHUSUS
     # ============================================
@@ -1873,6 +1873,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
