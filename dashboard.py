@@ -1452,6 +1452,63 @@ def page_detail():
     pengganti = perubahan_kepsek.get(nama, "")
     
     st.markdown("## 👤 Calon Pengganti Kepala Sekolah")
+    st.divider()
+st.markdown("## 📚 Riwayat Dapodik")
+
+if "Riwayat Dapodik" in row_detail.columns:
+
+    df_riwayat = row_detail.copy()
+
+    df_riwayat = df_riwayat[[
+        "Jabatan",
+        "Satuan Pendidikan",
+        "Jumlah Jam",
+        "Nomor SK",
+        "TMT Tugas",
+        "TST Tugas"
+    ]]
+
+    df_riwayat.insert(0, "No", range(1, len(df_riwayat) + 1))
+
+    html_table = df_riwayat.to_html(
+        index=False,
+        classes="dapodik",
+        border=0
+    )
+
+    style = """
+    <style>
+    table.dapodik {
+        width:100%;
+        border-collapse:collapse;
+        font-size:14px;
+        background:white;
+        box-shadow:0 3px 10px rgba(0,0,0,0.12);
+        border-radius:10px;
+        overflow:hidden;
+    }
+
+    table.dapodik th {
+        background:#8fa7c1;
+        color:black;
+        text-align:center;
+        padding:8px;
+        border:1px solid #9aa9b8;
+        font-weight:bold;
+    }
+
+    table.dapodik td {
+        padding:8px;
+        border:1px solid #c3ccd6;
+    }
+
+    table.dapodik tr:nth-child(even){
+        background:#f4f7fb;
+    }
+    </style>
+    """
+
+    st.markdown(style + html_table, unsafe_allow_html=True)
     
     # STATUS REGULATIF
     status_regulatif = map_status(row)
@@ -1945,6 +2002,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
