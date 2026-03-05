@@ -1322,8 +1322,10 @@ def page_detail():
     jenjang = row.get("Jenjang", "-")
     
     # =========================================================
-    # HITUNG TMT PERTAMA DARI RIWAYAT DAPODIK
+    # HITUNG TMT PERTAMA (HANYA KEPALA SEKOLAH, BUKAN PLT)
     # =========================================================
+    
+    from datetime import datetime
     
     tahun_pengangkatan = "-"
     tahun_berjalan = "-"
@@ -1342,7 +1344,24 @@ def page_detail():
                 str(nama_kepsek).upper().strip()
             ]
     
-            if not data_riwayat.empty and "TMT" in data_riwayat.columns:
+            # ===============================
+            # FILTER HANYA JABATAN KEPALA SEKOLAH
+            # ===============================
+    
+            data_riwayat = data_riwayat[
+                data_riwayat["Jabatan"]
+                .astype(str)
+                .str.contains("Kepala Sekolah", case=False, na=False)
+            ]
+    
+            # buang PLT
+            data_riwayat = data_riwayat[
+                ~data_riwayat["Jabatan"]
+                .astype(str)
+                .str.contains("PLT", case=False, na=False)
+            ]
+    
+            if not data_riwayat.empty:
     
                 tmt_series = pd.to_datetime(
                     data_riwayat["TMT"],
@@ -1365,7 +1384,7 @@ def page_detail():
     
                     tahun_berjalan = f"{tahun} Tahun {bulan} Bulan {hari} Hari"
     
-    except Exception as e:
+    except:
         pass
     
     # =========================================================
@@ -2128,6 +2147,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
