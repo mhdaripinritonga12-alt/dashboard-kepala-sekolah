@@ -1315,23 +1315,63 @@ def page_detail():
     st.divider()
     st.markdown("## 👨‍🏫 Data Kepala Sekolah")
     
+    from datetime import datetime
+    
     nama_kepsek = row.get("Nama Kepala Sekolah", "-")
     nama_sekolah = row.get("Nama Sekolah", "-")
     jenjang = row.get("Jenjang", "-")
-    # ======================================
-    # TAHUN PENGANGKATAN OTOMATIS DARI TMT
-    # ======================================
     
-    if tmt_pertama is not None:
-        tahun_pengangkatan = tmt_pertama.strftime("%d-%m-%Y")
-    else:
-        tahun_pengangkatan = "-"
+    # =========================================================
+    # HITUNG TMT PERTAMA DARI RIWAYAT DAPODIK
+    # =========================================================
     
-    # ======================================
-    # MASA JABATAN BERJALAN
-    # ======================================
+    tahun_pengangkatan = "-"
+    tahun_berjalan = "-"
+    tmt_pertama = None
     
-    tahun_berjalan = tahun_berjalan
+    try:
+    
+        if not df_riwayat_dapodik.empty:
+    
+            data_riwayat = df_riwayat_dapodik[
+                df_riwayat_dapodik["Nama Kepala Sekolah"]
+                .astype(str)
+                .str.upper()
+                .str.strip()
+                ==
+                str(nama_kepsek).upper().strip()
+            ]
+    
+            if not data_riwayat.empty and "TMT" in data_riwayat.columns:
+    
+                tmt_series = pd.to_datetime(
+                    data_riwayat["TMT"],
+                    errors="coerce"
+                )
+    
+                if not tmt_series.dropna().empty:
+    
+                    tmt_pertama = tmt_series.min()
+    
+                    today = datetime.today()
+    
+                    selisih = today - tmt_pertama
+    
+                    tahun = selisih.days // 365
+                    bulan = (selisih.days % 365) // 30
+                    hari = (selisih.days % 365) % 30
+    
+                    tahun_pengangkatan = tmt_pertama.strftime("%d-%m-%Y")
+    
+                    tahun_berjalan = f"{tahun} Tahun {bulan} Bulan {hari} Hari"
+    
+    except Exception as e:
+        pass
+    
+    # =========================================================
+    # DATA TAMBAHAN
+    # =========================================================
+    
     periode = row.get("Masa Periode Sesuai KSPSTK", "-")
     status = row.get("Status", "-")
     cabdis = row.get("Cabang Dinas", "-")
@@ -2088,6 +2128,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
