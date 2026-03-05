@@ -363,7 +363,6 @@ def load_data():
     return df_ks, df_guru
 
 df_ks, df_guru = load_data()
-df_ks["Status Regulatif"] = df_ks.apply(map_status, axis=1)
 # =========================================================
 # LOAD RIWAYAT DAPODIK
 # =========================================================
@@ -691,24 +690,16 @@ def map_status(row):
     jabatan = str(row.get("Keterangan Jabatan", "")).strip().lower()
     status_excel = str(row.get("Status", "")).strip().lower()
 
-    # ambil juga kolom lain yang mungkin berisi PLT
     ket_bcks = str(row.get("Ket Sertifikat BCKS", "")).strip().lower()
     permendik = str(row.get("Permendikdasmen No 7 Tahun 2025 Maksimal 2 Periode ( 1 Periode 4 Tahun )", "")).strip().lower()
 
     gabung = f"{masa} {ket_akhir} {jabatan} {status_excel} {ket_bcks} {permendik}"
 
-    # hapus simbol, titik, spasi (biar P.L.T jadi plt)
     cek = re.sub(r"[^a-z0-9]", "", gabung)
 
-    # =========================================================
-    # ✅ DETEKSI PLT SUPER FINAL
-    # =========================================================
     if "plt" in cek or "pelaksanatugas" in cek or "masihplt" in cek:
         return "Plt"
 
-    # =========================================================
-    # DETEKSI PERIODE
-    # =========================================================
     if "periode1" in cek:
         return "Aktif Periode Ke 1"
 
@@ -719,6 +710,12 @@ def map_status(row):
         return "Lebih dari 2 Periode"
 
     return "Aktif Periode Ke 1"
+
+
+# =========================================================
+# HITUNG STATUS REGULATIF SEKALI SAJA
+# =========================================================
+df_ks["Status Regulatif"] = df_ks.apply(map_status, axis=1)
 
 # =========================================================
 # CSS CARD SEKOLAH SERAGAM
@@ -2196,6 +2193,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
