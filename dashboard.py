@@ -20,7 +20,29 @@ st.set_page_config(
     layout="wide",
     page_icon="🎓"
 )
+st.markdown("""
+<style>
 
+/* RESET STREAMLIT LAYOUT */
+.block-container{
+    max-width:1200px;
+    padding-top:2rem;
+    margin:auto;
+}
+
+/* PERBAIKI POSISI HALAMAN */
+section.main > div {
+    max-width:1200px;
+    margin:auto;
+}
+
+/* HILANGKAN MARGIN ANEH */
+.css-18e3th9 {
+    padding-top:2rem;
+}
+
+</style>
+""", unsafe_allow_html=True)
 # =========================================================
 # CSS STYLE (TAMPILAN DINAS)
 # =========================================================
@@ -2281,6 +2303,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
