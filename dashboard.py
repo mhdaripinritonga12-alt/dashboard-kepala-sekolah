@@ -1007,7 +1007,7 @@ def page_cabdin():
     with col_title:
         st.markdown("""
         <h2 style='text-align:center;color:#0b3d2e;margin-bottom:0'>
-        DASHBOARD MONITORING KEPALA SEKOLAH
+        SMART-KS
         </h2>
         <div style='text-align:center;color:gray;font-size:16px'>
         Dinas Pendidikan Provinsi Sumatera Utara
@@ -2193,6 +2193,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
