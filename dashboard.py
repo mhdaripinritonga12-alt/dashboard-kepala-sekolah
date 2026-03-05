@@ -1003,45 +1003,62 @@ def tampil_pasal_permendikdasmen(status, ket_bcks):
         - Jika belum memiliki BCKS maka menjadi catatan evaluasi dalam perpanjangan jabatan
         """)
 # =========================================================
-# HALAMAN CABDIN
+# HALAMAN CABANG DINAS (DASHBOARD UTAMA)
 # =========================================================
 def page_cabdin():
-    st.markdown("""
-    <style>
-    /* samakan posisi vertikal semua isi kolom */
-    div[data-testid="column"] {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
-    col1, col2, col3, col4, col5, col6 = st.columns([2, 2, 2, 2, 2, 2])
+    # =====================================================
+    # HEADER DASHBOARD
+    # =====================================================
+
+    col_logo, col_title, col_user = st.columns([1,4,1])
+
+    with col_logo:
+        logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+        if os.path.exists(logo_path):
+            st.image(logo_path, width=90)
+
+    with col_title:
+        st.markdown("""
+        <h2 style='text-align:center;color:#0b3d2e;margin-bottom:0'>
+        DASHBOARD MONITORING KEPALA SEKOLAH
+        </h2>
+        <div style='text-align:center;color:gray;font-size:16px'>
+        Dinas Pendidikan Provinsi Sumatera Utara
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_user:
+        st.write("")
+
+    st.divider()
+
+    # =====================================================
+    # MENU AKSI
+    # =====================================================
+
+    col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
-
-        if os.path.exists(logo_path):
-            st.image(logo_path, width=120)
-        else:
-            st.markdown("## 📊 SMART.KS")
-
-    with col2:
         if st.button("🔄 Refresh SIMPEG", use_container_width=True):
             st.cache_data.clear()
-            st.success("✅ Data SIMPEG diperbarui")
+            st.success("Data SIMPEG diperbarui")
+            st.rerun()
+
+    with col2:
+        if st.button("🔄 Refresh Kepsek", use_container_width=True):
+            st.cache_data.clear()
+            st.success("Data Kepala Sekolah diperbarui")
             st.rerun()
 
     with col3:
-        if st.button("🔄 Refresh Kepsek", use_container_width=True):
-            st.cache_data.clear()
-            st.success("✅ Data Kepala Sekolah diperbarui")
+        if st.button("📊 Rekapitulasi Provinsi", use_container_width=True):
+            st.session_state.page = "rekap"
             st.rerun()
 
     with col4:
-        if st.button("📌 Rekapitulasi", use_container_width=True):
-            st.session_state.page = "rekap"
+        if st.button("📋 Audit Log", use_container_width=True):
+            st.session_state.page = "audit"
             st.rerun()
 
     with col5:
@@ -1053,11 +1070,12 @@ def page_cabdin():
             st.session_state.selected_sekolah = None
             st.session_state.filter_status = None
             st.rerun()
-    with col6:
-        if st.button("📊 Audit Log", use_container_width=True):
-            st.session_state.page = "audit"
-            st.rerun()
+
     st.divider()
+
+    # =====================================================
+    # REKAP DATA KEPALA SEKOLAH
+    # =====================================================
 
     df_rekap = df_ks.copy()
     df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
@@ -1069,14 +1087,15 @@ def page_cabdin():
 
     total_bisa_diberhentikan = jumlah_p2 + jumlah_lebih2 + jumlah_plt
 
-    st.markdown("## 📌 REKAP DATA DINAS PENDIDIKAN")
+    st.markdown("### 📊 Rekapitulasi Status Kepala Sekolah")
 
     colx1, colx2, colx3, colx4, colx5 = st.columns(5)
-    colx1.metric("Aktif Periode Ke 1", jumlah_p1)
-    colx2.metric("Aktif Periode Ke 2", jumlah_p2)
-    colx3.metric("Lebih 2 Periode", jumlah_lebih2)
-    colx4.metric("Kasek Plt", jumlah_plt)
-    colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
+
+    colx1.metric("Periode Ke-1", jumlah_p1)
+    colx2.metric("Periode Ke-2", jumlah_p2)
+    colx3.metric("Lebih dari 2 Periode", jumlah_lebih2)
+    colx4.metric("Kepala Sekolah PLT", jumlah_plt)
+    colx5.metric("Perlu Evaluasi", total_bisa_diberhentikan)
 
     st.divider()
 
@@ -2206,6 +2225,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
