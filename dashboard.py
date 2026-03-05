@@ -101,7 +101,6 @@ def set_bg(image_name):
 # =========================================================
 # KONFIGURASI APP
 # =========================================================
-st.set_page_config(page_title="Dashboard Kepala Sekolah", layout="wide")
 
 DATA_SAVE = "perubahan_kepsek.xlsx"
 DATA_FILE = "data_kepala_sekolah.xlsx"
@@ -288,52 +287,7 @@ def update_status_approval(row_index, status):
 
     audit_sheet.update(f"H{row_index}", status)
     audit_sheet.update(f"I{row_index}", "Kadis")
-# =========================================================
-# FUNGSI SIMPAN AUDIT TRAIL SMART-KS 2026
-# =========================================================
-def save_audit_log(sekolah, kepsek_lama, pengganti, alasan, role, username):
 
-    try:
-        scopes = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-
-        creds_dict = st.secrets["gcp_service_account"]
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
-        client = gspread.authorize(creds)
-
-        spreadsheet = client.open_by_key(SHEET_ID)
-
-        try:
-            sheet = spreadsheet.worksheet(SHEET_AUDIT)
-        except:
-            sheet = spreadsheet.add_worksheet(title=SHEET_AUDIT, rows="1000", cols="10")
-            sheet.append_row([
-                "Tanggal",
-                "Sekolah",
-                "Kepsek Lama",
-                "Pengganti",
-                "Alasan",
-                "Role",
-                "User"
-            ])
-
-        from datetime import datetime
-        tanggal = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-
-        sheet.append_row([
-            tanggal,
-            sekolah,
-            kepsek_lama,
-            pengganti,
-            alasan,
-            role,
-            username
-        ])
-
-    except Exception as e:
-        st.error(f"❌ Gagal menyimpan Audit Log: {e}")
         
 # =========================================================
 # DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
@@ -380,7 +334,7 @@ def simpan_riwayat_baru(nama_sekolah, nama_kepsek, nip, mulai, selesai, ket=""):
 # =========================================================
 # LOAD DATA UTAMA
 # =========================================================
-@st.cache_data(show_spinner="📂 Memuat data Kepala Sekolah & SIMPEG...")
+@st.cache_data(ttl=600)
 def load_data():
     xls = pd.ExcelFile(DATA_FILE)
 
@@ -409,6 +363,7 @@ def load_data():
     return df_ks, df_guru
 
 df_ks, df_guru = load_data()
+df_ks["Status Regulatif"] = df_ks.apply(map_status, axis=1)
 # =========================================================
 # LOAD RIWAYAT DAPODIK
 # =========================================================
@@ -785,9 +740,6 @@ div[data-testid="stButton"] > button {
 </style>
 """, unsafe_allow_html=True)
 
-import base64
-import os
-import streamlit as st
 # =========================================================
 # BACKGROUND LOGIN / DASHBOARD / CABDIS
 # =========================================================
@@ -1011,16 +963,17 @@ def tampil_pasal_permendikdasmen(status, ket_bcks):
 def page_home():
 
     # gambar header
-    st.image("header.png", use_container_width=True)
+    header_path = os.path.join(os.path.dirname(__file__), "header.png")
+    if os.path.exists(header_path):
+        st.image(header_path, use_container_width=True)
 
     st.markdown("##")
 
     col1,col2,col3,col4,col5 = st.columns(5)
 
     with col1:
-        if st.button("🏠\nDashboard",use_container_width=True):
+        if st.button("Dashboard"):
             st.session_state.page="cabdin"
-            st.rerun()
 
     with col2:
         if st.button("🏫\nData Kepsek",use_container_width=True):
@@ -1176,61 +1129,7 @@ def page_cabdin():
 
     st.divider()
 
-
 # =========================================================
-# HALAMAN SEKOLAH
-# =========================================================
-def page_sekolah():
-    if st.session_state.selected_cabdin is None:
-        st.session_state.page = "cabdin"
-        st.rerun()
-
-    col_a, col_b, col_c = st.columns([1, 6, 1])
-
-    with col_a:
-        if st.button("🏠", key="home_sekolah"):
-            st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
-            st.session_state.selected_sekolah = None
-            st.rerun()
-
-    with col_b:
-        st.subheader(f"🏫 {st.session_state.selected_cabdin}")
-
-    with col_c:
-        if st.button("⬅️", key="back_sekolah"):
-            st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
-            st.session_state.selected_sekolah = None
-            st.rerun()
-
-    df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
-    df_cab = apply_filter(df_cab)
-
-    if df_cab.empty:
-        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
-        st.stop()
-
-    df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
-
-    jumlah_p1 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 1").sum())
-    jumlah_p2 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 2").sum())
-    jumlah_lebih2 = int((df_cab["Status Regulatif"] == "Lebih dari 2 Periode").sum())
-    jumlah_plt = int((df_cab["Status Regulatif"] == "Plt").sum())
-    total_bisa = jumlah_p2 + jumlah_lebih2 + jumlah_plt
-
-    st.markdown("### 📌 Rekap pada Cabang Dinas")
-
-    col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric("Aktif Periode Ke 1", jumlah_p1)
-    col2.metric("Aktif Periode Ke 2", jumlah_p2)
-    col3.metric("Lebih 2 Periode", jumlah_lebih2)
-    col4.metric("Plt", jumlah_plt)
-    col5.metric("Bisa Diberhentikan", total_bisa)
-
-    st.divider()
-
-   # =========================================================
 # HALAMAN SEKOLAH
 # =========================================================
 def page_sekolah():
@@ -2297,6 +2196,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
