@@ -1085,23 +1085,29 @@ def page_cabdin():
     </div>
     """, unsafe_allow_html=True)
 
-    with col_logo:
-        logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
-        if os.path.exists(logo_path):
-            st.image(logo_path, width=90)
+# =====================================================
+# HEADER DASHBOARD
+# =====================================================
 
-    with col_title:
-        st.markdown("""
-        <h2 style='text-align:center;color:#0b3d2e;margin-bottom:0'>
-        SMART-KS
-        </h2>
-        <div style='text-align:center;color:gray;font-size:16px'>
-        Dinas Pendidikan Provinsi Sumatera Utara
-        </div>
-        """, unsafe_allow_html=True)
+col_logo, col_title, col_user = st.columns([1,4,1])
 
-    with col_user:
-        st.write("")
+with col_logo:
+    logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+    if os.path.exists(logo_path):
+        st.image(logo_path, width=90)
+
+with col_title:
+    st.markdown("""
+    <h2 style='text-align:center;color:#0b3d2e;margin-bottom:0'>
+    SMART-KS
+    </h2>
+    <div style='text-align:center;color:gray;font-size:16px'>
+    Dinas Pendidikan Provinsi Sumatera Utara
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_user:
+    st.write("")
 
     st.divider()
 
@@ -2275,6 +2281,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
