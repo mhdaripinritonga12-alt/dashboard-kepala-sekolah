@@ -1499,28 +1499,28 @@ def page_detail():
     html_kepsek = f"""
     <div style="
     background:white;
-    border-radius:18px;
-    padding:25px;
-    border-left:10px solid #2e8b57;
-    box-shadow:0 4px 14px rgba(0,0,0,0.15);
+    border-radius:16px;
+    padding:28px;
+    border-left:8px solid #0b6e4f;
+    box-shadow:0 4px 14px rgba(0,0,0,0.12);
     display:flex;
-    gap:30px;
+    gap:28px;
     align-items:flex-start;
     flex-wrap:wrap;
     ">
     
     <div>
-    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-    style="width:120px;border-radius:10px;">
+    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+    style="width:120px;border-radius:12px;">
     </div>
     
-    <div style="flex:1;min-width:350px">
+    <div style="flex:1;min-width:360px">
     
-    <div style="font-size:24px;font-weight:800;margin-bottom:12px;color:#1b4332">
+    <div style="font-size:26px;font-weight:800;margin-bottom:12px;color:#0b3d2e">
     👨‍🏫 {nama_kepsek}
     </div>
     
-    <div style="display:grid;grid-template-columns:200px auto;gap:6px;font-size:15px">
+    <div style="display:grid;grid-template-columns:220px auto;gap:6px;font-size:15px">
     
     <div><b>Nama Sekolah</b></div><div>: {nama_sekolah}</div>
     <div><b>Jenjang</b></div><div>: {jenjang}</div>
@@ -1530,21 +1530,21 @@ def page_detail():
     
     </div>
     
-    <hr style="margin:12px 0">
+    <hr style="margin:14px 0">
     
-    <div style="display:grid;grid-template-columns:200px auto;gap:6px;font-size:15px">
+    <div style="display:grid;grid-template-columns:220px auto;gap:6px;font-size:15px">
     
     <div><b>Tahun Pengangkatan</b></div><div>: {tahun_pengangkatan}</div>
-    <div><b>Tahun Berjalan</b></div><div>: {tahun_berjalan}</div>
+    <div><b>Masa Jabatan Berjalan</b></div><div>: {tahun_berjalan}</div>
     <div><b>Masa Periode</b></div><div>: {periode}</div>
     <div><b>Keterangan Jabatan</b></div><div>: {ket_jabatan}</div>
     <div><b>Sertifikat BCKS</b></div><div>: {ket_bcks}</div>
     
     </div>
     
-    <hr style="margin:12px 0">
+    <hr style="margin:14px 0">
     
-    <div style="display:grid;grid-template-columns:200px auto;gap:6px;font-size:15px">
+    <div style="display:grid;grid-template-columns:220px auto;gap:6px;font-size:15px">
     
     <div><b>NIP</b></div><div>: {nip}</div>
     <div><b>NIK</b></div><div>: {nik}</div>
@@ -1554,7 +1554,7 @@ def page_detail():
     <div><b>Unit Kerja</b></div><div>: {unor}</div>
     
     <div><b>Alamat</b></div>
-    <div style="word-wrap:break-word;white-space:normal">
+    <div style="word-wrap:break-word">
     : {alamat}
     </div>
     
@@ -1565,7 +1565,7 @@ def page_detail():
     </div>
     """
     
-    components.html(html_kepsek, height=550)
+    components.html(html_kepsek, height=620)
     
     # =========================================================
     # RIWAYAT DAPODIK (TABEL DARI SHEET RIWAYAT_DAPODIK)
@@ -2206,6 +2206,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
