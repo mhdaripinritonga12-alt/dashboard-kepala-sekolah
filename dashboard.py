@@ -71,6 +71,79 @@ h1,h2,h3{
 
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+
+/* =====================================================
+SMART-KS UI NASIONAL
+===================================================== */
+
+.main {
+    background:#f1f4f9;
+}
+
+.block-container{
+    padding-top:1.2rem;
+    padding-bottom:1rem;
+}
+
+/* HEADER NASIONAL */
+
+.header-smartks{
+    background:white;
+    border-radius:14px;
+    padding:18px 25px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.08);
+    border-left:8px solid #0b6e4f;
+}
+
+/* TOOLBAR ICON */
+
+.toolbar{
+    display:flex;
+    gap:12px;
+    margin-top:12px;
+}
+
+.toolbar button{
+    border-radius:10px !important;
+    height:42px !important;
+    width:42px !important;
+    font-size:18px !important;
+}
+
+/* METRIC CARD */
+
+[data-testid="stMetric"]{
+    background:white;
+    padding:12px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* SIDEBAR */
+
+section[data-testid="stSidebar"]{
+    background:#ffffff;
+    border-right:1px solid #e5e5e5;
+}
+
+/* TABLE */
+
+[data-testid="stDataFrame"]{
+    border-radius:12px;
+    overflow:hidden;
+}
+
+/* BUTTON */
+
+div[data-testid="stButton"] > button{
+    border-radius:12px !important;
+    font-weight:700 !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 # =========================================================
 # FUNGSI BACKGROUND (TARUH DI SINI)
@@ -334,7 +407,8 @@ def simpan_riwayat_baru(nama_sekolah, nama_kepsek, nip, mulai, selesai, ket=""):
 # =========================================================
 # LOAD DATA UTAMA
 # =========================================================
-@st.cache_data(ttl=600)
+pd.options.mode.copy_on_write = True
+@st.cache_data(ttl=3600, show_spinner=False)
 def load_data():
     xls = pd.ExcelFile(DATA_FILE)
 
@@ -997,7 +1071,19 @@ def page_cabdin():
     # HEADER DASHBOARD
     # =====================================================
 
-    col_logo, col_title, col_user = st.columns([1,4,1])
+    st.markdown("""
+    <div class="header-smartks">
+    <h2 style='margin:0;color:#0b3d2e'>
+    SMART-KS
+    </h2>
+    <div style='color:gray'>
+    Sistem Monitoring dan Analisis Riwayat Tugas Kepala Sekolah
+    </div>
+    <div style='font-size:13px;color:#888'>
+    Dinas Pendidikan Provinsi Sumatera Utara
+    </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     with col_logo:
         logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
@@ -1023,38 +1109,34 @@ def page_cabdin():
     # MENU AKSI
     # =====================================================
 
-    col1, col2, col3, col4, col5 = st.columns(5)
+    st.markdown("### ⚙️ Menu Sistem")
 
+    col1,col2,col3,col4,col5 = st.columns(5)
+    
     with col1:
-        if st.button("🔄 Refresh SIMPEG", use_container_width=True):
-            st.cache_data.clear()
-            st.success("Data SIMPEG diperbarui")
+        if st.button("🏠",use_container_width=True):
+            st.session_state.page="home"
             st.rerun()
-
+    
     with col2:
-        if st.button("🔄 Refresh Kepsek", use_container_width=True):
+        if st.button("🔄",use_container_width=True):
             st.cache_data.clear()
-            st.success("Data Kepala Sekolah diperbarui")
+            st.success("Data diperbarui")
             st.rerun()
-
+    
     with col3:
-        if st.button("📊 Rekapitulasi Provinsi", use_container_width=True):
-            st.session_state.page = "rekap"
+        if st.button("📊",use_container_width=True):
+            st.session_state.page="rekap"
             st.rerun()
-
+    
     with col4:
-        if st.button("📋 Audit Log", use_container_width=True):
-            st.session_state.page = "audit"
+        if st.button("📋",use_container_width=True):
+            st.session_state.page="audit"
             st.rerun()
-
+    
     with col5:
-        if st.button("🚪 Logout", use_container_width=True):
-            st.session_state.login = False
-            st.session_state.role = None
-            st.session_state.page = "cabdin"
-            st.session_state.selected_cabdin = None
-            st.session_state.selected_sekolah = None
-            st.session_state.filter_status = None
+        if st.button("🚪",use_container_width=True):
+            st.session_state.login=False
             st.rerun()
 
     st.divider()
@@ -2193,6 +2275,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
