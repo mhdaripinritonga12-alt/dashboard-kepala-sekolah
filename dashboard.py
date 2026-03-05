@@ -11,7 +11,66 @@ from google.oauth2.service_account import Credentials
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
+# =========================================================
+# KONFIGURASI HALAMAN
+# =========================================================
 
+st.set_page_config(
+    page_title="SMART Kepala Sekolah",
+    layout="wide",
+    page_icon="🎓"
+)
+
+# =========================================================
+# CSS STYLE (TAMPILAN DINAS)
+# =========================================================
+
+st.markdown("""
+<style>
+
+.main {
+    background-color:#f5f7fa;
+}
+
+.block-container{
+    padding-top:2rem;
+}
+
+h1,h2,h3{
+    color:#0b3d2e;
+}
+
+.card-dinas{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0px 4px 15px rgba(0,0,0,0.08);
+    border-left:8px solid #0b6e4f;
+}
+
+.nama-kepsek{
+    font-size:28px;
+    font-weight:700;
+    color:#0b3d2e;
+}
+
+.label{
+    font-weight:600;
+    color:#34495e;
+}
+
+.value{
+    color:#2c3e50;
+}
+
+.hr{
+    border-top:1px solid #e0e0e0;
+    margin-top:15px;
+    margin-bottom:15px;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 # =========================================================
 # FUNGSI BACKGROUND (TARUH DI SINI)
@@ -2147,6 +2206,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
