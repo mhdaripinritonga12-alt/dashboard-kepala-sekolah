@@ -116,7 +116,7 @@ if "role" not in st.session_state:
     st.session_state.role = None
 
 if "page" not in st.session_state:
-    st.session_state.page = "cabdin"
+    st.session_state.page = "home"
 
 if "selected_cabdin" not in st.session_state:
     st.session_state.selected_cabdin = None
@@ -1005,6 +1005,42 @@ def tampil_pasal_permendikdasmen(status, ket_bcks):
 # =========================================================
 # HALAMAN CABANG DINAS (DASHBOARD UTAMA)
 # =========================================================
+# =========================================================
+# HALAMAN HOME (LANDING MENU)
+# =========================================================
+def page_home():
+
+    # gambar header
+    st.image("header.png", use_container_width=True)
+
+    st.markdown("##")
+
+    col1,col2,col3,col4,col5 = st.columns(5)
+
+    with col1:
+        if st.button("🏠\nDashboard",use_container_width=True):
+            st.session_state.page="cabdin"
+            st.rerun()
+
+    with col2:
+        if st.button("🏫\nData Kepsek",use_container_width=True):
+            st.session_state.page="cabdin"
+            st.rerun()
+
+    with col3:
+        if st.button("📊\nRekap",use_container_width=True):
+            st.session_state.page="rekap"
+            st.rerun()
+
+    with col4:
+        if st.button("📋\nAudit Log",use_container_width=True):
+            st.session_state.page="audit"
+            st.rerun()
+
+    with col5:
+        if st.button("🚪\nLogout",use_container_width=True):
+            st.session_state.login=False
+            st.rerun()
 def page_cabdin():
 
     # =====================================================
@@ -2128,30 +2164,66 @@ def page_audit():
 # =========================================================
 # ROUTING UTAMA
 # =========================================================
-if st.session_state.page == "cabdin":
+
+# default halaman pertama
+if "page" not in st.session_state:
+    st.session_state.page = "home"
+
+
+# =========================================================
+# HALAMAN HOME (LANDING)
+# =========================================================
+if st.session_state.page == "home":
+    set_bg("cabdis.jpg")
+    page_home()
+
+
+# =========================================================
+# HALAMAN CABANG DINAS
+# =========================================================
+elif st.session_state.page == "cabdin":
     set_bg("cabdis.jpg")
     page_cabdin()
 
+
+# =========================================================
+# HALAMAN SEKOLAH
+# =========================================================
 elif st.session_state.page == "sekolah":
     set_bg("dashboard.jpg")
     page_sekolah()
 
+
+# =========================================================
+# HALAMAN DETAIL
+# =========================================================
 elif st.session_state.page == "detail":
     set_bg("dashboard.jpg")
     page_detail()
 
+
+# =========================================================
+# HALAMAN REKAP
+# =========================================================
 elif st.session_state.page == "rekap":
     set_bg("dashboard.jpg")
     page_rekap()
 
+
+# =========================================================
+# HALAMAN UPDATE
+# =========================================================
 elif st.session_state.page == "update":
     set_bg("dashboard.jpg")
     page_update()
 
+
+# =========================================================
+# HALAMAN AUDIT
+# =========================================================
 elif st.session_state.page == "audit":
     set_bg("dashboard.jpg")
     page_audit()
-    
 # =========================================================
 # FOOTER - FIX FINAL MENGGUNAKAN COMPONENTS.HTML
 # =========================================================
@@ -2225,6 +2297,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
