@@ -1012,8 +1012,7 @@ def page_cabdin():
     total_bisa_diberhentikan = jumlah_p2 + jumlah_lebih2 + jumlah_plt
 
     st.markdown("## 📌 REKAP DATA DINAS PENDIDIKAN")
-
-    colx1, colx2, colx3, colx4, colx5 = st.columns(5)
+    
 colx1, colx2, colx3, colx4, colx5 = st.columns(5)
 with colx1:
     st.markdown("<center>Aktif Periode Ke 1</center>", unsafe_allow_html=True)
@@ -2157,6 +2156,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
