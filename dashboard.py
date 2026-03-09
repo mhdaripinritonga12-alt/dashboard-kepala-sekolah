@@ -42,6 +42,45 @@ DATA_SAVE = "perubahan_kepsek.xlsx"
 DATA_FILE = "data_kepala_sekolah.xlsx"
 
 # =========================================================
+# LOAD & SAVE CALON PENGGANTI (EXCEL LOKAL)
+# =========================================================
+
+def load_perubahan():
+
+    if not os.path.exists(DATA_SAVE):
+        return {}
+
+    try:
+        df = pd.read_excel(DATA_SAVE)
+
+        if "Sekolah" not in df.columns:
+            return {}
+
+        if "Calon Pengganti" not in df.columns:
+            return {}
+
+        return dict(zip(df["Sekolah"], df["Calon Pengganti"]))
+
+    except:
+        return {}
+
+
+def save_perubahan(data_dict):
+
+    rows = []
+
+    for sekolah, pengganti in data_dict.items():
+
+        rows.append({
+            "Sekolah": sekolah,
+            "Calon Pengganti": pengganti
+        })
+
+    df = pd.DataFrame(rows)
+
+    df.to_excel(DATA_SAVE, index=False)
+
+# =========================================================
 # SESSION STATE DEFAULT
 # =========================================================
 if "login" not in st.session_state:
@@ -1872,4 +1911,5 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
