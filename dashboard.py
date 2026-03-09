@@ -1001,6 +1001,22 @@ def page_cabdin():
             st.rerun()
 
     st.divider()
+# =========================================================
+# DASAR HUKUM (HANYA DI DASHBOARD)
+# =========================================================
+
+st.markdown("## ⚖️ Permendikdasmen No 7 Tahun 2025")
+
+st.info("""
+**Penugasan Kepala Sekolah**
+
+1️. Kepala Sekolah ditugaskan maksimal **2 Periode**  
+2️. **1 Periode = 4 Tahun**  
+3️. Kepala Sekolah yang telah menjabat **lebih dari 2 Periode wajib diberhentikan**  
+4️. Kepala Sekolah wajib memiliki **Sertifikat BCKS**  
+5️. Jika terjadi kekosongan jabatan dapat ditunjuk **Plt Kepala Sekolah**
+6. **Kepala Sekolah** adalah **Tugas Tambahan** yang di Berikan Kepada Guru
+""")
 
     # =====================================================
     # HITUNG STATUS
@@ -1124,17 +1140,6 @@ def page_cabdin():
 
         return ""
 
-    st.markdown(f"### 📋 Daftar Kepala Sekolah - {status}")
-
-    st.dataframe(
-        tampil.style.applymap(warna_status, subset=["Status Regulatif"]),
-        use_container_width=True,
-        hide_index=True
-    )
-
-    if st.button("Tutup Daftar"):
-        st.session_state.filter_status = None
-        st.rerun()
 # =========================================================
 # TAMPILKAN DAFTAR KEPALA SEKOLAH SESUAI DASHBOARD
 # =========================================================
@@ -1172,17 +1177,6 @@ if st.session_state.filter_dashboard:
 
         tampil.insert(0, "No", range(1, len(tampil) + 1))
 
-        st.markdown(f"### 📋 Daftar Kepala Sekolah - {status}")
-
-        st.dataframe(
-            tampil,
-            use_container_width=True,
-            hide_index=True
-        )
-
-    if st.button("Tutup Daftar"):
-        st.session_state.filter_dashboard = None
-        st.rerun()
 # =========================================================
 # HALAMAN LIST STATUS DARI DASHBOARD
 # =========================================================
@@ -2209,6 +2203,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
