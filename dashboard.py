@@ -4,6 +4,12 @@ import os
 import re   # ✅ TAMBAHAN (UNTUK HAPUS HTML TAG)
 import streamlit.components.v1 as components
 import base64
+
+import gspread
+from google.oauth2.service_account import Credentials
+
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 from io import BytesIO
 
 
@@ -42,45 +48,6 @@ DATA_SAVE = "perubahan_kepsek.xlsx"
 DATA_FILE = "data_kepala_sekolah.xlsx"
 
 # =========================================================
-# LOAD & SAVE CALON PENGGANTI (EXCEL LOKAL)
-# =========================================================
-
-def load_perubahan():
-
-    if not os.path.exists(DATA_SAVE):
-        return {}
-
-    try:
-        df = pd.read_excel(DATA_SAVE)
-
-        if "Sekolah" not in df.columns:
-            return {}
-
-        if "Calon Pengganti" not in df.columns:
-            return {}
-
-        return dict(zip(df["Sekolah"], df["Calon Pengganti"]))
-
-    except:
-        return {}
-
-
-def save_perubahan(data_dict):
-
-    rows = []
-
-    for sekolah, pengganti in data_dict.items():
-
-        rows.append({
-            "Sekolah": sekolah,
-            "Calon Pengganti": pengganti
-        })
-
-    df = pd.DataFrame(rows)
-
-    df.to_excel(DATA_SAVE, index=False)
-
-# =========================================================
 # SESSION STATE DEFAULT
 # =========================================================
 if "login" not in st.session_state:
@@ -111,9 +78,204 @@ USERS = {
     "viewer": {"password": "viewer123", "role": "View"},
 }
 
+# =========================================================
+# GOOGLE SHEET CONFIG (SIMPAN PERMANEN)
+# =========================================================
+SHEET_ID = "1LfdTvQAMxc1r97HOmL6zylzn_d_CWrmvC8V5etaMSIA"
+SHEET_NAME = "perubahan_kepsek"
+# =========================================================
+# SHEET AUDIT SMART-KS 2026
+# =========================================================
+SHEET_AUDIT = "AUDIT_LOG_SMART_KS"
+
+# =========================================================
+# SHEET AUDIT TRAIL SMART-KS 2026
+# =========================================================
+SHEET_AUDIT = "AUDIT_LOG_SMART_KS"
+
+# =========================================================
+# FUNGSI SIMPAN & LOAD PENGGANTI (PERMANEN GOOGLE SHEET)
+# =========================================================
+
+@st.cache_resource
+def konek_gsheet():
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+
+    creds_dict = st.secrets["gcp_service_account"]
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+
+    client = gspread.authorize(creds)
+    sheet = client.open_by_key(SHEET_ID).worksheet(SHEET_NAME)
+
+    return sheet
+
+
+@st.cache_data(ttl=60)
+def load_perubahan():
+    try:
+        sheet = konek_gsheet()
+        data = sheet.get_all_records()
+
+        if not data:
+            return {}
+
+        df = pd.DataFrame(data)
+
+        if "Sekolah Tujuan" not in df.columns or "Calon Pengganti" not in df.columns:
+            return {}
+
+        df["Sekolah Tujuan"] = df["Sekolah Tujuan"].astype(str).str.strip()
+        df["Calon Pengganti"] = df["Calon Pengganti"].astype(str).str.strip()
+
+        return dict(zip(df["Sekolah Tujuan"], df["Calon Pengganti"]))
+
+    except Exception as e:
+        st.error("❌ ERROR GOOGLE SHEET (LOAD):")
+        st.exception(e)
+        return {}
+
+def save_perubahan(data_dict, df_ks, df_guru):
+    try:
+        sheet = konek_gsheet()
+
+        sheet.clear()
+        sheet.append_row(["Sekolah Tujuan", "Kepsek Lama", "Calon Pengganti", "Sekolah Asal"])
+
+        rows = []
+        for sekolah_tujuan, calon_pengganti in data_dict.items():
+
+            # Kepsek lama dari df_ks
+            data_row = df_ks[df_ks["Nama Sekolah"].astype(str).str.strip() == str(sekolah_tujuan).strip()]
+            kepsek_lama = "-"
+            if not data_row.empty:
+                kepsek_lama = str(data_row.iloc[0].get("Nama Kepala Sekolah", "-"))
+
+            # Sekolah asal calon pengganti dari df_guru (SIMPEG)
+            asal = "-"
+            data_calon = df_guru[df_guru["NAMA GURU"].astype(str).str.strip() == str(calon_pengganti).strip()]
+
+            if not data_calon.empty:
+                calon_row = data_calon.iloc[0]
+
+                # ambil kolom UNOR / UNIT KERJA
+                kol_unor = cari_kolom(data_calon, ["UNOR", "UNIT ORGANISASI", "UNIT KERJA", "SATKER", "INSTANSI"])
+                if kol_unor:
+                    asal = str(calon_row.get(kol_unor, "-")).strip()
+
+            rows.append([sekolah_tujuan, kepsek_lama, calon_pengganti, asal])
+
+        if rows:
+            sheet.append_rows(rows)
+
+    except Exception as e:
+        st.error(f"❌ Gagal simpan ke Google Sheet: {e}")
+
 # LOAD DATA PERUBAHAN SAAT APLIKASI START
 perubahan_kepsek = load_perubahan()
+load_perubahan.clear()
+# =========================================================
+# FUNGSI SIMPAN AUDIT LOG (MENUNGGU PERSETUJUAN KADIS)
+# =========================================================
+def save_audit_log(sekolah, kepsek_lama, pengganti, alasan, role, username):
 
+    try:
+        sheet = konek_gsheet()
+        spreadsheet = sheet.spreadsheet
+
+        try:
+            audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+        except:
+            audit_sheet = spreadsheet.add_worksheet(title=SHEET_AUDIT, rows="1000", cols="10")
+            audit_sheet.append_row([
+                "Tanggal",
+                "Sekolah",
+                "Kepsek Lama",
+                "Pengganti",
+                "Alasan",
+                "Role Pengusul",
+                "User",
+                "Status Approval",
+                "Approved By"
+            ])
+
+        from datetime import datetime
+        tanggal = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
+        audit_sheet.append_row([
+            tanggal,
+            sekolah,
+            kepsek_lama,
+            pengganti,
+            alasan,
+            role,
+            username,
+            "Menunggu Persetujuan Kadis",
+            "-"
+        ])
+
+    except Exception as e:
+        st.error(f"Gagal menyimpan audit: {e}")
+# =========================================================
+# UPDATE STATUS APPROVAL (KHUSUS KADIS)
+# =========================================================
+def update_status_approval(row_index, status):
+
+    sheet = konek_gsheet()
+    spreadsheet = sheet.spreadsheet
+    audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+
+    audit_sheet.update(f"H{row_index}", status)
+    audit_sheet.update(f"I{row_index}", "Kadis")
+# =========================================================
+# FUNGSI SIMPAN AUDIT TRAIL SMART-KS 2026
+# =========================================================
+def save_audit_log(sekolah, kepsek_lama, pengganti, alasan, role, username):
+
+    try:
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+
+        creds_dict = st.secrets["gcp_service_account"]
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+        client = gspread.authorize(creds)
+
+        spreadsheet = client.open_by_key(SHEET_ID)
+
+        try:
+            sheet = spreadsheet.worksheet(SHEET_AUDIT)
+        except:
+            sheet = spreadsheet.add_worksheet(title=SHEET_AUDIT, rows="1000", cols="10")
+            sheet.append_row([
+                "Tanggal",
+                "Sekolah",
+                "Kepsek Lama",
+                "Pengganti",
+                "Alasan",
+                "Role",
+                "User"
+            ])
+
+        from datetime import datetime
+        tanggal = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
+        sheet.append_row([
+            tanggal,
+            sekolah,
+            kepsek_lama,
+            pengganti,
+            alasan,
+            role,
+            username
+        ])
+
+    except Exception as e:
+        st.error(f"❌ Gagal menyimpan Audit Log: {e}")
+        
 # =========================================================
 # DATA RIWAYAT KEPALA SEKOLAH (UPDATE SEKOLAH)
 # =========================================================
@@ -188,15 +350,6 @@ def load_data():
     return df_ks, df_guru
 
 df_ks, df_guru = load_data()
-# =========================================================
-# LOAD RIWAYAT DAPODIK
-# =========================================================
-try:
-    df_riwayat_dapodik = pd.read_excel(DATA_FILE, sheet_name="Riwayat_Dapodik", dtype=str)
-    df_riwayat_dapodik = df_riwayat_dapodik.fillna("")
-except:
-    df_riwayat_dapodik = pd.DataFrame()
-
 # =========================================================
 # ✅ DEBUG PLT: CEK APAKAH DATA PLT MASUK KE DF_KS
 # =========================================================
@@ -858,75 +1011,7 @@ def page_cabdin():
     colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
 
     st.divider()
-    # =========================================================
-    # HALAMAN SEKOLAH
-    # =========================================================
-    def page_sekolah():
-    
-        if st.session_state.selected_cabdin is None:
-            st.session_state.page = "cabdin"
-            st.rerun()
-    
-        col_a, col_b, col_c = st.columns([1,6,1])
-    
-        with col_a:
-            if st.button("🏠", key="home_sekolah"):
-                st.session_state.page = "cabdin"
-                st.session_state.selected_cabdin = None
-                st.session_state.selected_sekolah = None
-                st.rerun()
-    
-        with col_b:
-            st.subheader(f"🏫 {st.session_state.selected_cabdin}")
-    
-        with col_c:
-            if st.button("⬅️", key="back_sekolah"):
-                st.session_state.page = "cabdin"
-                st.session_state.selected_cabdin = None
-                st.session_state.selected_sekolah = None
-                st.rerun()
-    
-        df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
-        df_cab = apply_filter(df_cab)
-    
-        if df_cab.empty:
-            st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
-            return
-    
-        df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
-    
-        st.divider()
-    
-        cols = st.columns(4)
-    
-        for i, row in df_cab.iterrows():
-    
-            nama_sekolah = str(row.get("Nama Sekolah","-"))
-    
-            status = map_status(row)
-    
-            if status == "Aktif Periode Ke 1":
-                warna = "🟦"
-            elif status == "Aktif Periode Ke 2":
-                warna = "🟨"
-            elif status == "Lebih dari 2 Periode":
-                warna = "🟥"
-            elif status == "Plt":
-                warna = "🟩"
-            else:
-                warna = "⬜"
-    
-            with cols[i % 4]:
-    
-                if st.button(
-                    f"{warna} {nama_sekolah}",
-                    key=f"sekolah_{i}",
-                    use_container_width=True
-                ):
-    
-                    st.session_state.selected_sekolah = nama_sekolah
-                    st.session_state.page = "detail"
-                    st.rerun()
+
     # =========================================================
     # 🔍 PENCARIAN GURU SIMPEG (HANYA DI DASHBOARD UTAMA)
     # =========================================================
@@ -967,6 +1052,142 @@ def page_cabdin():
                 st.rerun()
 
     st.divider()
+
+
+# =========================================================
+# HALAMAN SEKOLAH
+# =========================================================
+def page_sekolah():
+    if st.session_state.selected_cabdin is None:
+        st.session_state.page = "cabdin"
+        st.rerun()
+
+    col_a, col_b, col_c = st.columns([1, 6, 1])
+
+    with col_a:
+        if st.button("🏠", key="home_sekolah"):
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
+            st.rerun()
+
+    with col_b:
+        st.subheader(f"🏫 {st.session_state.selected_cabdin}")
+
+    with col_c:
+        if st.button("⬅️", key="back_sekolah"):
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
+            st.rerun()
+
+    df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
+    df_cab = apply_filter(df_cab)
+
+    if df_cab.empty:
+        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
+        st.stop()
+
+    df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
+
+    jumlah_p1 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 1").sum())
+    jumlah_p2 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 2").sum())
+    jumlah_lebih2 = int((df_cab["Status Regulatif"] == "Lebih dari 2 Periode").sum())
+    jumlah_plt = int((df_cab["Status Regulatif"] == "Plt").sum())
+    total_bisa = jumlah_p2 + jumlah_lebih2 + jumlah_plt
+
+    st.markdown("### 📌 Rekap pada Cabang Dinas")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric("Aktif Periode Ke 1", jumlah_p1)
+    col2.metric("Aktif Periode Ke 2", jumlah_p2)
+    col3.metric("Lebih 2 Periode", jumlah_lebih2)
+    col4.metric("Plt", jumlah_plt)
+    col5.metric("Bisa Diberhentikan", total_bisa)
+
+    st.divider()
+
+   # =========================================================
+# HALAMAN SEKOLAH
+# =========================================================
+def page_sekolah():
+    if st.session_state.selected_cabdin is None:
+        st.session_state.page = "cabdin"
+        st.rerun()
+
+    col_a, col_b, col_c = st.columns([1, 6, 1])
+
+    with col_a:
+        if st.button("🏠", key="home_sekolah"):
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
+            st.rerun()
+
+    with col_b:
+        st.subheader(f"🏫 {st.session_state.selected_cabdin}")
+
+    with col_c:
+        if st.button("⬅️", key="back_sekolah"):
+            st.session_state.page = "cabdin"
+            st.session_state.selected_cabdin = None
+            st.session_state.selected_sekolah = None
+            st.rerun()
+
+    df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
+    df_cab = apply_filter(df_cab)
+
+    if df_cab.empty:
+        st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
+        st.stop()
+
+    df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
+
+    jumlah_p1 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 1").sum())
+    jumlah_p2 = int((df_cab["Status Regulatif"] == "Aktif Periode Ke 2").sum())
+    jumlah_lebih2 = int((df_cab["Status Regulatif"] == "Lebih dari 2 Periode").sum())
+    jumlah_plt = int((df_cab["Status Regulatif"] == "Plt").sum())
+    total_bisa = jumlah_p2 + jumlah_lebih2 + jumlah_plt
+
+    st.markdown("### 📌 Rekap Pada Cabang Dinas")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric("Aktif Periode Ke 1", jumlah_p1)
+    col2.metric("Aktif Periode Ke 2", jumlah_p2)
+    col3.metric("Lebih 2 Periode", jumlah_lebih2)
+    col4.metric("Plt", jumlah_plt)
+    col5.metric("Bisa Diberhentikan", total_bisa)
+
+    st.divider()
+
+    # =========================================================
+    # LIST SEKOLAH (CARD BUTTON)
+    # =========================================================
+    cols = st.columns(4)
+    idx = 0
+
+    for _, row in df_cab.iterrows():
+        nama_sekolah = str(row.get("Nama Sekolah", "-"))
+        status = map_status(row)
+
+        if status == "Aktif Periode Ke 1":
+            warna = "🟦"
+        elif status == "Aktif Periode Ke 2":
+            warna = "🟨"
+        elif status == "Lebih dari 2 Periode":
+            warna = "🟥"
+        elif status == "Plt":
+            warna = "🟩"
+        else:
+            warna = "⬜"
+
+        with cols[idx % 4]:
+            if st.button(f"{warna} {nama_sekolah}", key=f"btn_sekolah_{idx}", use_container_width=True):
+                st.session_state.selected_sekolah = nama_sekolah
+                st.session_state.page = "detail"
+                st.rerun()
+
+        idx += 1
 
     # =========================================================
     # ✅ REKAP CABANG DINAS (TABEL SEKOLAH BISA DIBERHENTIKAN)
@@ -1014,16 +1235,9 @@ def tampil_colored_field(label, value, bg="#f1f1f1", text_color="black"):
 # HALAMAN DETAIL SEKOLAH
 # =========================================================
 def page_detail():
-    # ======================================
-    # DEFAULT VARIABEL TMT
-    # ======================================
-    tmt_pertama = None
-    tahun_pengangkatan = "-"
-    tahun_berjalan = "-"
     if st.session_state.selected_sekolah is None:
         st.session_state.page = "sekolah"
         st.rerun()
-
 
     col_a, col_b, col_c = st.columns([1, 6, 1])
 
@@ -1085,82 +1299,11 @@ def page_detail():
     st.divider()
     st.markdown("## 👨‍🏫 Data Kepala Sekolah")
     
-    from datetime import datetime
-    
     nama_kepsek = row.get("Nama Kepala Sekolah", "-")
     nama_sekolah = row.get("Nama Sekolah", "-")
     jenjang = row.get("Jenjang", "-")
-    
-    # =========================================================
-    # HITUNG TMT PERTAMA (HANYA KEPALA SEKOLAH, BUKAN PLT)
-    # =========================================================
-    
-    from datetime import datetime
-    
-    tahun_pengangkatan = "-"
-    tahun_berjalan = "-"
-    tmt_pertama = None
-    
-    try:
-    
-        if not df_riwayat_dapodik.empty:
-    
-            data_riwayat = df_riwayat_dapodik[
-                df_riwayat_dapodik["Nama Kepala Sekolah"]
-                .astype(str)
-                .str.upper()
-                .str.strip()
-                ==
-                str(nama_kepsek).upper().strip()
-            ]
-    
-            # ===============================
-            # FILTER HANYA JABATAN KEPALA SEKOLAH
-            # ===============================
-    
-            data_riwayat = data_riwayat[
-                data_riwayat["Jabatan"]
-                .astype(str)
-                .str.contains("Kepala Sekolah", case=False, na=False)
-            ]
-    
-            # buang PLT
-            data_riwayat = data_riwayat[
-                ~data_riwayat["Jabatan"]
-                .astype(str)
-                .str.contains("PLT", case=False, na=False)
-            ]
-    
-            if not data_riwayat.empty:
-    
-                tmt_series = pd.to_datetime(
-                    data_riwayat["TMT"],
-                    errors="coerce"
-                )
-    
-                if not tmt_series.dropna().empty:
-    
-                    tmt_pertama = tmt_series.min()
-    
-                    today = datetime.today()
-    
-                    selisih = today - tmt_pertama
-    
-                    tahun = selisih.days // 365
-                    bulan = (selisih.days % 365) // 30
-                    hari = (selisih.days % 365) % 30
-    
-                    tahun_pengangkatan = tmt_pertama.strftime("%d-%m-%Y")
-    
-                    tahun_berjalan = f"{tahun} Tahun {bulan} Bulan {hari} Hari"
-    
-    except:
-        pass
-    
-    # =========================================================
-    # DATA TAMBAHAN
-    # =========================================================
-    
+    tahun_pengangkatan = row.get("Tahun Pengangkatan", "-")
+    tahun_berjalan = row.get("Tahun Berjalan", "-")
     periode = row.get("Masa Periode Sesuai KSPSTK", "-")
     status = row.get("Status", "-")
     cabdis = row.get("Cabang Dinas", "-")
@@ -1277,129 +1420,109 @@ def page_detail():
     """
     
     components.html(html_kepsek, height=550)
+    # =========================================================
+    # RIWAYAT DAPODIK (VERSI TEKS)
+    # =========================================================
+    
+    kol_riwayat = cari_kolom_riwayat_dapodik(df_ks)
+    
+    if kol_riwayat:
+        riwayat_dapodik = bersihkan(row.get(kol_riwayat, "-"))
+    else:
+        riwayat_dapodik = bersihkan(row.get("Riwayat Dapodik", "-"))
+    
+    riwayat_dapodik = format_riwayat_dapodik(riwayat_dapodik)
+    
+    tampil_colored_field(
+        "Riwayat Dapodik",
+        riwayat_dapodik.replace("\n", "<br>"),
+        bg="#f1f1f1"
+    )
+    
     
     # =========================================================
-    # RIWAYAT DAPODIK (TABEL DARI SHEET RIWAYAT_DAPODIK)
+    # RIWAYAT DAPODIK (TABEL)
     # =========================================================
     
     st.divider()
     st.markdown("## 📚 Riwayat Dapodik")
-
+    
     try:
     
-        if not df_riwayat_dapodik.empty:
+        if "row_detail" in locals() and row_detail is not None and not row_detail.empty:
     
-            nama_kepsek = str(row.get("Nama Kepala Sekolah", "")).strip().upper()
-    
-            data_riwayat = df_riwayat_dapodik[
-                df_riwayat_dapodik["Nama Kepala Sekolah"]
-                .astype(str)
-                .str.strip()
-                .str.upper()
-                == nama_kepsek
-            ]
-    
-            if not data_riwayat.empty:
-    
-                kolom = [
+            kolom_dibutuhkan = [
                 "Jabatan",
                 "Satuan Pendidikan",
                 "Jumlah Jam",
                 "Nomor SK",
-                "TMT",
-                "TST"
+                "TMT Tugas",
+                "TST Tugas"
             ]
     
-                kolom = [k for k in kolom if k in data_riwayat.columns]
+            kolom_tersedia = [k for k in kolom_dibutuhkan if k in row_detail.columns]
     
-                df_tampil = data_riwayat[kolom].copy()
-                # ======================================
-                # TMT PERTAMA KEPALA SEKOLAH
-                # ======================================
-                
-                from datetime import datetime
-                
-                tmt_pertama = None
-                tahun_pengangkatan = "-"
-                tahun_berjalan = "-"
-                
-                if "TMT" in df_tampil.columns:
-                
-                    # ubah ke datetime
-                    tmt_series = pd.to_datetime(df_tampil["TMT"], errors="coerce")
-                
-                    # ambil tanggal paling awal
-                    tmt_pertama = tmt_series.min()
-                
-                    if pd.notna(tmt_pertama):
-                
-                        today = datetime.today()
-                
-                        selisih = today - tmt_pertama
-                
-                        tahun = selisih.days // 365
-                        bulan = (selisih.days % 365) // 30
-                        hari = (selisih.days % 365) % 30
-                
-                        tahun_pengangkatan = tmt_pertama.strftime("%d-%m-%Y")
-                
-                        tahun_berjalan = f"{tahun} Tahun {bulan} Bulan {hari} Hari"
-                # ======================================================
-                # AMBIL TMT PERTAMA (AWAL MENJABAT KEPALA SEKOLAH)
-                # ======================================================
-                tmt_pertama = None
-                
-                if "TMT" in df_tampil.columns:
-                
-                    df_tmt = pd.to_datetime(df_tampil["TMT"], errors="coerce")
-                
-                    if not df_tmt.dropna().empty:
-                        tmt_pertama = df_tmt.min()
-                    
-                from datetime import datetime
-
-                if tmt_pertama is not None:
-                
-                    today = datetime.today()
-                
-                    selisih = today - tmt_pertama
-                
-                    tahun = selisih.days // 365
-                    bulan = (selisih.days % 365) // 30
-                
-                    tahun_pengangkatan = tmt_pertama.strftime("%d-%m-%Y")
-                    tahun_berjalan = f"{tahun} Tahun {bulan} Bulan"
+            if kolom_tersedia:
     
-                # ==============================
-                # FORMAT TANGGAL
-                # ==============================
+                df_riwayat = row_detail[kolom_tersedia].copy()
     
-                if "TMT" in df_tampil.columns:
-                    df_tampil["TMT"] = pd.to_datetime(
-                        df_tampil["TMT"], errors="coerce"
-                    ).dt.strftime("%d-%m-%Y")
+                df_riwayat.insert(0, "No", range(1, len(df_riwayat) + 1))
     
-                if "TST" in df_tampil.columns:
-                    df_tampil["TST"] = pd.to_datetime(
-                        df_tampil["TST"], errors="coerce"
-                    ).dt.strftime("%d-%m-%Y")
+                html_table = df_riwayat.to_html(
+                    index=False,
+                    classes="dapodik",
+                    border=0
+                )
     
-                    df_tampil["TST"] = df_tampil["TST"].replace("NaT", "Sekarang")
+                style = """
+                <style>
     
-                df_tampil.insert(0, "No", range(1, len(df_tampil) + 1))
+                table.dapodik{
+                    width:100%;
+                    border-collapse:collapse;
+                    font-size:14px;
+                    background:white;
+                    box-shadow:0 3px 10px rgba(0,0,0,0.12);
+                    border-radius:10px;
+                    overflow:hidden;
+                }
     
-                st.dataframe(df_tampil, use_container_width=True, hide_index=True)
+                table.dapodik th{
+                    background:#8fa7c1;
+                    color:black;
+                    text-align:center;
+                    padding:8px;
+                    border:1px solid #9aa9b8;
+                    font-weight:bold;
+                }
+    
+                table.dapodik td{
+                    padding:8px;
+                    border:1px solid #c3ccd6;
+                }
+    
+                table.dapodik tr:nth-child(even){
+                    background:#f4f7fb;
+                }
+    
+                </style>
+                """
+    
+                st.markdown(style + html_table, unsafe_allow_html=True)
     
             else:
-                st.info("Riwayat dapodik belum tersedia")
+    
+                st.info("Kolom riwayat dapodik tidak ditemukan")
     
         else:
-            st.warning("Sheet Riwayat_Dapodik tidak ditemukan")
+    
+            st.info("Data riwayat dapodik belum tersedia")
     
     except Exception as e:
     
         st.warning("Riwayat dapodik tidak dapat ditampilkan")
-
+    
+    
     # =========================================================
     # STATUS REGULATIF
     # =========================================================
@@ -1625,18 +1748,30 @@ def page_detail():
 
     with colbtn1:
         if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-    
+
             if calon == "-- Pilih Calon Pengganti --":
                 st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-    
             else:
-    
+                kepsek_lama = row.get("Nama Kepala Sekolah", "-")
+
                 perubahan_kepsek[nama] = calon
-    
-                save_perubahan(perubahan_kepsek)
-    
-                st.success("✅ Calon pengganti berhasil disimpan")
-    
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
+
+                try:
+                    save_audit_log(
+                        sekolah=nama,
+                        kepsek_lama=kepsek_lama,
+                        pengganti=calon,
+                        alasan="Regulatif / Override",
+                        role=st.session_state.role,
+                        username=st.session_state.role
+                    )
+
+                    st.success("⏳ Usulan tersimpan dan masuk Audit Log. Menunggu persetujuan Kadis.")
+
+                except Exception as e:
+                    st.error(f"Gagal menyimpan audit: {e}")
+
                 st.rerun()
 
     with colbtn2:
@@ -1644,7 +1779,7 @@ def page_detail():
 
             if nama in perubahan_kepsek:
                 del perubahan_kepsek[nama]
-                save_perubahan(perubahan_kepsek)
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
 
             if key_select in st.session_state:
                 del st.session_state[key_select]
@@ -1733,6 +1868,10 @@ def page_update():
         st.warning("⚠️ Belum ada riwayat jabatan.")
     else:
         st.dataframe(df_view, use_container_width=True)
+# =========================================================
+# HALAMAN AUDIT MONITORING
+# =========================================================
+def page_audit():
 
     # ============================================
     # HEADER + TOMBOL KEMBALI
@@ -1749,6 +1888,58 @@ def page_update():
 
     st.divider()
 
+    # ============================================
+    # LOAD DATA AUDIT
+    # ============================================
+    try:
+        sheet = konek_gsheet()
+        spreadsheet = sheet.spreadsheet
+        audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
+
+        data = audit_sheet.get_all_records()
+
+        if not data:
+            st.warning("Belum ada audit log.")
+            return
+
+        df_audit = pd.DataFrame(data)
+
+        st.dataframe(df_audit, use_container_width=True)
+
+    except Exception as e:
+        st.error(f"Gagal memuat Audit Log: {e}")
+    
+    # ==============================
+    # APPROVAL KHUSUS KADIS
+    # ==============================
+    if st.session_state.role == "Kadis":
+
+        pending = df_audit[
+            df_audit["Status Approval"] == "Menunggu Persetujuan Kadis"
+        ]
+
+        if pending.empty:
+            st.success("Tidak ada usulan menunggu persetujuan.")
+            return
+
+        pilih = st.selectbox(
+            "Pilih Sekolah",
+            pending["Sekolah"]
+        )
+
+        if st.button("✅ Setujui"):
+            index = pending[pending["Sekolah"] == pilih].index[0] + 2
+            update_status_approval(index, "Disetujui Kadis")
+            st.success("Disetujui Kadis")
+            st.rerun()
+
+        if st.button("❌ Tolak"):
+            index = pending[pending["Sekolah"] == pilih].index[0] + 2
+            update_status_approval(index, "Ditolak Kadis")
+            st.error("Ditolak Kadis")
+            st.rerun()
+    else:
+        st.info("🔐 Hanya Kadis yang dapat memberikan persetujuan.")
 # =========================================================
 # ROUTING UTAMA
 # =========================================================
@@ -1771,6 +1962,10 @@ elif st.session_state.page == "rekap":
 elif st.session_state.page == "update":
     set_bg("dashboard.jpg")
     page_update()
+
+elif st.session_state.page == "audit":
+    set_bg("dashboard.jpg")
+    page_audit()
     
 # =========================================================
 # FOOTER - FIX FINAL MENGGUNAKAN COMPONENTS.HTML
@@ -1845,8 +2040,4 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
-
-
-
-
 
