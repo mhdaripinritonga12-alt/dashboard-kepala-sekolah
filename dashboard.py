@@ -71,31 +71,6 @@ if "selected_sekolah" not in st.session_state:
 if "filter_status" not in st.session_state:
     st.session_state.filter_status = None
 # =========================================================
-# EVENT KLIK DASHBOARD
-# =========================================================
-
-col_click1, col_click2, col_click3, col_click4, col_click5 = st.columns(5)
-
-with col_click1:
-    if st.button("Lihat Aktif Periode 1"):
-        st.session_state.filter_dashboard = "Aktif Periode Ke 1"
-
-with col_click2:
-    if st.button("Lihat Aktif Periode 2"):
-        st.session_state.filter_dashboard = "Aktif Periode Ke 2"
-
-with col_click3:
-    if st.button("Lihat Lebih 2 Periode"):
-        st.session_state.filter_dashboard = "Lebih dari 2 Periode"
-
-with col_click4:
-    if st.button("Lihat PLT"):
-        st.session_state.filter_dashboard = "Plt"
-
-with col_click5:
-    if st.button("Lihat Bisa Diberhentikan"):
-        st.session_state.filter_dashboard = "Bisa Diberhentikan"
-# =========================================================
 # USER LOGIN
 # =========================================================
 USERS = {
@@ -1035,13 +1010,25 @@ def page_cabdin():
 
     st.markdown("## 📌 REKAP DATA DINAS PENDIDIKAN")
 
-    colx1, colx2, colx3, colx4, colx5 = st.columns(5)
-    colx1.metric("Aktif Periode Ke 1", jumlah_p1)
-    colx2.metric("Aktif Periode Ke 2", jumlah_p2)
-    colx3.metric("Lebih 2 Periode", jumlah_lebih2)
-    colx4.metric("Kasek Plt", jumlah_plt)
-    colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
+    with colx1:
+    if st.button(f"Aktif Periode Ke 1\n{jumlah_p1}", use_container_width=True):
+        st.session_state.filter_status = "Aktif Periode Ke 1"
 
+    with colx2:
+        if st.button(f"Aktif Periode Ke 2\n{jumlah_p2}", use_container_width=True):
+            st.session_state.filter_status = "Aktif Periode Ke 2"
+    
+    with colx3:
+        if st.button(f"Lebih 2 Periode\n{jumlah_lebih2}", use_container_width=True):
+            st.session_state.filter_status = "Lebih dari 2 Periode"
+    
+    with colx4:
+        if st.button(f"Kasek Plt\n{jumlah_plt}", use_container_width=True):
+            st.session_state.filter_status = "Plt"
+    
+    with colx5:
+        if st.button(f"Bisa Diberhentikan\n{total_bisa_diberhentikan}", use_container_width=True):
+            st.session_state.filter_status = "Bisa Diberhentikan"
     st.divider()
 
     # =========================================================
@@ -2101,6 +2088,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
