@@ -1843,16 +1843,45 @@ def page_detail():
         
             components.html(html_card, height=320)
             
-            colbtn1, colbtn2 = st.columns(2)
-    # ============================================
-    # KOLOM TOMBOL SIMPAN & RESET
-    # ============================================
     colbtn1, colbtn2 = st.columns(2)
 
-    with colbtn2:
+# ============================================
+# TOMBOL SIMPAN
+# ============================================
 
-    if st.session_state.role in ["Kadis","View"]:
+with colbtn1:
+
+    if st.session_state.role in ["Kadis", "View"]:
         st.info("🔒 Role ini hanya dapat melihat data.")
+
+    else:
+
+        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+
+            if calon == "-- Pilih Calon Pengganti --":
+                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+
+            else:
+
+                kepsek_lama = row.get("Nama Kepala Sekolah", "-")
+
+                perubahan_kepsek[nama] = calon
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
+
+                st.success("✅ Usulan pergantian berhasil disimpan")
+
+                st.rerun()
+
+
+# ============================================
+# TOMBOL RESET
+# ============================================
+
+with colbtn2:
+
+    if st.session_state.role in ["Kadis", "View"]:
+        st.info("🔒 Role ini hanya dapat melihat data.")
+
     else:
 
         if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
@@ -1865,6 +1894,7 @@ def page_detail():
                 del st.session_state[key_select]
 
             st.success("✅ Calon pengganti dikembalikan")
+
             st.rerun()
 # =========================================================
 # HALAMAN REKAP PROVINSI
@@ -2044,4 +2074,5 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
