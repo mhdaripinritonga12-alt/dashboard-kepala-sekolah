@@ -1067,8 +1067,8 @@ st.info("""
             st.session_state.filter_status="Bisa Diberhentikan"
             st.session_state.page="list_status"
             st.rerun()
-            
-            st.divider()
+    
+    st.divider()
 
     # =====================================================
     # DAFTAR CABANG DINAS
@@ -2201,6 +2201,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
