@@ -1842,12 +1842,12 @@ def page_detail():
             """
         
             components.html(html_card, height=320)
-            
-    colbtn1, colbtn2 = st.columns(2)
 
 # ============================================
-# TOMBOL SIMPAN
+# KOLOM TOMBOL SIMPAN & RESET
 # ============================================
+
+colbtn1, colbtn2 = st.columns(2)
 
 with colbtn1:
 
@@ -1873,10 +1873,6 @@ with colbtn1:
                 st.rerun()
 
 
-# ============================================
-# TOMBOL RESET
-# ============================================
-
 with colbtn2:
 
     if st.session_state.role in ["Kadis", "View"]:
@@ -1896,6 +1892,7 @@ with colbtn2:
             st.success("✅ Calon pengganti dikembalikan")
 
             st.rerun()
+
 # =========================================================
 # HALAMAN REKAP PROVINSI
 # =========================================================
@@ -2074,5 +2071,6 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
