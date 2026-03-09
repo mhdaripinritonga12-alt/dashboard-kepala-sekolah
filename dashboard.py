@@ -50,6 +50,9 @@ DATA_FILE = "data_kepala_sekolah.xlsx"
 # =========================================================
 # SESSION STATE DEFAULT
 # =========================================================
+if "filter_dashboard" not in st.session_state:
+    st.session_state.filter_dashboard = None
+    
 if "login" not in st.session_state:
     st.session_state.login = False
 
@@ -67,7 +70,31 @@ if "selected_sekolah" not in st.session_state:
 
 if "filter_status" not in st.session_state:
     st.session_state.filter_status = None
+# =========================================================
+# EVENT KLIK DASHBOARD
+# =========================================================
 
+col_click1, col_click2, col_click3, col_click4, col_click5 = st.columns(5)
+
+with col_click1:
+    if st.button("Lihat Aktif Periode 1"):
+        st.session_state.filter_dashboard = "Aktif Periode Ke 1"
+
+with col_click2:
+    if st.button("Lihat Aktif Periode 2"):
+        st.session_state.filter_dashboard = "Aktif Periode Ke 2"
+
+with col_click3:
+    if st.button("Lihat Lebih 2 Periode"):
+        st.session_state.filter_dashboard = "Lebih dari 2 Periode"
+
+with col_click4:
+    if st.button("Lihat PLT"):
+        st.session_state.filter_dashboard = "Plt"
+
+with col_click5:
+    if st.button("Lihat Bisa Diberhentikan"):
+        st.session_state.filter_dashboard = "Bisa Diberhentikan"
 # =========================================================
 # USER LOGIN
 # =========================================================
@@ -1058,7 +1085,54 @@ def page_cabdin():
 
     st.divider()
 
+# =========================================================
+# TAMPILKAN DAFTAR KEPALA SEKOLAH SESUAI DASHBOARD
+# =========================================================
 
+if st.session_state.filter_dashboard:
+
+    st.divider()
+
+    status = st.session_state.filter_dashboard
+
+    df_tmp = df_ks.copy()
+    df_tmp["Status Regulatif"] = df_tmp.apply(map_status, axis=1)
+
+    if status == "Bisa Diberhentikan":
+
+        df_tmp = df_tmp[df_tmp["Status Regulatif"].isin([
+            "Aktif Periode Ke 2",
+            "Lebih dari 2 Periode",
+            "Plt"
+        ])]
+
+    else:
+        df_tmp = df_tmp[df_tmp["Status Regulatif"] == status]
+
+    if df_tmp.empty:
+        st.warning("Tidak ada data.")
+    else:
+
+        tampil = df_tmp[[
+            "Nama Kepala Sekolah",
+            "Nama Sekolah",
+            "Cabang Dinas",
+            "Status Regulatif"
+        ]].copy()
+
+        tampil.insert(0, "No", range(1, len(tampil) + 1))
+
+        st.markdown(f"### 📋 Daftar Kepala Sekolah - {status}")
+
+        st.dataframe(
+            tampil,
+            use_container_width=True,
+            hide_index=True
+        )
+
+    if st.button("Tutup Daftar"):
+        st.session_state.filter_dashboard = None
+        st.rerun()
 # =========================================================
 # HALAMAN SEKOLAH
 # =========================================================
@@ -2027,6 +2101,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
