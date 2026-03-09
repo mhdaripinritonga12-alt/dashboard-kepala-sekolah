@@ -994,10 +994,6 @@ def page_cabdin():
             st.session_state.selected_sekolah = None
             st.session_state.filter_status = None
             st.rerun()
-    with col6:
-        if st.button("📊 Audit Log", use_container_width=True):
-            st.session_state.page = "audit"
-            st.rerun()
     st.divider()
 
     df_rekap = df_ks.copy()
@@ -1853,35 +1849,12 @@ def page_detail():
     # ============================================
     colbtn1, colbtn2 = st.columns(2)
 
-    with colbtn1:
-        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-
-            if calon == "-- Pilih Calon Pengganti --":
-                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-            else:
-                kepsek_lama = row.get("Nama Kepala Sekolah", "-")
-
-                perubahan_kepsek[nama] = calon
-                save_perubahan(perubahan_kepsek, df_ks, df_guru)
-
-                try:
-                    save_audit_log(
-                        sekolah=nama,
-                        kepsek_lama=kepsek_lama,
-                        pengganti=calon,
-                        alasan="Regulatif / Override",
-                        role=st.session_state.role,
-                        username=st.session_state.role
-                    )
-
-                    st.success("⏳ Usulan tersimpan dan masuk Audit Log. Menunggu persetujuan Kadis.")
-
-                except Exception as e:
-                    st.error(f"Gagal menyimpan audit: {e}")
-
-                st.rerun()
-
     with colbtn2:
+
+    if st.session_state.role in ["Kadis","View"]:
+        st.info("🔒 Role ini hanya dapat melihat data.")
+    else:
+
         if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
 
             if nama in perubahan_kepsek:
@@ -1891,7 +1864,7 @@ def page_detail():
             if key_select in st.session_state:
                 del st.session_state[key_select]
 
-            st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
+            st.success("✅ Calon pengganti dikembalikan")
             st.rerun()
 # =========================================================
 # HALAMAN REKAP PROVINSI
@@ -1976,78 +1949,6 @@ def page_update():
     else:
         st.dataframe(df_view, use_container_width=True)
 # =========================================================
-# HALAMAN AUDIT MONITORING
-# =========================================================
-def page_audit():
-
-    # ============================================
-    # HEADER + TOMBOL KEMBALI
-    # ============================================
-    col_a, col_b = st.columns([1, 6])
-
-    with col_a:
-        if st.button("⬅️ Kembali", key="back_audit", use_container_width=True):
-            st.session_state.page = "cabdin"
-            st.rerun()
-
-    with col_b:
-        st.markdown("## 📊 Audit Monitoring SMART-KS 2026")
-
-    st.divider()
-
-    # ============================================
-    # LOAD DATA AUDIT
-    # ============================================
-    try:
-        sheet = konek_gsheet()
-        spreadsheet = sheet.spreadsheet
-        audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
-
-        data = audit_sheet.get_all_records()
-
-        if not data:
-            st.warning("Belum ada audit log.")
-            return
-
-        df_audit = pd.DataFrame(data)
-
-        st.dataframe(df_audit, use_container_width=True)
-
-    except Exception as e:
-        st.error(f"Gagal memuat Audit Log: {e}")
-    
-    # ==============================
-    # APPROVAL KHUSUS KADIS
-    # ==============================
-    if st.session_state.role == "Kadis":
-
-        pending = df_audit[
-            df_audit["Status Approval"] == "Menunggu Persetujuan Kadis"
-        ]
-
-        if pending.empty:
-            st.success("Tidak ada usulan menunggu persetujuan.")
-            return
-
-        pilih = st.selectbox(
-            "Pilih Sekolah",
-            pending["Sekolah"]
-        )
-
-        if st.button("✅ Setujui"):
-            index = pending[pending["Sekolah"] == pilih].index[0] + 2
-            update_status_approval(index, "Disetujui Kadis")
-            st.success("Disetujui Kadis")
-            st.rerun()
-
-        if st.button("❌ Tolak"):
-            index = pending[pending["Sekolah"] == pilih].index[0] + 2
-            update_status_approval(index, "Ditolak Kadis")
-            st.error("Ditolak Kadis")
-            st.rerun()
-    else:
-        st.info("🔐 Hanya Kadis yang dapat memberikan persetujuan.")
-# =========================================================
 # ROUTING UTAMA
 # =========================================================
 if st.session_state.page == "cabdin":
@@ -2069,10 +1970,6 @@ elif st.session_state.page == "rekap":
 elif st.session_state.page == "update":
     set_bg("dashboard.jpg")
     page_update()
-
-elif st.session_state.page == "audit":
-    set_bg("dashboard.jpg")
-    page_audit()
     
 # =========================================================
 # FOOTER - FIX FINAL MENGGUNAKAN COMPONENTS.HTML
@@ -2147,3 +2044,4 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
