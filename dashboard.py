@@ -858,7 +858,75 @@ def page_cabdin():
     colx5.metric("Bisa Diberhentikan", total_bisa_diberhentikan)
 
     st.divider()
-
+    # =========================================================
+    # HALAMAN SEKOLAH
+    # =========================================================
+    def page_sekolah():
+    
+        if st.session_state.selected_cabdin is None:
+            st.session_state.page = "cabdin"
+            st.rerun()
+    
+        col_a, col_b, col_c = st.columns([1,6,1])
+    
+        with col_a:
+            if st.button("🏠", key="home_sekolah"):
+                st.session_state.page = "cabdin"
+                st.session_state.selected_cabdin = None
+                st.session_state.selected_sekolah = None
+                st.rerun()
+    
+        with col_b:
+            st.subheader(f"🏫 {st.session_state.selected_cabdin}")
+    
+        with col_c:
+            if st.button("⬅️", key="back_sekolah"):
+                st.session_state.page = "cabdin"
+                st.session_state.selected_cabdin = None
+                st.session_state.selected_sekolah = None
+                st.rerun()
+    
+        df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
+        df_cab = apply_filter(df_cab)
+    
+        if df_cab.empty:
+            st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
+            return
+    
+        df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
+    
+        st.divider()
+    
+        cols = st.columns(4)
+    
+        for i, row in df_cab.iterrows():
+    
+            nama_sekolah = str(row.get("Nama Sekolah","-"))
+    
+            status = map_status(row)
+    
+            if status == "Aktif Periode Ke 1":
+                warna = "🟦"
+            elif status == "Aktif Periode Ke 2":
+                warna = "🟨"
+            elif status == "Lebih dari 2 Periode":
+                warna = "🟥"
+            elif status == "Plt":
+                warna = "🟩"
+            else:
+                warna = "⬜"
+    
+            with cols[i % 4]:
+    
+                if st.button(
+                    f"{warna} {nama_sekolah}",
+                    key=f"sekolah_{i}",
+                    use_container_width=True
+                ):
+    
+                    st.session_state.selected_sekolah = nama_sekolah
+                    st.session_state.page = "detail"
+                    st.rerun()
     # =========================================================
     # 🔍 PENCARIAN GURU SIMPEG (HANYA DI DASHBOARD UTAMA)
     # =========================================================
@@ -899,82 +967,6 @@ def page_cabdin():
                 st.rerun()
 
     st.divider()
-
-    # =========================================================
-    # HALAMAN SEKOLAH
-    # =========================================================
-    def page_sekolah():
-    
-        if st.session_state.selected_cabdin is None:
-            st.session_state.page = "cabdin"
-            st.rerun()
-    
-        col_a, col_b, col_c = st.columns([1,6,1])
-    
-        with col_a:
-            if st.button("🏠", key="home_sekolah"):
-                st.session_state.page = "cabdin"
-                st.session_state.selected_cabdin = None
-                st.session_state.selected_sekolah = None
-                st.rerun()
-    
-        with col_b:
-            st.subheader(f"🏫 {st.session_state.selected_cabdin}")
-    
-        with col_c:
-            if st.button("⬅️", key="back_sekolah"):
-                st.session_state.page = "cabdin"
-                st.session_state.selected_cabdin = None
-                st.session_state.selected_sekolah = None
-                st.rerun()
-    
-        df_cab = df_ks[df_ks["Cabang Dinas"] == st.session_state.selected_cabdin].copy()
-    
-        df_cab = apply_filter(df_cab)
-    
-        if df_cab.empty:
-            st.warning("⚠️ Tidak ada data sekolah pada Cabang Dinas ini.")
-            return
-    
-        df_cab["Status Regulatif"] = df_cab.apply(map_status, axis=1)
-    
-        st.divider()
-    
-        # =====================================
-        # CARD SEKOLAH
-        # =====================================
-        cols = st.columns(4)
-    
-        for i, row in df_cab.iterrows():
-    
-            nama_sekolah = str(row.get("Nama Sekolah","-"))
-    
-            status = map_status(row)
-    
-            if status == "Aktif Periode Ke 1":
-                warna = "🟦"
-            elif status == "Aktif Periode Ke 2":
-                warna = "🟨"
-            elif status == "Lebih dari 2 Periode":
-                warna = "🟥"
-            elif status == "Plt":
-                warna = "🟩"
-            else:
-                warna = "⬜"
-    
-            with cols[i % 4]:
-    
-                if st.button(
-                    f"{warna} {nama_sekolah}",
-                    key=f"sekolah_{i}",
-                    use_container_width=True
-                ):
-    
-                    st.session_state.selected_sekolah = nama_sekolah
-                    st.session_state.page = "detail"
-                    st.rerun()
-
-        idx += 1
 
     # =========================================================
     # ✅ REKAP CABANG DINAS (TABEL SEKOLAH BISA DIBERHENTIKAN)
@@ -1905,6 +1897,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
