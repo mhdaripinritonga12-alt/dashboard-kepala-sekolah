@@ -1113,7 +1113,9 @@ def page_cabdin():
     cols = st.columns(4)
     for i, cabdin in enumerate(cabdin_list):
         with cols[i % 4]:
-            if st.button(f"📍 {cabdin}", key=f"cabdin_{i}", use_container_width=True):
+            key_btn = f"cabdin_{cabdin}".replace(" ", "_")
+        
+            if st.button(f"📍 {cabdin}", key=key_btn, use_container_width=True):
                 st.session_state.selected_cabdin = cabdin
                 st.session_state.page = "sekolah"
                 st.rerun()
@@ -2255,6 +2257,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
