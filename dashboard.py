@@ -1472,9 +1472,7 @@ def page_detail():
     # DATA KEPALA SEKOLAH (DATABASE + SIMPEG)
     # =========================================================
     
-    st.divider()
-    st.markdown("## 👨‍🏫 Data Kepala Sekolah")
-    
+        
     from datetime import datetime
     
     nama_kepsek = row.get("Nama Kepala Sekolah", "-")
