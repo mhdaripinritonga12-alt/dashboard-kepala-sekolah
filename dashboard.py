@@ -33,7 +33,7 @@ def set_bg(image_name):
     <style>
     .stApp {{
         background-image: url("data:image/jpg;base64,{data}");
-        background-size: cover;
+        background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
@@ -1600,7 +1600,8 @@ def page_detail():
     html_kepsek = f"""
     <div style="
     background-image:url('data:image/jpg;base64,{bg_card}');
-    background-size:cover;
+    background-size: contain;
+    background-repeat:no-repeat;
     background-position:center;
     border-radius:18px;
     padding:25px;
@@ -2251,6 +2252,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
