@@ -12,7 +12,6 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
 
-
 # =========================================================
 # FUNGSI BACKGROUND (TARUH DI SINI)
 # =========================================================
@@ -1071,7 +1070,67 @@ def page_cabdin():
                 st.rerun()
 
     st.divider()
+# =====================================================
+# TAMPILKAN DATA SESUAI DASHBOARD
+# =====================================================
 
+if st.session_state.filter_status:
+
+    status = st.session_state.filter_status
+
+    df_tmp = df_ks.copy()
+    df_tmp["Status Regulatif"] = df_tmp.apply(map_status, axis=1)
+
+    if status == "Bisa Diberhentikan":
+
+        df_tmp = df_tmp[df_tmp["Status Regulatif"].isin([
+            "Aktif Periode Ke 2",
+            "Lebih dari 2 Periode",
+            "Plt"
+        ])]
+
+    else:
+        df_tmp = df_tmp[df_tmp["Status Regulatif"] == status]
+
+    tampil = df_tmp[[
+        "Nama Kepala Sekolah",
+        "Nama Sekolah",
+        "Cabang Dinas",
+        "Status Regulatif"
+    ]].copy()
+
+    tampil.insert(0, "No", range(1, len(tampil)+1))
+
+    # =============================
+    # WARNA KOLOM STATUS
+    # =============================
+    def warna_status(val):
+
+        if "Periode Ke 1" in val:
+            return "background-color:#dbeeff"
+
+        if "Periode Ke 2" in val:
+            return "background-color:#fff3cd"
+
+        if "Lebih dari 2" in val:
+            return "background-color:#f8d7da"
+
+        if "Plt" in val:
+            return "background-color:#d1e7dd"
+
+        return ""
+
+    st.markdown(f"### 📋 Daftar Kepala Sekolah - {status}")
+
+    st.dataframe(
+        tampil.style.applymap(warna_status, subset=["Status Regulatif"]),
+        use_container_width=True,
+        hide_index=True
+    )
+
+    if st.button("Tutup Daftar"):
+        st.session_state.filter_status = None
+        st.rerun()
 # =========================================================
 # TAMPILKAN DAFTAR KEPALA SEKOLAH SESUAI DASHBOARD
 # =========================================================
@@ -2088,6 +2147,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
