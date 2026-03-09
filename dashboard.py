@@ -1630,38 +1630,42 @@ def page_detail():
     # ============================================
     # KOLOM TOMBOL SIMPAN & RESET
     # ============================================
+    
     colbtn1, colbtn2 = st.columns(2)
-
+    
     with colbtn1:
-    if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
-
-        if calon == "-- Pilih Calon Pengganti --":
-            st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
-
-        else:
-
-            perubahan_kepsek[nama] = calon
-
-            save_perubahan(perubahan_kepsek)
-
-            st.success("✅ Calon pengganti berhasil disimpan")
-
-            st.rerun()
-
+    
+        if st.button("💾 Simpan Pengganti", key="btn_simpan_pengganti", use_container_width=True):
+    
+            if calon == "-- Pilih Calon Pengganti --":
+                st.warning("⚠️ Pilih calon pengganti terlebih dahulu.")
+    
+            else:
+    
+                perubahan_kepsek[nama] = calon
+    
+                save_perubahan(perubahan_kepsek)
+    
+                st.success("✅ Calon pengganti berhasil disimpan")
+    
+                st.rerun()
+    
+    
     with colbtn2:
-    if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
-
-        if nama in perubahan_kepsek:
-            del perubahan_kepsek[nama]
-
-        save_perubahan(perubahan_kepsek)
-
-        if key_select in st.session_state:
-            del st.session_state[key_select]
-
-        st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
-
-        st.rerun()
+    
+        if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", key="btn_reset_pengganti", use_container_width=True):
+    
+            if nama in perubahan_kepsek:
+                del perubahan_kepsek[nama]
+    
+            save_perubahan(perubahan_kepsek)
+    
+            if key_select in st.session_state:
+                del st.session_state[key_select]
+    
+            st.success("✅ Calon pengganti dikembalikan ke kondisi awal")
+    
+            st.rerun()
 # =========================================================
 # HALAMAN REKAP PROVINSI
 # =========================================================
@@ -1911,4 +1915,5 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
