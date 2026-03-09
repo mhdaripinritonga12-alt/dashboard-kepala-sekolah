@@ -2149,13 +2149,7 @@ components.html("""
         box-shadow:0 3px 10px rgba(0,0,0,0.12);
         margin-bottom:20px;
     ">
-        <div style="font-size:18px; font-weight:800; color:#0d6efd; margin-bottom:6px;">
-            📌 Permendikdasmen Nomor 7 Tahun 2025
-        </div>
-        <div style="font-size:14px; color:#444;">
-            Penugasan Kepala Sekolah Maksimal 2 Periode (1 Periode = 4 Tahun)
-        </div>
-    </div>
+            </div>
 
     <div style="
         background:#ffffff;
@@ -2202,6 +2196,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
