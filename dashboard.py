@@ -1621,13 +1621,18 @@ def page_detail():
     flex-wrap:wrap;
     ">
     
-    <div>
-    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-    style="width:120px;border-radius:10px;">
-    </div>
-    
+    <div style="
+    width:100%;
+    text-align:center;
+    font-size:36px;
+    font-weight:900;
+    margin-bottom:20px;
+    color:#1b4332;
+    letter-spacing:1px;
+    text-shadow:1px 1px 2px rgba(0,0,0,0.2);
+    ">
     👨‍🏫 {nama_kepsek}
-    </div>
+    </div>  
     
     <div style="display:grid;grid-template-columns:200px auto;gap:6px;font-size:15px">
     
@@ -2247,6 +2252,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
