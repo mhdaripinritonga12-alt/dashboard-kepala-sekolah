@@ -1001,23 +1001,24 @@ def page_cabdin():
             st.rerun()
 
     st.divider()
-# =========================================================
-# DASAR HUKUM (HANYA DI DASHBOARD)
-# =========================================================
 
-st.markdown("## ⚖️ Permendikdasmen No 7 Tahun 2025")
+    # =========================================================
+    # DASAR HUKUM (HANYA DI DASHBOARD)
+    # =========================================================
+    st.markdown("## ⚖️ Permendikdasmen No 7 Tahun 2025")
 
-st.info("""
-**Penugasan Kepala Sekolah**
+    st.info("""
+    **Penugasan Kepala Sekolah**
 
-1️. Kepala Sekolah ditugaskan maksimal **2 Periode**  
-2️. **1 Periode = 4 Tahun**  
-3️. Kepala Sekolah yang telah menjabat **lebih dari 2 Periode wajib diberhentikan**  
-4️. Kepala Sekolah wajib memiliki **Sertifikat BCKS**  
-5️. Jika terjadi kekosongan jabatan dapat ditunjuk **Plt Kepala Sekolah**
-6. **Kepala Sekolah** adalah **Tugas Tambahan** yang di Berikan Kepada Guru
-""")
-        # =====================================================
+    1. Kepala Sekolah ditugaskan maksimal **2 Periode**  
+    2. **1 Periode = 4 Tahun**  
+    3. Kepala Sekolah yang telah menjabat **lebih dari 2 Periode wajib diberhentikan**  
+    4. Kepala Sekolah wajib memiliki **Sertifikat BCKS**  
+    5. Jika terjadi kekosongan jabatan dapat ditunjuk **Plt Kepala Sekolah**
+    6. **Kepala Sekolah** adalah **Tugas Tambahan** yang diberikan kepada Guru
+    """)
+
+    # =====================================================
     # HITUNG STATUS
     # =====================================================
     df_rekap = df_ks.copy()
@@ -2201,6 +2202,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
