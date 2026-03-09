@@ -1017,22 +1017,20 @@ st.info("""
 5️. Jika terjadi kekosongan jabatan dapat ditunjuk **Plt Kepala Sekolah**
 6. **Kepala Sekolah** adalah **Tugas Tambahan** yang di Berikan Kepada Guru
 """)
-
     # =====================================================
     # HITUNG STATUS
     # =====================================================
     df_rekap = df_ks.copy()
     df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
 
-    jumlah_p1 = int((df_rekap["Status Regulatif"]=="Aktif Periode Ke 1").sum())
-    jumlah_p2 = int((df_rekap["Status Regulatif"]=="Aktif Periode Ke 2").sum())
-    jumlah_lebih2 = int((df_rekap["Status Regulatif"]=="Lebih dari 2 Periode").sum())
-    jumlah_plt = int((df_rekap["Status Regulatif"]=="Plt").sum())
+    jumlah_p1 = int((df_rekap["Status Regulatif"] == "Aktif Periode Ke 1").sum())
+    jumlah_p2 = int((df_rekap["Status Regulatif"] == "Aktif Periode Ke 2").sum())
+    jumlah_lebih2 = int((df_rekap["Status Regulatif"] == "Lebih dari 2 Periode").sum())
+    jumlah_plt = int((df_rekap["Status Regulatif"] == "Plt").sum())
 
     total_bisa_diberhentikan = jumlah_p2 + jumlah_lebih2 + jumlah_plt
 
     st.markdown("## 📌 REKAP DATA DINAS PENDIDIKAN")
-
     colx1,colx2,colx3,colx4,colx5 = st.columns(5)
 
     with colx1:
@@ -2203,6 +2201,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
