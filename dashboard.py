@@ -2163,52 +2163,11 @@ if st.session_state.page == "cabdin":
 
     </div>
     """, height=420)
-    
-</div>
-""", height=520, scrolling=False)
 
-st.divider()
-st.markdown("""
-<div style="text-align:center; font-weight:800; font-size:16px;">
-© 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
-</div>
-""", unsafe_allow_html=True)
+    st.divider()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    st.markdown("""
+    <div style="text-align:center; font-weight:800; font-size:16px;">
+    © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
+    </div>
+    """, unsafe_allow_html=True)
