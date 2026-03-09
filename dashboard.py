@@ -1164,28 +1164,51 @@ if st.session_state.filter_dashboard:
         tampil.insert(0, "No", range(1, len(tampil) + 1))
 
 # =========================================================
-# HALAMAN LIST STATUS DARI DASHBOARD
+# HALAMAN LIST STATUS DARI DASHBOARD / CABDIN
 # =========================================================
 def page_list_status():
 
     status = st.session_state.filter_status
+    cabdin = st.session_state.filter_cabdin
 
     col1, col2 = st.columns([6,1])
 
     with col1:
-        st.markdown(f"## 📋 Daftar Kepala Sekolah - {status}")
+
+        if cabdin:
+            st.markdown(f"## 📋 Daftar Kepala Sekolah - {status} ({cabdin})")
+        else:
+            st.markdown(f"## 📋 Daftar Kepala Sekolah - {status}")
 
     with col2:
         if st.button("⬅️ Kembali", use_container_width=True):
-            st.session_state.page = "cabdin"
+
+            if cabdin:
+                st.session_state.page = "sekolah"
+            else:
+                st.session_state.page = "cabdin"
+
             st.session_state.filter_status = None
+            st.session_state.filter_cabdin = None
             st.rerun()
 
     st.divider()
 
+    # =====================================================
+    # PREPARE DATA
+    # =====================================================
     df_tmp = df_ks.copy()
     df_tmp["Status Regulatif"] = df_tmp.apply(map_status, axis=1)
 
+    # =====================================================
+    # FILTER CABANG DINAS
+    # =====================================================
+    if cabdin:
+        df_tmp = df_tmp[df_tmp["Cabang Dinas"] == cabdin]
+
+    # =====================================================
+    # FILTER STATUS
+    # =====================================================
     if status == "Bisa Diberhentikan":
 
         df_tmp = df_tmp[df_tmp["Status Regulatif"].isin([
@@ -1198,6 +1221,9 @@ def page_list_status():
 
         df_tmp = df_tmp[df_tmp["Status Regulatif"] == status]
 
+    # =====================================================
+    # TABEL TAMPIL
+    # =====================================================
     tampil = df_tmp[[
         "Nama Kepala Sekolah",
         "Nama Sekolah",
@@ -1212,6 +1238,7 @@ def page_list_status():
         use_container_width=True,
         hide_index=True
     )
+
 # =========================================================
 # HALAMAN SEKOLAH
 # =========================================================
@@ -2202,5 +2229,6 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
