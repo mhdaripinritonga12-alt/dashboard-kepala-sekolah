@@ -1849,9 +1849,24 @@ colbtn1, colbtn2 = st.columns(2)
 
 calon_tersimpan = perubahan_kepsek.get(nama, None)
 
-# ================================
-# JIKA BELUM ADA PENGGANTI
-# ================================
+# ============================================
+# SELECTBOX CALON PENGGANTI
+# ============================================
+
+key_select = f"calon_{nama}"
+
+calon = st.selectbox(
+    "👤 Pilih Calon Pengganti (SIMPEG)",
+    ["-- Pilih Calon Pengganti --"] + guru_list,
+    key=key_select
+)
+
+# ============================================
+# TOMBOL DINAMIS
+# ============================================
+
+calon_tersimpan = perubahan_kepsek.get(nama, None)
+
 if calon_tersimpan is None:
 
     if calon != "-- Pilih Calon Pengganti --":
@@ -1860,52 +1875,37 @@ if calon_tersimpan is None:
 
         with colbtn1:
 
-            if st.session_state.role in ["Kadis", "View"]:
-                st.info("🔒 Role ini hanya dapat melihat data.")
+            if st.button("💾 Simpan Pengganti", use_container_width=True):
 
-            else:
+                kepsek_lama = row.get("Nama Kepala Sekolah", "-")
 
-                if st.button("💾 Simpan Pengganti", use_container_width=True):
+                perubahan_kepsek[nama] = calon
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
 
-                    kepsek_lama = row.get("Nama Kepala Sekolah", "-")
+                st.success("✅ Pengganti berhasil disimpan")
 
-                    perubahan_kepsek[nama] = calon
-                    save_perubahan(perubahan_kepsek, df_ks, df_guru)
+                st.rerun()
 
-                    st.success("✅ Pengganti berhasil disimpan")
-
-                    st.rerun()
-
-
-# ================================
-# JIKA SUDAH ADA PENGGANTI
-# ================================
 else:
 
     colbtn1, colbtn2 = st.columns(2)
 
     with colbtn1:
-
         st.success(f"Pengganti tersimpan: **{calon_tersimpan}**")
 
     with colbtn2:
 
-        if st.session_state.role in ["Kadis", "View"]:
-            st.info("🔒 Role ini hanya dapat melihat data.")
+        if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", use_container_width=True):
 
-        else:
+            del perubahan_kepsek[nama]
+            save_perubahan(perubahan_kepsek, df_ks, df_guru)
 
-            if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", use_container_width=True):
+            if key_select in st.session_state:
+                del st.session_state[key_select]
 
-                del perubahan_kepsek[nama]
-                save_perubahan(perubahan_kepsek, df_ks, df_guru)
+            st.success("✅ Dikembalikan ke kepsek lama")
 
-                if key_select in st.session_state:
-                    del st.session_state[key_select]
-
-                st.success("✅ Data dikembalikan ke kepala sekolah lama")
-
-                st.rerun()
+            st.rerun()
 # =========================================================
 # HALAMAN REKAP PROVINSI
 # =========================================================
@@ -2084,6 +2084,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
