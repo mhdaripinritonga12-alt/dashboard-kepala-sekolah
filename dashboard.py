@@ -1009,6 +1009,7 @@ def page_cabdin():
 
     st.markdown("## 📌 REKAP DATA DINAS PENDIDIKAN")
 
+    colx1, colx2, colx3, colx4, colx5 = st.columns(5)
     with colx1:
         if st.button(f"Aktif Periode Ke 1\n{jumlah_p1}", use_container_width=True):
             st.session_state.filter_status = "Aktif Periode Ke 1"
@@ -2147,6 +2148,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
