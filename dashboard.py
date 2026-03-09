@@ -2145,16 +2145,6 @@ components.html("""
         background:#ffffff;
         padding:22px;
         border-radius:16px;
-        border-left:6px solid #0d6efd;
-        box-shadow:0 3px 10px rgba(0,0,0,0.12);
-        margin-bottom:20px;
-    ">
-            </div>
-
-    <div style="
-        background:#ffffff;
-        padding:22px;
-        border-radius:16px;
         border-left:6px solid #198754;
         box-shadow:0 3px 10px rgba(0,0,0,0.12);
         margin-bottom:20px;
@@ -2196,6 +2186,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
