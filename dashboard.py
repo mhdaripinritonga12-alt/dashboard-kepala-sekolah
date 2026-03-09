@@ -1038,7 +1038,8 @@ with colx4:
 with colx5:
     st.markdown("<center>Bisa Diberhentikan</center>", unsafe_allow_html=True)
     if st.button(f"{total_bisa_diberhentikan}", key="p5", use_container_width=True):
-        st.session_state.filter_status = "Bisa Diberhentikan"    st.divider()
+        st.session_state.filter_status = "Bisa Diberhentikan"
+        st.divider()
 
     # =========================================================
     # 🔍 PENCARIAN GURU SIMPEG (HANYA DI DASHBOARD UTAMA)
@@ -2156,6 +2157,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
