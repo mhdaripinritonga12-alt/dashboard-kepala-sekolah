@@ -735,12 +735,13 @@ import streamlit as st
 # =========================================================
 
 if st.session_state.filter_status:
-    
-if not st.session_state.login:
-    set_bg("login.jpg")
-else:
     set_bg("dashboard.jpg")
 
+elif not st.session_state.login:
+    set_bg("login.jpg")
+
+else:
+    set_bg("dashboard.jpg")
 # =========================================================
 # LOGIN PAGE
 # =========================================================
@@ -2155,6 +2156,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
