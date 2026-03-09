@@ -422,7 +422,6 @@ rename_map_ks = {
 
     "Masa Periode Sesuai KSPSTK ": "Masa Periode Sesuai KSPSTK",
     "Masa Periode Sisuai KSPSTK": "Masa Periode Sesuai KSPSTK",
-
     # =========================================================
     # ✅ TAMBAHAN FIX BARU (RIWAYAT DAPODIK)
     # =========================================================
@@ -431,7 +430,6 @@ rename_map_ks = {
     "Riwayat dapodik": "Riwayat Dapodik",
     "Riwayat_Dapodik": "Riwayat Dapodik",
 }
-
 rename_map_guru = {
     "NAMA GURU ": "NAMA GURU",
     "Nama Guru": "NAMA GURU",
@@ -2250,6 +2248,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
