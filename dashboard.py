@@ -1073,7 +1073,7 @@ def page_cabdin():
 
         with cols[i%4]:
 
-            if st.button(f"📍 {cabdin}",key=f"cabdin_{i}",use_container_width=True):
+            if st.button(f"📍 {cabdin}",key=f"cabdin_{cabdin}".replace(" ","_"),use_container_width=True):
 
                 st.session_state.selected_cabdin=cabdin
                 st.session_state.page="sekolah"
@@ -2189,6 +2189,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
