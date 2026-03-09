@@ -1749,58 +1749,6 @@ def page_update():
 
     st.divider()
 
-    # ============================================
-    # LOAD DATA AUDIT
-    # ============================================
-    try:
-        sheet = konek_gsheet()
-        spreadsheet = sheet.spreadsheet
-        audit_sheet = spreadsheet.worksheet(SHEET_AUDIT)
-
-        data = audit_sheet.get_all_records()
-
-        if not data:
-            st.warning("Belum ada audit log.")
-            return
-
-        df_audit = pd.DataFrame(data)
-
-        st.dataframe(df_audit, use_container_width=True)
-
-    except Exception as e:
-        st.error(f"Gagal memuat Audit Log: {e}")
-    
-    # ==============================
-    # APPROVAL KHUSUS KADIS
-    # ==============================
-    if st.session_state.role == "Kadis":
-
-        pending = df_audit[
-            df_audit["Status Approval"] == "Menunggu Persetujuan Kadis"
-        ]
-
-        if pending.empty:
-            st.success("Tidak ada usulan menunggu persetujuan.")
-            return
-
-        pilih = st.selectbox(
-            "Pilih Sekolah",
-            pending["Sekolah"]
-        )
-
-        if st.button("✅ Setujui"):
-            index = pending[pending["Sekolah"] == pilih].index[0] + 2
-            update_status_approval(index, "Disetujui Kadis")
-            st.success("Disetujui Kadis")
-            st.rerun()
-
-        if st.button("❌ Tolak"):
-            index = pending[pending["Sekolah"] == pilih].index[0] + 2
-            update_status_approval(index, "Ditolak Kadis")
-            st.error("Ditolak Kadis")
-            st.rerun()
-    else:
-        st.info("🔐 Hanya Kadis yang dapat memberikan persetujuan.")
 # =========================================================
 # ROUTING UTAMA
 # =========================================================
@@ -1897,6 +1845,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
