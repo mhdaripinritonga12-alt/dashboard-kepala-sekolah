@@ -5,6 +5,10 @@ import re   # ✅ TAMBAHAN (UNTUK HAPUS HTML TAG)
 import streamlit.components.v1 as components
 import base64
 
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img:
+        return base64.b64encode(img.read()).decode()
+
 import gspread
 from google.oauth2.service_account import Credentials
 
@@ -1592,10 +1596,10 @@ def page_detail():
     # =========================================================
     # CARD TAMPILAN KEPALA SEKOLAH
     # =========================================================
-    
+    bg_card = get_base64_image("background_card.jpg")
     html_kepsek = f"""
     <div style="
-    background-image:url('background_card.jpg');
+    background-image:url('data:image/jpg;base64,{bg_card}');
     background-size:cover;
     background-position:center;
     border-radius:18px;
@@ -2247,6 +2251,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
