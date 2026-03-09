@@ -1001,7 +1001,45 @@ def page_cabdin():
             st.rerun()
 
     st.divider()
+# =========================================================
+# HALAMAN DAFTAR STATUS KEPALA SEKOLAH
+# =========================================================
+def page_list_status():
 
+    status = st.session_state.filter_status
+
+    st.markdown(f"## 📋 Daftar Kepala Sekolah - {status}")
+
+    if st.button("⬅️ Kembali ke Dashboard"):
+        st.session_state.page = "cabdin"
+        st.rerun()
+
+    df_tmp = df_ks.copy()
+    df_tmp["Status Regulatif"] = df_tmp.apply(map_status, axis=1)
+
+    if status == "Bisa Diberhentikan":
+        df_tmp = df_tmp[df_tmp["Status Regulatif"].isin([
+            "Aktif Periode Ke 2",
+            "Lebih dari 2 Periode",
+            "Plt"
+        ])]
+    else:
+        df_tmp = df_tmp[df_tmp["Status Regulatif"] == status]
+
+    tampil = df_tmp[[
+        "Nama Kepala Sekolah",
+        "Nama Sekolah",
+        "Cabang Dinas",
+        "Status Regulatif"
+    ]].copy()
+
+    tampil.insert(0, "No", range(1, len(tampil)+1))
+
+    st.dataframe(
+        tampil,
+        use_container_width=True,
+        hide_index=True
+    )
     # ===============================
     # HITUNG STATUS KEPSEK
     # ===============================
@@ -1023,30 +1061,39 @@ def page_cabdin():
     colx1, colx2, colx3, colx4, colx5 = st.columns(5)
 
     with colx1:
-        st.markdown("<center>Aktif Periode Ke 1</center>", unsafe_allow_html=True)
-        if st.button(f"{jumlah_p1}", key="p1", use_container_width=True):
-            st.session_state.filter_status = "Aktif Periode Ke 1"
+    st.markdown("<center>Aktif Periode Ke 1</center>", unsafe_allow_html=True)
+    if st.button(f"{jumlah_p1}", key="p1", use_container_width=True):
+        st.session_state.filter_status = "Aktif Periode Ke 1"
+        st.session_state.page = "list_status"
+        st.rerun()
 
     with colx2:
         st.markdown("<center>Aktif Periode Ke 2</center>", unsafe_allow_html=True)
         if st.button(f"{jumlah_p2}", key="p2", use_container_width=True):
             st.session_state.filter_status = "Aktif Periode Ke 2"
-
+            st.session_state.page = "list_status"
+            st.rerun()
+    
     with colx3:
         st.markdown("<center>Lebih 2 Periode</center>", unsafe_allow_html=True)
         if st.button(f"{jumlah_lebih2}", key="p3", use_container_width=True):
             st.session_state.filter_status = "Lebih dari 2 Periode"
-
+            st.session_state.page = "list_status"
+            st.rerun()
+    
     with colx4:
         st.markdown("<center>Kasek Plt</center>", unsafe_allow_html=True)
         if st.button(f"{jumlah_plt}", key="p4", use_container_width=True):
             st.session_state.filter_status = "Plt"
-
+            st.session_state.page = "list_status"
+            st.rerun()
+    
     with colx5:
         st.markdown("<center>Bisa Diberhentikan</center>", unsafe_allow_html=True)
         if st.button(f"{total_bisa_diberhentikan}", key="p5", use_container_width=True):
             st.session_state.filter_status = "Bisa Diberhentikan"
-
+            st.session_state.page = "list_status"
+            st.rerun()
     st.divider()
     # =========================================================
     # 🔍 PENCARIAN GURU SIMPEG (HANYA DI DASHBOARD UTAMA)
@@ -2074,6 +2121,8 @@ def page_update():
 if st.session_state.page == "cabdin":
     set_bg("cabdis.jpg")
     page_cabdin()
+elif st.session_state.page == "list_status":
+    page_list_status()
 
 elif st.session_state.page == "sekolah":
     set_bg("dashboard.jpg")
@@ -2164,6 +2213,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
