@@ -1626,9 +1626,6 @@ def page_detail():
     style="width:120px;border-radius:10px;">
     </div>
     
-    <div style="flex:1;min-width:350px">
-    
-    <div style="font-size:24px;font-weight:800;margin-bottom:12px;color:#1b4332">
     👨‍🏫 {nama_kepsek}
     </div>
     
@@ -2250,6 +2247,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
