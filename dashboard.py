@@ -1011,7 +1011,7 @@ def page_cabdin():
 
     with colx1:
         if st.button(f"Aktif Periode Ke 1\n{jumlah_p1}", use_container_width=True):
-        st.session_state.filter_status = "Aktif Periode Ke 1"
+            st.session_state.filter_status = "Aktif Periode Ke 1"
 
     with colx2:
         if st.button(f"Aktif Periode Ke 2\n{jumlah_p2}", use_container_width=True):
@@ -2147,6 +2147,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
