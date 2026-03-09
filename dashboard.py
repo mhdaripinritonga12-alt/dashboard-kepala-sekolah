@@ -1287,6 +1287,7 @@ def page_sekolah():
     with col1:
         st.markdown("<center>Aktif Periode Ke 1</center>", unsafe_allow_html=True)
         if st.button(str(jumlah_p1), key="cab_p1", use_container_width=True):
+            st.session_state.filter_status = "Aktif Periode Ke 1"
             st.session_state.filter_cabdin = st.session_state.selected_cabdin
             st.session_state.page = "list_status"
             st.rerun()
@@ -1294,6 +1295,7 @@ def page_sekolah():
     with col2:
         st.markdown("<center>Aktif Periode Ke 2</center>", unsafe_allow_html=True)
         if st.button(str(jumlah_p2), key="cab_p2", use_container_width=True):
+            st.session_state.filter_status = "Aktif Periode Ke 2"
             st.session_state.filter_cabdin = st.session_state.selected_cabdin
             st.session_state.page = "list_status"
             st.rerun()
@@ -1301,6 +1303,7 @@ def page_sekolah():
     with col3:
         st.markdown("<center>Lebih 2 Periode</center>", unsafe_allow_html=True)
         if st.button(str(jumlah_lebih2), key="cab_p3", use_container_width=True):
+            st.session_state.filter_status = "Lebih dari 2 Periode"
             st.session_state.filter_cabdin = st.session_state.selected_cabdin
             st.session_state.page = "list_status"
             st.rerun()
@@ -1308,6 +1311,7 @@ def page_sekolah():
     with col4:
         st.markdown("<center>Kasek Plt</center>", unsafe_allow_html=True)
         if st.button(str(jumlah_plt), key="cab_p4", use_container_width=True):
+            st.session_state.filter_status = "Plt"
             st.session_state.filter_cabdin = st.session_state.selected_cabdin
             st.session_state.page = "list_status"
             st.rerun()
@@ -1315,6 +1319,7 @@ def page_sekolah():
     with col5:
         st.markdown("<center>Bisa Diberhentikan</center>", unsafe_allow_html=True)
         if st.button(str(total_bisa), key="cab_p5", use_container_width=True):
+            st.session_state.filter_status = "Bisa Diberhentikan"
             st.session_state.filter_cabdin = st.session_state.selected_cabdin
             st.session_state.page = "list_status"
             st.rerun()
@@ -2229,6 +2234,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
