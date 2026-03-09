@@ -1105,22 +1105,7 @@ def page_cabdin():
 
     st.divider()
 
-    st.subheader("🏢 DAFTAR CABANG DINAS PENDIDIKAN")
 
-    df_view = apply_filter(df_ks)
-    cabdin_list = urutkan_cabdin(df_view["Cabang Dinas"].dropna().unique())
-
-    cols = st.columns(4)
-    for i, cabdin in enumerate(cabdin_list):
-        with cols[i % 4]:
-            key_btn = f"cabdin_{cabdin}".replace(" ", "_")
-        
-            if st.button(f"📍 {cabdin}", key=key_btn, use_container_width=True):
-                st.session_state.selected_cabdin = cabdin
-                st.session_state.page = "sekolah"
-                st.rerun()
-
-    st.divider()
 # =====================================================
 # TAMPILKAN DATA SESUAI DASHBOARD
 # =====================================================
@@ -2204,6 +2189,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
