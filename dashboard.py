@@ -1021,40 +1021,40 @@ def page_cabdin():
 
     with colx1:
         st.markdown("<center>Aktif Periode Ke 1</center>",unsafe_allow_html=True)
-        if st.button(jumlah_p1,key="p1",use_container_width=True):
+        if st.button(f"{jumlah_p1}",key="p1",use_container_width=True):
             st.session_state.filter_status="Aktif Periode Ke 1"
             st.session_state.page="list_status"
             st.rerun()
 
     with colx2:
         st.markdown("<center>Aktif Periode Ke 2</center>",unsafe_allow_html=True)
-        if st.button(jumlah_p2,key="p2",use_container_width=True):
+        if st.button(f"{jumlah_p2}",key="p2",use_container_width=True):
             st.session_state.filter_status="Aktif Periode Ke 2"
             st.session_state.page="list_status"
             st.rerun()
-
+    
     with colx3:
         st.markdown("<center>Lebih 2 Periode</center>",unsafe_allow_html=True)
-        if st.button(jumlah_lebih2,key="p3",use_container_width=True):
+        if st.button(f"{jumlah_lebih2}",key="p3",use_container_width=True):
             st.session_state.filter_status="Lebih dari 2 Periode"
             st.session_state.page="list_status"
             st.rerun()
-
+    
     with colx4:
         st.markdown("<center>Kasek Plt</center>",unsafe_allow_html=True)
-        if st.button(jumlah_plt,key="p4",use_container_width=True):
+        if st.button(f"{jumlah_plt}",key="p4",use_container_width=True):
             st.session_state.filter_status="Plt"
             st.session_state.page="list_status"
             st.rerun()
-
+    
     with colx5:
         st.markdown("<center>Bisa Diberhentikan</center>",unsafe_allow_html=True)
-        if st.button(total_bisa_diberhentikan,key="p5",use_container_width=True):
+        if st.button(f"{total_bisa_diberhentikan}",key="p5",use_container_width=True):
             st.session_state.filter_status="Bisa Diberhentikan"
             st.session_state.page="list_status"
             st.rerun()
-
-    st.divider()
+            
+            st.divider()
 
     # =====================================================
     # DAFTAR CABANG DINAS
@@ -2197,6 +2197,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
