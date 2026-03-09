@@ -1808,8 +1808,8 @@ def page_detail():
     # CALON PENGGANTI (ANTI ERROR)
     # =========================================================
     
-    pengganti = ""
-    pengganti_excel = ""
+    pengganti = perubahan_kepsek.get(nama, "")
+    pengganti_excel = row.get("Calon Pengganti", "")
     
     try:
         pengganti = st.session_state.get("calon_pengganti", "")
@@ -1832,12 +1832,27 @@ def page_detail():
     
     else:
     
-        tampil_colored_field(
-            "Calon Pengganti",
-            pengganti_excel,
-            bg="#fff3cd"
-        )
-    
+        # =========================================================
+        # TAMPILKAN CALON PENGGANTI YANG TERSIMPAN
+        # =========================================================
+        
+        calon_tersimpan = perubahan_kepsek.get(nama, "")
+        
+        if calon_tersimpan:
+        
+            tampil_colored_field(
+                "Calon Pengganti",
+                calon_tersimpan,
+                bg="#d1e7dd"
+            )
+        
+        else:
+        
+            tampil_colored_field(
+                "Calon Pengganti",
+                "-",
+                bg="#fff3cd"
+            )
     
     st.divider()
     # =========================================================
@@ -2020,17 +2035,18 @@ def page_detail():
     with colbtn1:
     
         if st.button("💾 Simpan Pengganti", use_container_width=True):
-    
+
             if calon == "-- Pilih Calon Pengganti --":
                 st.error("⚠️ Pilih calon pengganti terlebih dahulu")
+        
             else:
-    
+        
                 perubahan_kepsek[nama] = calon
-    
+        
                 save_perubahan(perubahan_kepsek, df_ks, df_guru)
-    
-                st.success(f"✅ Pengganti untuk {nama} berhasil disimpan")
-    
+        
+                st.success("✅ Pengganti berhasil disimpan")
+        
                 st.rerun()
     
     
@@ -2038,20 +2054,20 @@ def page_detail():
     with colbtn2:
     
         if st.button("↩️ Kembalikan ke Kepsek Lama", use_container_width=True):
-    
-            if nama in perubahan_kepsek:
-    
-                del perubahan_kepsek[nama]
-    
-                save_perubahan(perubahan_kepsek, df_ks, df_guru)
-    
-                st.success("✅ Data pengganti berhasil dihapus")
-    
-                st.rerun()
-    
-            else:
-                st.warning("Belum ada pengganti yang disimpan")
 
+            if nama in perubahan_kepsek:
+        
+                del perubahan_kepsek[nama]
+        
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
+        
+                st.success("✅ Data pengganti dihapus")
+        
+                st.rerun()
+        
+            else:
+                st.warning("Belum ada pengganti tersimpan")
+                
 colbtn1, colbtn2 = st.columns(2)
 # ============================================
 # KOLOM TOMBOL SIMPAN & RESET (DINAMIS)
@@ -2239,6 +2255,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
