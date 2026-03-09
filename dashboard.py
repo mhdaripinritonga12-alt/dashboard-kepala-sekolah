@@ -1629,7 +1629,7 @@ def page_detail():
     👨‍🏫 {nama_kepsek}
     </div>
     
-    <div style="display:grid;grid-template-columns:200px auto;gap:6px;font-size:20px">
+    <div style="display:grid;grid-template-columns:200px auto;gap:6px;font-size:15px">
     
     <div><b>Nama Sekolah</b></div><div>: {nama_sekolah}</div>
     <div><b>Jenjang</b></div><div>: {jenjang}</div>
@@ -2247,6 +2247,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
