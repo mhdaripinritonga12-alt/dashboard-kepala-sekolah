@@ -1595,7 +1595,9 @@ def page_detail():
     
     html_kepsek = f"""
     <div style="
-    background:white;
+    background-image:url('background_card.jpg');
+    background-size:cover;
+    background-position:center;
     border-radius:18px;
     padding:25px;
     border-left:10px solid #2e8b57;
@@ -1603,6 +1605,16 @@ def page_detail():
     display:flex;
     gap:30px;
     align-items:flex-start;
+    flex-wrap:wrap;
+    ">
+    
+    <div style="
+    background:rgba(255,255,255,0.92);
+    padding:20px;
+    border-radius:14px;
+    width:100%;
+    display:flex;
+    gap:30px;
     flex-wrap:wrap;
     ">
     
@@ -1660,10 +1672,11 @@ def page_detail():
     </div>
     
     </div>
+    
+    </div>
     """
     
     components.html(html_kepsek, height=550)
-    
     # =========================================================
     # RIWAYAT DAPODIK (TABEL DARI SHEET RIWAYAT_DAPODIK)
     # =========================================================
@@ -2234,6 +2247,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
