@@ -1001,6 +1001,61 @@ def page_cabdin():
             st.rerun()
 
     st.divider()
+
+# ===============================
+# HITUNG STATUS KEPSEK
+# ===============================
+df_rekap = df_ks.copy()
+df_rekap["Status Regulatif"] = df_rekap.apply(map_status, axis=1)
+
+jumlah_p1 = int((df_rekap["Status Regulatif"] == "Aktif Periode Ke 1").sum())
+jumlah_p2 = int((df_rekap["Status Regulatif"] == "Aktif Periode Ke 2").sum())
+jumlah_lebih2 = int((df_rekap["Status Regulatif"] == "Lebih dari 2 Periode").sum())
+jumlah_plt = int((df_rekap["Status Regulatif"] == "Plt").sum())
+
+total_bisa_diberhentikan = jumlah_p2 + jumlah_lebih2 + jumlah_plt
+
+st.markdown("## 📌 REKAP DATA DINAS PENDIDIKAN")
+
+colx1, colx2, colx3, colx4, colx5 = st.columns(5)
+
+with colx1:
+    st.markdown("<center>Aktif Periode Ke 1</center>", unsafe_allow_html=True)
+    if st.button(f"{jumlah_p1}", key="p1", use_container_width=True):
+        st.session_state.filter_status = "Aktif Periode Ke 1"
+        st.session_state.page = "list_status"
+        st.rerun()
+
+with colx2:
+    st.markdown("<center>Aktif Periode Ke 2</center>", unsafe_allow_html=True)
+    if st.button(f"{jumlah_p2}", key="p2", use_container_width=True):
+        st.session_state.filter_status = "Aktif Periode Ke 2"
+        st.session_state.page = "list_status"
+        st.rerun()
+
+with colx3:
+    st.markdown("<center>Lebih 2 Periode</center>", unsafe_allow_html=True)
+    if st.button(f"{jumlah_lebih2}", key="p3", use_container_width=True):
+        st.session_state.filter_status = "Lebih dari 2 Periode"
+        st.session_state.page = "list_status"
+        st.rerun()
+
+with colx4:
+    st.markdown("<center>Kasek Plt</center>", unsafe_allow_html=True)
+    if st.button(f"{jumlah_plt}", key="p4", use_container_width=True):
+        st.session_state.filter_status = "Plt"
+        st.session_state.page = "list_status"
+        st.rerun()
+
+with colx5:
+    st.markdown("<center>Bisa Diberhentikan</center>", unsafe_allow_html=True)
+    if st.button(f"{total_bisa_diberhentikan}", key="p5", use_container_width=True):
+        st.session_state.filter_status = "Bisa Diberhentikan"
+        st.session_state.page = "list_status"
+        st.rerun()
+
+st.divider()
+
 # =========================================================
 # HALAMAN DAFTAR STATUS KEPALA SEKOLAH
 # =========================================================
@@ -1026,12 +1081,14 @@ def page_list_status():
     else:
         df_tmp = df_tmp[df_tmp["Status Regulatif"] == status]
 
-    tampil = df_tmp[[
-        "Nama Kepala Sekolah",
-        "Nama Sekolah",
-        "Cabang Dinas",
-        "Status Regulatif"
-    ]].copy()
+    tampil = df_tmp[
+        [
+            "Nama Kepala Sekolah",
+            "Nama Sekolah",
+            "Cabang Dinas",
+            "Status Regulatif"
+        ]
+    ].copy()
 
     tampil.insert(0, "No", range(1, len(tampil)+1))
 
@@ -2213,6 +2270,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
