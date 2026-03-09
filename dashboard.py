@@ -1061,11 +1061,11 @@ def page_list_status():
     colx1, colx2, colx3, colx4, colx5 = st.columns(5)
 
     with colx1:
-    st.markdown("<center>Aktif Periode Ke 1</center>", unsafe_allow_html=True)
-    if st.button(f"{jumlah_p1}", key="p1", use_container_width=True):
-        st.session_state.filter_status = "Aktif Periode Ke 1"
-        st.session_state.page = "list_status"
-        st.rerun()
+        st.markdown("<center>Aktif Periode Ke 1</center>", unsafe_allow_html=True)
+        if st.button(f"{jumlah_p1}", key="p1", use_container_width=True):
+            st.session_state.filter_status = "Aktif Periode Ke 1"
+            st.session_state.page = "list_status"
+            st.rerun()
 
     with colx2:
         st.markdown("<center>Aktif Periode Ke 2</center>", unsafe_allow_html=True)
@@ -2213,6 +2213,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
