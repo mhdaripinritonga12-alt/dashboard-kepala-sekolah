@@ -2010,6 +2010,48 @@ def page_detail():
             """
         
             components.html(html_card, height=320)
+    # ============================================
+    # TOMBOL SIMPAN & RESET PENGGANTI
+    # ============================================
+    
+    colbtn1, colbtn2 = st.columns(2)
+    
+    # SIMPAN PENGGANTI
+    with colbtn1:
+    
+        if st.button("💾 Simpan Pengganti", use_container_width=True):
+    
+            if calon == "-- Pilih Calon Pengganti --":
+                st.error("⚠️ Pilih calon pengganti terlebih dahulu")
+            else:
+    
+                perubahan_kepsek[nama] = calon
+    
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
+    
+                st.success(f"✅ Pengganti untuk {nama} berhasil disimpan")
+    
+                st.rerun()
+    
+    
+    # RESET KE KEPSEK LAMA
+    with colbtn2:
+    
+        if st.button("↩️ Kembalikan ke Kepsek Lama", use_container_width=True):
+    
+            if nama in perubahan_kepsek:
+    
+                del perubahan_kepsek[nama]
+    
+                save_perubahan(perubahan_kepsek, df_ks, df_guru)
+    
+                st.success("✅ Data pengganti berhasil dihapus")
+    
+                st.rerun()
+    
+            else:
+                st.warning("Belum ada pengganti yang disimpan")
+
 colbtn1, colbtn2 = st.columns(2)
 # ============================================
 # KOLOM TOMBOL SIMPAN & RESET (DINAMIS)
@@ -2197,6 +2239,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
