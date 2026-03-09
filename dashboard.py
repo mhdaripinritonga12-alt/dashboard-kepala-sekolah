@@ -1849,63 +1849,6 @@ colbtn1, colbtn2 = st.columns(2)
 
 calon_tersimpan = perubahan_kepsek.get(nama, None)
 
-# ============================================
-# SELECTBOX CALON PENGGANTI
-# ============================================
-
-key_select = f"calon_{nama}"
-
-calon = st.selectbox(
-    "👤 Pilih Calon Pengganti (SIMPEG)",
-    ["-- Pilih Calon Pengganti --"] + guru_list,
-    key=key_select
-)
-
-# ============================================
-# TOMBOL DINAMIS
-# ============================================
-
-calon_tersimpan = perubahan_kepsek.get(nama, None)
-
-if calon_tersimpan is None:
-
-    if calon != "-- Pilih Calon Pengganti --":
-
-        colbtn1 = st.columns(1)[0]
-
-        with colbtn1:
-
-            if st.button("💾 Simpan Pengganti", use_container_width=True):
-
-                kepsek_lama = row.get("Nama Kepala Sekolah", "-")
-
-                perubahan_kepsek[nama] = calon
-                save_perubahan(perubahan_kepsek, df_ks, df_guru)
-
-                st.success("✅ Pengganti berhasil disimpan")
-
-                st.rerun()
-
-else:
-
-    colbtn1, colbtn2 = st.columns(2)
-
-    with colbtn1:
-        st.success(f"Pengganti tersimpan: **{calon_tersimpan}**")
-
-    with colbtn2:
-
-        if st.button("↩️ Kembalikan ke Kepala Sekolah Awal", use_container_width=True):
-
-            del perubahan_kepsek[nama]
-            save_perubahan(perubahan_kepsek, df_ks, df_guru)
-
-            if key_select in st.session_state:
-                del st.session_state[key_select]
-
-            st.success("✅ Dikembalikan ke kepsek lama")
-
-            st.rerun()
 # =========================================================
 # HALAMAN REKAP PROVINSI
 # =========================================================
@@ -2084,6 +2027,7 @@ st.markdown("""
 © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
