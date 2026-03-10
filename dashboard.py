@@ -1608,7 +1608,6 @@ def page_detail():
     ">
     
     <div style="
-    background:rgba(255,255,255,0.92);
     padding:20px;
     border-radius:14px;
     width:100%;
@@ -2248,6 +2247,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
