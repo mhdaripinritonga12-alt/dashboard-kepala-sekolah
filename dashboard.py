@@ -1126,80 +1126,37 @@ def page_cabdin():
     st.markdown('<div class="rekap-title">📌 REKAP DATA DINAS PENDIDIKAN</div>', unsafe_allow_html=True)
     
     col1,col2,col3,col4,col5 = st.columns(5)
-
+    
     with col1:
-    
-        st.markdown("""
-        <div class="rekap-card">
-            <div class="rekap-title">Aktif Periode 1</div>
-            <div class="rekap-number">""" + str(jumlah_p1) + """</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        if st.button("Lihat Data", key="p1", use_container_width=True):
+        if st.button(f"Aktif Periode 1\n{jumlah_p1}", use_container_width=True):
             st.session_state.filter_status="Aktif Periode Ke 1"
             st.session_state.page="list_status"
             st.rerun()
     
-    
     with col2:
-    
-        st.markdown("""
-        <div class="rekap-card">
-            <div class="rekap-title">Aktif Periode 2</div>
-            <div class="rekap-number">""" + str(jumlah_p2) + """</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        if st.button("Lihat Data", key="p2", use_container_width=True):
+        if st.button(f"Aktif Periode 2\n{jumlah_p2}", use_container_width=True):
             st.session_state.filter_status="Aktif Periode Ke 2"
             st.session_state.page="list_status"
             st.rerun()
     
-    
     with col3:
-    
-        st.markdown("""
-        <div class="rekap-card">
-            <div class="rekap-title">&gt;2 Periode</div>
-            <div class="rekap-number">""" + str(jumlah_lebih2) + """</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        if st.button("Lihat Data", key="p3", use_container_width=True):
+        if st.button(f">2 Periode\n{jumlah_lebih2}", use_container_width=True):
             st.session_state.filter_status="Lebih dari 2 Periode"
             st.session_state.page="list_status"
             st.rerun()
     
-    
     with col4:
-    
-        st.markdown("""
-        <div class="rekap-card">
-            <div class="rekap-title">Pelaksana Tugas</div>
-            <div class="rekap-number">""" + str(jumlah_plt) + """</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        if st.button("Lihat Data", key="p4", use_container_width=True):
+        if st.button(f"Pelaksana Tugas\n{jumlah_plt}", use_container_width=True):
             st.session_state.filter_status="Plt"
             st.session_state.page="list_status"
             st.rerun()
     
-    
     with col5:
-    
-        st.markdown("""
-        <div class="rekap-card">
-            <div class="rekap-title">Bisa Diberhentikan</div>
-            <div class="rekap-number">""" + str(total_bisa_diberhentikan) + """</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        if st.button("Lihat Data", key="p5", use_container_width=True):
+        if st.button(f"Bisa Diberhentikan\n{total_bisa_diberhentikan}", use_container_width=True):
             st.session_state.filter_status="Bisa Diberhentikan"
             st.session_state.page="list_status"
             st.rerun()
+    
     st.divider()
     # =====================================================
     # DAFTAR CABANG DINAS
@@ -2388,6 +2345,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
