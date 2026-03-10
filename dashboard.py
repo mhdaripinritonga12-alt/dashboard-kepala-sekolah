@@ -28,36 +28,33 @@ def set_video_bg(video_file):
         st.warning(f"⚠️ Video background tidak ditemukan: {video_file}")
         return
 
-    video_base64 = base64.b64encode(open(video_path, "rb").read()).decode()
-
     st.markdown(
         f"""
         <style>
+
+        #bg-video {{
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100vw;
+            min-height: 100vh;
+            object-fit: cover;
+            z-index: -1;
+        }}
 
         .stApp {{
             background: transparent;
         }}
 
-        #video-bg {{
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%;
-            min-height: 100%;
-            object-fit: cover;
-            z-index: -100;
-        }}
-
         </style>
 
-        <video autoplay muted loop id="video-bg">
-            <source src="data:video/mp4;base64,{video_base64}" type="video/mp4">
+        <video autoplay muted loop id="bg-video">
+            <source src="{video_file}" type="video/mp4">
         </video>
 
         """,
         unsafe_allow_html=True
     )
-
 # =========================================================
 # FUNGSI BACKGROUND GAMBAR
 # =========================================================
@@ -2288,6 +2285,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
