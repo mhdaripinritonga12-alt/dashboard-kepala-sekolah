@@ -1126,7 +1126,7 @@ def page_cabdin():
     st.markdown('<div class="rekap-title">📌 REKAP DATA DINAS PENDIDIKAN</div>', unsafe_allow_html=True)
     
     col1,col2,col3,col4,col5 = st.columns(5)
-    
+
     with col1:
         if st.button(f"Aktif Periode 1\n{jumlah_p1}", use_container_width=True):
             st.session_state.filter_status="Aktif Periode Ke 1"
@@ -1155,8 +1155,7 @@ def page_cabdin():
         if st.button(f"Bisa Diberhentikan\n{total_bisa_diberhentikan}", use_container_width=True):
             st.session_state.filter_status="Bisa Diberhentikan"
             st.session_state.page="list_status"
-            st.rerun()
-    
+            st.rerun()    
     st.divider()
     # =====================================================
     # DAFTAR CABANG DINAS
@@ -2345,6 +2344,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
