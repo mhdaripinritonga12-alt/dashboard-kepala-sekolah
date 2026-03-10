@@ -1068,45 +1068,94 @@ def page_cabdin():
 
     total_bisa_diberhentikan = jumlah_p2 + jumlah_lebih2 + jumlah_plt
 
-    st.markdown("## 📌 REKAP DATA DINAS PENDIDIKAN")
-
-    colx1, colx2, colx3, colx4, colx5 = st.columns(5)
-
-    with colx1:
-        st.markdown("<center>Aktif Periode Ke 1</center>", unsafe_allow_html=True)
-        if st.button(str(jumlah_p1), key="p1", use_container_width=True):
-            st.session_state.filter_status = "Aktif Periode Ke 1"
-            st.session_state.page = "list_status"
+    st.markdown("""
+    <style>
+    
+    .rekap-title{
+    text-align:center;
+    font-size:30px;
+    font-weight:800;
+    margin-bottom:20px;
+    color:#1f2d3d;
+    }
+    
+    .rekap-wrapper{
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    flex-wrap:wrap;
+    margin-bottom:30px;
+    }
+    
+    .rekap-card{
+    width:120px;
+    height:40px;
+    background:white;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    transition:0.2s;
+    }
+    
+    .rekap-card:hover{
+    transform:scale(1.05);
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+    }
+    
+    .rekap-label{
+    font-size:11px;
+    font-weight:700;
+    color:#555;
+    margin-bottom:2px;
+    }
+    
+    .rekap-number{
+    font-size:18px;
+    font-weight:900;
+    color:#1b4332;
+    }
+    
+    </style>
+    """, unsafe_allow_html=True)
+    
+    
+    st.markdown('<div class="rekap-title">📌 REKAP DATA DINAS PENDIDIKAN</div>', unsafe_allow_html=True)
+    
+    col1,col2,col3,col4,col5 = st.columns(5)
+    
+    with col1:
+        if st.button("Aktif P1\n"+str(jumlah_p1),use_container_width=True):
+            st.session_state.filter_status="Aktif Periode Ke 1"
+            st.session_state.page="list_status"
             st.rerun()
-
-    with colx2:
-        st.markdown("<center>Aktif Periode Ke 2</center>", unsafe_allow_html=True)
-        if st.button(str(jumlah_p2), key="p2", use_container_width=True):
-            st.session_state.filter_status = "Aktif Periode Ke 2"
-            st.session_state.page = "list_status"
+    
+    with col2:
+        if st.button("Aktif P2\n"+str(jumlah_p2),use_container_width=True):
+            st.session_state.filter_status="Aktif Periode Ke 2"
+            st.session_state.page="list_status"
             st.rerun()
-
-    with colx3:
-        st.markdown("<center>Lebih 2 Periode</center>", unsafe_allow_html=True)
-        if st.button(str(jumlah_lebih2), key="p3", use_container_width=True):
-            st.session_state.filter_status = "Lebih dari 2 Periode"
-            st.session_state.page = "list_status"
+    
+    with col3:
+        if st.button(">2 Periode\n"+str(jumlah_lebih2),use_container_width=True):
+            st.session_state.filter_status="Lebih dari 2 Periode"
+            st.session_state.page="list_status"
             st.rerun()
-
-    with colx4:
-        st.markdown("<center>Kasek Plt</center>", unsafe_allow_html=True)
-        if st.button(str(jumlah_plt), key="p4", use_container_width=True):
-            st.session_state.filter_status = "Plt"
-            st.session_state.page = "list_status"
+    
+    with col4:
+        if st.button("PLT\n"+str(jumlah_plt),use_container_width=True):
+            st.session_state.filter_status="Plt"
+            st.session_state.page="list_status"
             st.rerun()
-
-    with colx5:
-        st.markdown("<center>Bisa Diberhentikan</center>", unsafe_allow_html=True)
-        if st.button(str(total_bisa_diberhentikan), key="p5", use_container_width=True):
-            st.session_state.filter_status = "Bisa Diberhentikan"
-            st.session_state.page = "list_status"
+    
+    with col5:
+        if st.button("Bisa Stop\n"+str(total_bisa_diberhentikan),use_container_width=True):
+            st.session_state.filter_status="Bisa Diberhentikan"
+            st.session_state.page="list_status"
             st.rerun()
-
     st.divider()
     # =====================================================
     # DAFTAR CABANG DINAS
@@ -2295,6 +2344,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
