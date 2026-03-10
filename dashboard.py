@@ -1103,6 +1103,22 @@ def page_cabdin():
     </style>
     """, unsafe_allow_html=True)
     
+    st.markdown("""
+    <style>
+    
+    div[data-testid="stButton"] > button{
+    height:80px;
+    border-radius:14px;
+    font-weight:700;
+    font-size:14px;
+    text-align:center;
+    line-height:1.3;
+    white-space:pre-line;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    }
+    
+    </style>
+    """, unsafe_allow_html=True)
     
     col1,col2,col3,col4,col5 = st.columns(5)
     
@@ -2382,6 +2398,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
