@@ -783,16 +783,11 @@ div[data-testid="stButton"] > button {
 import base64
 import os
 import streamlit as st
-# =========================================================
-# BACKGROUND LOGIN / DASHBOARD / CABDIS
-# =========================================================
+
+# BACKGROUND LOGIN / DASHBOARD
 
 if not st.session_state.login:
     set_video_bg("login_bg.mp4")
-
-elif st.session_state.filter_status:
-    set_bg("dashboard.jpg")
-
 else:
     set_bg("dashboard.jpg")
 
@@ -2214,25 +2209,30 @@ def page_update():
 # ROUTING UTAMA
 # =========================================================
 
-if st.session_state.login:
+if st.session_state.page == "cabdin":
+    set_bg("cabdis.jpg")
+    page_cabdin()
 
-    if st.session_state.page == "cabdin":
-        set_bg("cabdis.jpg")
+elif st.session_state.page == "list_status":
+    set_bg("dashboard.jpg")
+    page_list_status()
 
-    elif st.session_state.page == "list_status":
-        set_bg("dashboard.jpg")
+elif st.session_state.page == "sekolah":
+    set_bg("dashboard.jpg")
+    page_sekolah()
 
-    elif st.session_state.page == "sekolah":
-        set_bg("dashboard.jpg")
+elif st.session_state.page == "detail":
+    set_bg("dashboard.jpg")
+    page_detail()
 
-    elif st.session_state.page == "detail":
-        set_bg("dashboard.jpg")
+elif st.session_state.page == "rekap":
+    set_bg("dashboard.jpg")
+    page_rekap()
 
-    elif st.session_state.page == "rekap":
-        set_bg("dashboard.jpg")
-
-    elif st.session_state.page == "update":
-        set_bg("dashboard.jpg")
+elif st.session_state.page == "update":
+    set_bg("dashboard.jpg")
+    page_update()
+        
 # =========================================================
 # FOOTER HANYA DI DASHBOARD UTAMA
 # =========================================================
@@ -2291,6 +2291,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
