@@ -25,7 +25,7 @@ def set_video_bg(video_file):
     video_path = os.path.join(os.path.dirname(__file__), video_file)
 
     if not os.path.exists(video_path):
-        st.error("❌ Video login_mp4 tidak ditemukan di folder aplikasi")
+        st.error("❌ Video login_.mp4 tidak ditemukan di folder aplikasi")
         return
 
     video_bytes = open(video_path, "rb").read()
@@ -790,7 +790,7 @@ import streamlit as st
 
 if not st.session_state.login:
 
-    set_video_bg("login_mp4")
+    set_video_bg("login_.mp4")
 
 else:
 
@@ -2295,6 +2295,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
