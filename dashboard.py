@@ -17,7 +17,44 @@ from reportlab.pdfgen import canvas
 from io import BytesIO
 
 # =========================================================
-# FUNGSI BACKGROUND (TARUH DI SINI)
+# FUNGSI VIDEO BACKGROUND LOGIN
+# =========================================================
+def set_video_bg(video_file):
+
+    video_path = os.path.join(os.path.dirname(__file__), video_file)
+
+    if not os.path.exists(video_path):
+        st.warning(f"⚠️ Video background tidak ditemukan: {video_file}")
+        return
+
+    with open(video_path, "rb") as f:
+        video_bytes = f.read()
+
+    encoded = base64.b64encode(video_bytes).decode()
+
+    st.markdown(f"""
+    <style>
+
+    #bgvideo {{
+        position: fixed;
+        right:0;
+        bottom:0;
+        min-width:100%;
+        min-height:100%;
+        object-fit:cover;
+        z-index:-1;
+    }}
+
+    </style>
+
+    <video autoplay muted loop id="bgvideo">
+        <source src="data:video/mp4;base64,{encoded}" type="video/mp4">
+    </video>
+    """, unsafe_allow_html=True)
+
+
+# =========================================================
+# FUNGSI BACKGROUND GAMBAR
 # =========================================================
 def set_bg(image_name):
     path = os.path.join(os.path.dirname(__file__), image_name)
@@ -2246,6 +2283,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
