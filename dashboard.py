@@ -25,7 +25,7 @@ def set_video_bg(video_file):
     video_path = os.path.join(os.path.dirname(__file__), video_file)
 
     if not os.path.exists(video_path):
-        st.error("Video login tidak ditemukan")
+        st.error("❌ Video login.mp4 tidak ditemukan di folder aplikasi")
         return
 
     video_bytes = open(video_path, "rb").read()
@@ -34,26 +34,35 @@ def set_video_bg(video_file):
     st.markdown(f"""
     <style>
 
+    /* HILANGKAN BACKGROUND STREAMLIT */
     .stApp {{
         background: transparent !important;
     }}
 
-    #video-login {{
+    .main {{
+        background: transparent !important;
+    }}
+
+    header {{
+        background: transparent !important;
+    }}
+
+    /* VIDEO BACKGROUND */
+    #loginVideo {{
         position: fixed;
         right: 0;
         bottom: 0;
         min-width: 100vw;
         min-height: 100vh;
         object-fit: cover;
-        z-index: -10;
+        z-index: -999;
     }}
 
     </style>
 
-    <video autoplay muted loop id="video-login">
+    <video autoplay muted loop id="loginVideo">
         <source src="data:video/mp4;base64,{video_base64}" type="video/mp4">
     </video>
-
     """, unsafe_allow_html=True)
 # =========================================================
 # FUNGSI BACKGROUND GAMBAR
@@ -775,11 +784,16 @@ import base64
 import os
 import streamlit as st
 
-# BACKGROUND LOGIN / DASHBOARD / CABDIS
+# =========================================================
+# VIDEO LOGIN BACKGROUND
+# =========================================================
 
 if not st.session_state.login:
+
     set_video_bg("login.mp4")
+
 else:
+
     pass
 # =========================================================
 # LOGIN PAGE
@@ -2281,6 +2295,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
