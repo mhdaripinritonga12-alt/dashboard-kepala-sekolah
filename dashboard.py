@@ -15,6 +15,40 @@ from google.oauth2.service_account import Credentials
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
+import base64
+import os
+
+def set_video_bg(video_file):
+
+    video_path = os.path.join(os.path.dirname(__file__), video_file)
+
+    with open(video_path, "rb") as f:
+        video_bytes = f.read()
+
+    encoded = base64.b64encode(video_bytes).decode()
+
+    st.markdown(
+        f"""
+        <style>
+
+        #bgvideo {{
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            object-fit: cover;
+        }}
+
+        </style>
+
+        <video autoplay muted loop id="bgvideo">
+        <source src="data:video/mp4;base64,{encoded}" type="video/mp4">
+        </video>
+        """,
+        unsafe_allow_html=True
+    )
 
 # =========================================================
 # FUNGSI BACKGROUND (TARUH DI SINI)
@@ -2247,6 +2281,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
