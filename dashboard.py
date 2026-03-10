@@ -1128,7 +1128,8 @@ def page_cabdin():
     col1,col2,col3,col4,col5 = st.columns(5)
     
     with col1:
-        if st.button("Aktif Periode 1\n"+str(jumlah_p1),use_container_width=True):
+        if st.button("Aktif Periode 1\n"
+            str(jumlah_p1),use_container_width=True):
             st.session_state.filter_status="Aktif Periode Ke 1"
             st.session_state.page="list_status"
             st.rerun()
@@ -2344,6 +2345,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
