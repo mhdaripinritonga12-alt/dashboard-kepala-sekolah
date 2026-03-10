@@ -1071,142 +1071,46 @@ def page_cabdin():
     st.markdown("""
     <style>
     
-    .kpi-card{
-    background:white;
-    border-radius:14px;
-    padding:12px;
-    text-align:center;
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
-    font-weight:700;
-    height:65px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    }
-    
-    .kpi-title{
-    font-size:14px;
-    }
-    
-    .kpi-number{
-    font-size:22px;
-    font-weight:900;
-    margin-top:4px;
-    }
-    
     div[data-testid="stButton"] > button{
-    height:0px;
-    padding:0px;
-    border:none;
-    }
-    
-    </style>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("""
-    <style>
-    
-    div[data-testid="stButton"] > button{
-    height:80px;
+    height:70px;
     border-radius:14px;
     font-weight:700;
-    font-size:14px;
+    font-size:15px;
     text-align:center;
-    line-height:1.3;
     white-space:pre-line;
     box-shadow:0 4px 10px rgba(0,0,0,0.15);
     }
     
     </style>
     """, unsafe_allow_html=True)
-    
     col1,col2,col3,col4,col5 = st.columns(5)
-    
-    # =========================
-    # AKTIF PERIODE 1
-    # =========================
+
     with col1:
-    
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-title">Aktif Periode 1</div>
-            <div class="kpi-number">{jumlah_p1}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        if st.button("", key="p1"):
+        if st.button(f"Aktif Periode 1\n\n{jumlah_p1}", use_container_width=True):
             st.session_state.filter_status="Aktif Periode Ke 1"
             st.session_state.page="list_status"
             st.rerun()
     
-    
-    # =========================
-    # AKTIF PERIODE 2
-    # =========================
     with col2:
-    
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-title">Aktif Periode 2</div>
-            <div class="kpi-number">{jumlah_p2}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        if st.button("", key="p2"):
+        if st.button(f"Aktif Periode 2\n\n{jumlah_p2}", use_container_width=True):
             st.session_state.filter_status="Aktif Periode Ke 2"
             st.session_state.page="list_status"
             st.rerun()
     
-    
-    # =========================
-    # >2 PERIODE
-    # =========================
     with col3:
-    
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-title">&gt;2 Periode</div>
-            <div class="kpi-number">{jumlah_lebih2}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        if st.button("", key="p3"):
+        if st.button(f">2 Periode\n\n{jumlah_lebih2}", use_container_width=True):
             st.session_state.filter_status="Lebih dari 2 Periode"
             st.session_state.page="list_status"
             st.rerun()
     
-    
-    # =========================
-    # PLT
-    # =========================
     with col4:
-    
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-title">Pelaksana Tugas</div>
-            <div class="kpi-number">{jumlah_plt}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        if st.button("", key="p4"):
+        if st.button(f"Pelaksana Tugas\n\n{jumlah_plt}", use_container_width=True):
             st.session_state.filter_status="Plt"
             st.session_state.page="list_status"
             st.rerun()
     
-    
-    # =========================
-    # BISA DIBERHENTIKAN
-    # =========================
     with col5:
-    
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-title">Bisa Diberhentikan</div>
-            <div class="kpi-number">{total_bisa_diberhentikan}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-        if st.button("", key="p5"):
+        if st.button(f"Bisa Diberhentikan\n\n{total_bisa_diberhentikan}", use_container_width=True):
             st.session_state.filter_status="Bisa Diberhentikan"
             st.session_state.page="list_status"
             st.rerun()    
@@ -2398,6 +2302,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
