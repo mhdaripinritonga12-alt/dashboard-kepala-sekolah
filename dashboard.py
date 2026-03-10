@@ -49,7 +49,8 @@ def set_video_bg(video_file):
         """,
         unsafe_allow_html=True
     )
-
+if not st.session_state.login:
+    set_video_bg("login_bg.mp4")
 # =========================================================
 # FUNGSI BACKGROUND (TARUH DI SINI)
 # =========================================================
@@ -2281,6 +2282,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
