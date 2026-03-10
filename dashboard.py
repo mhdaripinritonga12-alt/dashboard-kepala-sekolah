@@ -795,7 +795,7 @@ if not st.session_state.login:
 st.markdown("""
 <style>
 .stApp {
-    background-color: #1034A6;
+    background-color: transparent;
 }
 
 .block-container {
@@ -2289,6 +2289,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
