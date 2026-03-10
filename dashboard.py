@@ -1071,88 +1071,126 @@ def page_cabdin():
     st.markdown("""
     <style>
     
-    .rekap-title{
-    text-align:center;
-    font-size:30px;
-    font-weight:800;
-    margin-bottom:20px;
-    color:#1f2d3d;
-    }
-    
-    .rekap-wrapper{
-    display:flex;
-    justify-content:center;
-    gap:18px;
-    flex-wrap:wrap;
-    margin-bottom:30px;
-    }
-    
-    .rekap-card{
-    width:120px;
-    height:40px;
+    .kpi-card{
     background:white;
-    border-radius:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.15);
+    border-radius:14px;
+    padding:12px;
+    text-align:center;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    font-weight:700;
+    height:65px;
     display:flex;
     flex-direction:column;
     justify-content:center;
-    align-items:center;
-    cursor:pointer;
-    transition:0.2s;
     }
     
-    .rekap-card:hover{
-    transform:scale(1.05);
-    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+    .kpi-title{
+    font-size:14px;
     }
     
-    .rekap-label{
-    font-size:11px;
-    font-weight:700;
-    color:#555;
-    margin-bottom:2px;
-    }
-    
-    .rekap-number{
-    font-size:18px;
+    .kpi-number{
+    font-size:22px;
     font-weight:900;
-    color:#1b4332;
+    margin-top:4px;
+    }
+    
+    div[data-testid="stButton"] > button{
+    height:0px;
+    padding:0px;
+    border:none;
     }
     
     </style>
     """, unsafe_allow_html=True)
     
     
-    st.markdown('<div class="rekap-title">📌 REKAP DATA DINAS PENDIDIKAN</div>', unsafe_allow_html=True)
-    
     col1,col2,col3,col4,col5 = st.columns(5)
-
+    
+    # =========================
+    # AKTIF PERIODE 1
+    # =========================
     with col1:
-        if st.button(f"Aktif Periode 1\n{jumlah_p1}", use_container_width=True):
+    
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-title">Aktif Periode 1</div>
+            <div class="kpi-number">{jumlah_p1}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+        if st.button("", key="p1"):
             st.session_state.filter_status="Aktif Periode Ke 1"
             st.session_state.page="list_status"
             st.rerun()
     
+    
+    # =========================
+    # AKTIF PERIODE 2
+    # =========================
     with col2:
-        if st.button(f"Aktif Periode 2\n{jumlah_p2}", use_container_width=True):
+    
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-title">Aktif Periode 2</div>
+            <div class="kpi-number">{jumlah_p2}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+        if st.button("", key="p2"):
             st.session_state.filter_status="Aktif Periode Ke 2"
             st.session_state.page="list_status"
             st.rerun()
     
+    
+    # =========================
+    # >2 PERIODE
+    # =========================
     with col3:
-        if st.button(f">2 Periode\n{jumlah_lebih2}", use_container_width=True):
+    
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-title">&gt;2 Periode</div>
+            <div class="kpi-number">{jumlah_lebih2}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+        if st.button("", key="p3"):
             st.session_state.filter_status="Lebih dari 2 Periode"
             st.session_state.page="list_status"
             st.rerun()
     
+    
+    # =========================
+    # PLT
+    # =========================
     with col4:
-        if st.button(f"Pelaksana Tugas\n{jumlah_plt}", use_container_width=True):
+    
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-title">Pelaksana Tugas</div>
+            <div class="kpi-number">{jumlah_plt}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+        if st.button("", key="p4"):
             st.session_state.filter_status="Plt"
             st.session_state.page="list_status"
             st.rerun()
     
+    
+    # =========================
+    # BISA DIBERHENTIKAN
+    # =========================
     with col5:
-        if st.button(f"Bisa Diberhentikan\n{total_bisa_diberhentikan}", use_container_width=True):
+    
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-title">Bisa Diberhentikan</div>
+            <div class="kpi-number">{total_bisa_diberhentikan}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+        if st.button("", key="p5"):
             st.session_state.filter_status="Bisa Diberhentikan"
             st.session_state.page="list_status"
             st.rerun()    
@@ -2344,6 +2382,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
