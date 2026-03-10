@@ -1,26 +1,33 @@
 import streamlit as st
 import pandas as pd
 import os
-import re   # ✅ TAMBAHAN (UNTUK HAPUS HTML TAG)
+import re
 import streamlit.components.v1 as components
 import base64
-
-def get_base64_image(image_path):
-    with open(image_path, "rb") as img:
-        return base64.b64encode(img.read()).decode()
-
 import gspread
 from google.oauth2.service_account import Credentials
-
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
-import base64
-import os
 
+# =========================================================
+# INISIALISASI SESSION STATE
+# =========================================================
+if "login" not in st.session_state:
+    st.session_state.login = False
+
+
+# =========================================================
+# FUNGSI BACKGROUND VIDEO LOGIN
+# =========================================================
 def set_video_bg(video_file):
 
     video_path = os.path.join(os.path.dirname(__file__), video_file)
+
+    # cek apakah file ada
+    if not os.path.exists(video_path):
+        st.warning(f"⚠️ Video background tidak ditemukan: {video_file}")
+        return
 
     with open(video_path, "rb") as f:
         video_bytes = f.read()
@@ -37,22 +44,31 @@ def set_video_bg(video_file):
             bottom: 0;
             min-width: 100%;
             min-height: 100%;
-            z-index: -1;
             object-fit: cover;
+            z-index: -1;
+        }}
+
+        .login-box {{
+            background: rgba(0,0,0,0.45);
+            padding: 40px;
+            border-radius: 14px;
         }}
 
         </style>
 
         <video autoplay muted loop id="bgvideo">
-        <source src="data:video/mp4;base64,{encoded}" type="video/mp4">
+            <source src="data:video/mp4;base64,{encoded}" type="video/mp4">
         </video>
         """,
         unsafe_allow_html=True
     )
+
+
 # =========================================================
-# FUNGSI BACKGROUND (TARUH DI SINI)
+# FUNGSI BACKGROUND GAMBAR
 # =========================================================
 def set_bg(image_name):
+
     path = os.path.join(os.path.dirname(__file__), image_name)
 
     if not os.path.exists(path):
@@ -66,17 +82,14 @@ def set_bg(image_name):
     <style>
     .stApp {{
         background-image: url("data:image/jpg;base64,{data}");
-        background-size: 100% 100%;
+        background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
     </style>
     """, unsafe_allow_html=True)
-
-
-if not st.session_state.login:
-    set_video_bg("login_bg.mp4")
+    
 # =========================================================
 # KONFIGURASI APP
 # =========================================================
@@ -2282,6 +2295,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
