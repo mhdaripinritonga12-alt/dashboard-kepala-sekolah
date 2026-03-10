@@ -25,36 +25,36 @@ def set_video_bg(video_file):
     video_path = os.path.join(os.path.dirname(__file__), video_file)
 
     if not os.path.exists(video_path):
-        st.warning(f"⚠️ Video background tidak ditemukan: {video_file}")
+        st.error("Video login tidak ditemukan")
         return
 
-    st.markdown(
-        f"""
-        <style>
+    video_bytes = open(video_path, "rb").read()
+    video_base64 = base64.b64encode(video_bytes).decode()
 
-        #bg-video {{
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100vw;
-            min-height: 100vh;
-            object-fit: cover;
-            z-index: -1;
-        }}
+    st.markdown(f"""
+    <style>
 
-        .stApp {{
-            background: transparent;
-        }}
+    .stApp {{
+        background: transparent !important;
+    }}
 
-        </style>
+    #video-login {{
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        min-width: 100vw;
+        min-height: 100vh;
+        object-fit: cover;
+        z-index: -10;
+    }}
 
-        <video autoplay muted loop id="bg-video">
-            <source src="{video_file}" type="video/mp4">
-        </video>
+    </style>
 
-        """,
-        unsafe_allow_html=True
-    )
+    <video autoplay muted loop id="video-login">
+        <source src="data:video/mp4;base64,{video_base64}" type="video/mp4">
+    </video>
+
+    """, unsafe_allow_html=True)
 # =========================================================
 # FUNGSI BACKGROUND GAMBAR
 # =========================================================
@@ -779,12 +779,8 @@ import streamlit as st
 
 if not st.session_state.login:
     set_video_bg("login.mp4")
-
-elif st.session_state.filter_status:
-    set_bg("dashboard.jpg")
-
 else:
-    set_bg("dashboard.jpg")
+    pass
 # =========================================================
 # LOGIN PAGE
 # =========================================================
@@ -2285,6 +2281,7 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
+
 
 
 
