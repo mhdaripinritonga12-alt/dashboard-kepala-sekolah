@@ -1,74 +1,25 @@
 import streamlit as st
 import pandas as pd
 import os
-import re
+import re   # ✅ TAMBAHAN (UNTUK HAPUS HTML TAG)
 import streamlit.components.v1 as components
 import base64
+
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img:
+        return base64.b64encode(img.read()).decode()
+
 import gspread
 from google.oauth2.service_account import Credentials
+
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from io import BytesIO
 
 # =========================================================
-# INISIALISASI SESSION STATE
-# =========================================================
-if "login" not in st.session_state:
-    st.session_state.login = False
-
-
-# =========================================================
-# FUNGSI BACKGROUND VIDEO LOGIN
-# =========================================================
-def set_video_bg(video_file):
-
-    video_path = os.path.join(os.path.dirname(__file__), video_file)
-
-    # cek apakah file ada
-    if not os.path.exists(video_path):
-        st.warning(f"⚠️ Video background tidak ditemukan: {video_file}")
-        return
-
-    with open(video_path, "rb") as f:
-        video_bytes = f.read()
-
-    encoded = base64.b64encode(video_bytes).decode()
-
-    st.markdown(
-        f"""
-        <style>
-
-        #bgvideo {{
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%;
-            min-height: 100%;
-            object-fit: cover;
-            z-index: -1;
-        }}
-
-        .login-box {{
-            background: rgba(0,0,0,0.45);
-            padding: 40px;
-            border-radius: 14px;
-        }}
-
-        </style>
-
-        <video autoplay muted loop id="bgvideo">
-            <source src="data:video/mp4;base64,{encoded}" type="video/mp4">
-        </video>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# =========================================================
-# FUNGSI BACKGROUND GAMBAR
+# FUNGSI BACKGROUND (TARUH DI SINI)
 # =========================================================
 def set_bg(image_name):
-
     path = os.path.join(os.path.dirname(__file__), image_name)
 
     if not os.path.exists(path):
@@ -82,14 +33,15 @@ def set_bg(image_name):
     <style>
     .stApp {{
         background-image: url("data:image/jpg;base64,{data}");
-        background-size: cover;
+        background-size: 100% 100%;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
     </style>
     """, unsafe_allow_html=True)
-    
+
+
 # =========================================================
 # KONFIGURASI APP
 # =========================================================
@@ -783,19 +735,25 @@ div[data-testid="stButton"] > button {
 import base64
 import os
 import streamlit as st
+# =========================================================
+# BACKGROUND LOGIN / DASHBOARD / CABDIS
+# =========================================================
 
-# BACKGROUND LOGIN VIDEO
+if st.session_state.filter_status:
+    set_bg("dashboard.jpg")
 
-if not st.session_state.login:
-    set_video_bg("login_bg.mp4")
+elif not st.session_state.login:
+    set_bg("login.jpg")
 
+else:
+    set_bg("dashboard.jpg")
 # =========================================================
 # LOGIN PAGE
 # =========================================================
 st.markdown("""
 <style>
 .stApp {
-    background-color: transparent;
+    background-color: #1034A6;
 }
 
 .block-container {
@@ -2230,7 +2188,7 @@ elif st.session_state.page == "rekap":
 elif st.session_state.page == "update":
     set_bg("dashboard.jpg")
     page_update()
-        
+
 # =========================================================
 # FOOTER HANYA DI DASHBOARD UTAMA
 # =========================================================
@@ -2289,15 +2247,6 @@ if st.session_state.page == "cabdin":
     © 2026 SMART-KS • Sistem Monitoring dan Analisis Riwayat Tugas - Kepala Sekolah
     </div>
     """, unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
 
 
 
